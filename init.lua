@@ -4,10 +4,7 @@ cas = {
 	},
 };
 
-local JSON = assert(loadfile(cas._globals.pathToSource .. "/lib/JSON.lua"))()
-local configFile = assert(io.open(cas._globals.pathToSource .. "/config.json"))
-cas._config = assert(JSON:decode(configFile:read("*all")))
-configFile:close()
+cas._config = assert(loadfile(cas._globals.pathToSource .. "/config.lua"))()
 
 local funcStr = "cas._cs2dCommands = {"
 for key, value in pairs(cas._config.cs2dCommands) do

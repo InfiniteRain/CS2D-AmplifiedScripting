@@ -1,5 +1,6 @@
+return
 {
-	"cs2dCommands": [
+	cs2dCommands = {
 		"addhook",
 		"ai_aim",
 		"ai_attack",
@@ -69,5 +70,5 @@
 		"tween_rotateconstantly",
 		"tween_scale",
 		"vars"
-	]
+	}
 }
