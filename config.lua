@@ -1,6 +1,4 @@
--- DO NOT REMOVE THIS RETURN --
-return                       --
--- ^^^^^^^^^^^^^^^^^^^^^^^^^ --
+return                      
 
 {
 	cs2dCommands = {

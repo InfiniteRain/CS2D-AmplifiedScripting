@@ -1,18 +1,33 @@
-cas = {
-	_globals = {
-		pathToSource = "sys/lua/CS2D-AmplifiedScripting",
-	},
+-- Initializing the AS. 
+cas = { -- The global table which holds everything this mod uses.
+	_pathToSource = "sys/lua/CS2D-AmplifiedScripting", -- Path to AS source folder.
 };
 
-cas._config = assert(loadfile(cas._globals.pathToSource .. "/config.lua"))()
+-- Loading the first few classes which are essential for debugging.
+dofile(cas._pathToSource .. "/core/color.lua")
+dofile(cas._pathToSource .. "/core/debug.lua")
 
+local initDebugger = cas.debug.new(cas.color.white, "AS initialization") -- Creating the debugger for this initialization process.
+initDebugger:setActive(true) -- Making it active.
+initDebugger:log("Initializing Amplified Scripting...")
+initDebugger:log("Color and debugger classes have been successfully loaded.")
+
+-- Loading the configuration file.
+initDebugger:log("Loading config...")
+cas._config = assert(loadfile(cas._pathToSource .. "/config.lua"))()
+
+-- 
 local funcStr = "cas._cs2dCommands = {"
 for key, value in pairs(cas._config.cs2dCommands) do
 	funcStr = funcStr .. value .. " = " .. value ..", "
 end
 funcStr = funcStr .. "}"
 assert(loadstring(funcStr))()
+initDebugger:log("Config has been successfully loaded.")
 
-dofile(cas._globals.pathToSource .. "/core/color.lua")
-dofile(cas._globals.pathToSource .. "/core/debug.lua")
-dofile(cas._globals.pathToSource .. "/core/hook.lua")
+
+initDebugger:log("Loading AS functionality classes...")
+dofile(cas._pathToSource .. "/core/hook.lua")
+initDebugger:log("AS functionality classes were successfully loaded.")
+
+initDebugger:log("Initialization was successful.")

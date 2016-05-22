@@ -6,7 +6,8 @@ cas.color.__index = cas.color
 -- Static methods --
 --------------------
 
--- Constructor. Will create the instance of color and return it.
+-- Constructor. Creates an instance of the color class and returns it. Takes RGB color values as 
+-- arguments to define the color the instance is supposed to represent.
 function cas.color.new(red, green, blue)
 	if not (red and green and blue) then
 		error("Less than 3 arguments were passed, expected at least 3 arguments.")
