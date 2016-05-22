@@ -7,14 +7,14 @@ cas.debug.__index = cas.debug
 --------------------
 
 -- Constructor. Creates an instance of the debug class and returns it. Takes color and tag values 
--- as arguments.
+-- as parameters.
 function cas.debug.new(color, tag)
 	if not (color and tag) then
-		error("Less than 2 arguments were passed, expected at least 2 arguments.")
+		error("Less than 2 parameters were passed, expected at least 2 parameters.")
 	elseif getmetatable(color) ~= cas.color then
-		error("Passed color is not an instance of the \"cas.color\" class.")
+		error("Passed \"color\" parameter is not an instance of the \"cas.color\" class.")
 	elseif type(tag) ~= "string" then
-		error("Passed tag is not valid. String expected, ".. type(tag) .." passed.")
+		error("Passed \"tag\" parameter is not valid. String expected, ".. type(tag) .." passed.")
 	end
 	
 	local self = {}
@@ -34,9 +34,9 @@ end
 -- Will create an entry in the debug log.
 function cas.debug:log(message)
 	if not message then
-		error("No arguments were passed, expected at least 1 argument.")
+		error("No parameters were passed, expected at least 1 parameter.")
 	elseif type(message) ~= "string" then
-		error("Passed message is not valid. String expected, ".. type(tag) .." passed.")
+		error("Passed \"message\" parameter is not valid. String expected, ".. type(tag) .." passed.")
 	end
 	
 	if self._active then
@@ -47,9 +47,9 @@ end
 -- Will show an informational message
 function cas.debug:infoMessage(message)
 	if not message then
-		error("No arguments were passed, expected at least 1 argument.")
+		error("No parameters were passed, expected at least 1 parameter.")
 	elseif type(message) ~= "string" then
-		error("Passed message is not valid. String expected, ".. type(tag) .." passed.")
+		error("Passed \"message\" parameter is not valid. String expected, ".. type(tag) .." passed.")
 	end
 	
 	print(tostring(self._color) .. "Info - ".. self._tag ..": ".. message)
@@ -60,9 +60,9 @@ end
 -- Sets the active state of the debug logger.
 function cas.debug:setActive(active)
 	if active == nil then
-		error("No arguments were passed, expected at least 1 argument.")
+		error("No parameters were passed, expected at least 1 parameter.")
 	elseif type(active) ~= "boolean" then
-		error("Passed active state is not valid. Boolean expected, ".. type(active) .." passed.")
+		error("Passed \"active\" parameter is not valid. Boolean expected, ".. type(active) .." passed.")
 	end
 	
 	self._active = active

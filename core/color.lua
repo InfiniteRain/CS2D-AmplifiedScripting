@@ -7,12 +7,12 @@ cas.color.__index = cas.color
 --------------------
 
 -- Constructor. Creates an instance of the color class and returns it. Takes RGB color values as 
--- arguments to define the color the instance is supposed to represent.
+-- parameters to define the color the instance is supposed to represent.
 function cas.color.new(red, green, blue)
 	if not (red and green and blue) then
-		error("Less than 3 arguments were passed, expected at least 3 arguments.")
+		error("Less than 3 parameters were passed, expected at least 3 parameters.")
 	elseif not cas.color.isCorrectFormat(red, green, blue) then
-		error("Passed arguments contained unsuitable values for color instance.")
+		error("Passed parameters contained unsuitable values for color instance.")
 	end
 	
 	local self = {}
@@ -25,7 +25,7 @@ function cas.color.new(red, green, blue)
 	return self
 end
 
--- Checks if the passed arguments are suitable for color representation. All the passed arguments
+-- Checks if the passed parameters are suitable for color representation. All the passed parameters
 -- have to be numbers, being in range of 0 and 255 while not containing a floating point.
 function cas.color.isCorrectFormat(...)
 	local numbers = {...}
@@ -46,7 +46,7 @@ end
 ----------------------
 
 -- This method will be called whenever a tostring() function is called with the instance of this
--- class as an argument. Returns a string which is used to change the message's color, in the 
+-- class as an parameter. Returns a string which is used to change the message's color, in the 
 -- following format: "©<red><green><blue>", with necessary zeros added.
 function cas.color:__tostring()
 	return string.format("%c%03d%03d%03d", 169, self._red, self._green, self._blue)
@@ -55,11 +55,11 @@ end
 --== Setters ==--
 
 -- Sets the color fields of the instance.
-function cas.color:setColor(red, green, blue)
+function cas.color:setRGB(red, green, blue)
 	if not (red and green and blue) then
-		error("Less than 3 arguments were passed, expected at least 3 arguments.")
+		error("Less than 3 parameters were passed, expected at least 3 parameters.")
 	elseif not cas.color.isCorrectFormat(red, green, blue) then
-		error("Passed arguments contained unsuitable values for color instance.")
+		error("Passed parameters contained unsuitable values for color instance.")
 	end
 	
 	self._red = red
@@ -70,9 +70,9 @@ end
 -- Sets the red color field of the instance.
 function cas.color:setRed(red)
 	if not red then
-		error("No arguments were passed, expected at least 1 argument.")
+		error("No parameters were passed, expected at least 1 parameter.")
 	elseif not cas.color.isCorrectFormat(red) then
-		error("Passed argument contained unsuitable value for color instance.")
+		error("Passed parameter contained unsuitable value for color instance.")
 	end
 	
 	self._red = red
@@ -81,9 +81,9 @@ end
 -- Sets the green color field of the instance.
 function cas.color:setGreen(green)
 	if not red then
-		error("No arguments were passed, expected at least 1 argument.")
+		error("No parameters were passed, expected at least 1 parameter.")
 	elseif not cas.color.isCorrectFormat(red) then
-		error("Passed argument contained unsuitable value for color instance.")
+		error("Passed parameter contained unsuitable value for color instance.")
 	end
 	
 	self._green = green
@@ -92,9 +92,9 @@ end
 -- Sets the blue color field of the instance.
 function cas.color:setBlue(blue)
 	if not red then
-		error("No arguments were passed, expected at least 1 argument.")
+		error("No parameters were passed, expected at least 1 parameter.")
 	elseif not cas.color.isCorrectFormat(red) then
-		error("Passed argument contained unsuitable value for color instance.")
+		error("Passed parameter contained unsuitable value for color instance.")
 	end
 	
 	self._blue = blue
@@ -103,7 +103,7 @@ end
 --== Getters ==--
 
 -- Gets the color fields of the instance.
-function cas.color:getColor()
+function cas.color:getRGB()
 	return self._red, self._green, self._blue
 end
 

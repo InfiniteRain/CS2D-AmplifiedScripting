@@ -26,10 +26,38 @@ funcStr = funcStr .. "}"
 assert(loadstring(funcStr))()
 initDebugger:log("Config has been successfully loaded.")
 
-
+-- Loading classes
 initDebugger:log("Loading AS functionality classes...")
 initDebugger:log("... Loading hook class ...")
-dofile(cas._pathToSource .. "/core/hook.lua")
-initDebugger:log("AS functionality classes were successfully loaded.")
+dofile(cas._pathToSource .. "/core/hook.lua") -- Hook class
+initDebugger:log("... Loading mapImage class ...")
+dofile(cas._pathToSource .. "/core/mapImage.lua") -- Map image class
 
+--i = cas.mapImage.new('gfx/block.bmp', 'top')
+-- Hooked function for all the image classes, frees all the images on round restart.
+local function imageStartround(mode)
+	for key, value in pairs(cas.mapImage._images) do
+		value._freed = true
+	end
+	cas.mapImage._images = {}
+end
+
+cas._imageStartround = cas.hook.new("startround", imageStartround, -255, "_imageStartround")
+
+initDebugger:log("AS functionality classes were successfully loaded.")
 initDebugger:infoMessage("AS initialization was successful.")
+
+--[[img = {}
+for i = 1, 100 do
+	img[i] = cas.mapImage.new('gfx/block.bmp', 'top')
+	img[i]:setPosition(math.random(0, map('xsize') * 32), math.random(0, map('ysize') * 32))
+	img[i]:setAngle(math.random(-180, 180))
+	img[i]:setScale(math.random(0, 65535)/65535 + 1, math.random(0, 65535)/65535 + 1)
+	img[i]:setColor(cas.color.new(math.random(1, 255), math.random(1, 255), math.random(1, 255)))
+end
+
+function k()
+	for k, v in pairs(cas.mapImage._images) do
+		print(k)
+	end
+end]]

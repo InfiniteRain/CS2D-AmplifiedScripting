@@ -10,24 +10,24 @@ cas.hook.__index = cas.hook
 -- string!) and priority is the optional priority value for the cs2d hook. Label is the name the 
 -- hook function will have in the cas.hook._hooks table.
 function cas.hook.new(event, func, priority, label)
-	-- Checks if all the passed arguments were correct.
+	-- Checks if all the passed parameters were correct.
 	if not (func and event) then
-		error("Less than 2 arguments were passed, expected at least 2 arguments.")
+		error("Less than 2 parameters were passed, expected at least 2 parameters.")
 	elseif type(func) ~= "function" then
-		error("Passed func is not valid. Function expected, ".. type(func) .." passed.")
+		error("Passed \"func\" parameter is not valid. Function expected, ".. type(func) .." passed.")
 	elseif type(event) ~= "string" then
-		error("Passed event is not valid. String expected, ".. type(event) .." passed.")
+		error("Passed \"event\" parameter is not valid. String expected, ".. type(event) .." passed.")
 	end
 	if priority then
 		if type(priority) ~= "number" then
-			error("Passed priority is not valid. Number expected, ".. type(priority) .." passed.")
+			error("Passed \"priority\" parameter is not valid. Number expected, ".. type(priority) .." passed.")
 		end
 	end
 	if label then
 		if type(label) ~= "string" then
-			error("Passed label is not valid. String expected, ".. type(label) .." passed.")
-		elseif string.find(label, "^%a+[%a%d]*$") == nil then
-			error("Passed label has to start with a letter and contain no special/punctuational characters.")
+			error("Passed \"label\" parameter is not valid. String expected, ".. type(label) .." passed.")
+		elseif string.find(label, "^[%a_]+[%a%d_]*$") == nil then
+			error("Passed \"label\" parameter has to start with a letter and contain no special/punctuational characters.")
 		end
 	end
 	
@@ -41,17 +41,17 @@ function cas.hook.new(event, func, priority, label)
 		end
 	end	
 	if not match then
-		error("Passed event was not found in the \"cs2dHooks\" table in the config.")
+		error("Passed \"event\" value was not found in the \"cs2dHooks\" table in the config.")
 	end
 	
 	if label then
 		-- Checks if passed label is not in use by any other hook.
 		if cas.hook._hooks[label] then
-			error("Passed label is already in use by other hook(s).")
+			error("Passed \"label\" value is already in use by other hook(s).")
 		end
 	end
 	
-	-- Creating the object itself.
+	-- Creates the instance itself.
 	local self = {}
 	setmetatable(self, cas.hook)
 	
@@ -100,9 +100,9 @@ end
 -- Sets the hooked function.
 function cas.hook:setFunction(func)
 	if not func then
-		error("No arguments were passed, expected at least 1 argument.")
+		error("No parameters were passed, expected at least 1 parameter.")
 	elseif type(func) ~= "function" then
-		error("Passed func is not valid. Function expected, ".. type(func) .." passed.")
+		error("Passed \"func\" parameter is not valid. Function expected, ".. type(func) .." passed.")
 	end
 	
 	self._func = func
