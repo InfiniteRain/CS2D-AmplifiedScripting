@@ -13,4 +13,6 @@ end
 funcStr = funcStr .. "}"
 assert(loadstring(funcStr))()
 
+dofile(cas._globals.pathToSource .. "/core/color.lua")
+dofile(cas._globals.pathToSource .. "/core/debug.lua")
 dofile(cas._globals.pathToSource .. "/core/hook.lua")

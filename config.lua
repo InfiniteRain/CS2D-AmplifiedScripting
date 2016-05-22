@@ -1,4 +1,7 @@
-return
+-- DO NOT REMOVE THIS RETURN --
+return                       --
+-- ^^^^^^^^^^^^^^^^^^^^^^^^^ --
+
 {
 	cs2dCommands = {
 		"addhook",
