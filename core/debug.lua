@@ -44,6 +44,17 @@ function cas.debug:log(message)
 	end
 end
 
+-- Will show an informational message
+function cas.debug:infoMessage(message)
+	if not message then
+		error("No arguments were passed, expected at least 1 argument.")
+	elseif type(message) ~= "string" then
+		error("Passed message is not valid. String expected, ".. type(tag) .." passed.")
+	end
+	
+	print(tostring(self._color) .. "Info - ".. self._tag ..": ".. message)
+end
+
 --== Setters ==--
 
 -- Sets the active state of the debug logger.

@@ -16,7 +16,8 @@ initDebugger:log("Color and debugger classes have been successfully loaded.")
 initDebugger:log("Loading config...")
 cas._config = assert(loadfile(cas._pathToSource .. "/config.lua"))()
 
--- 
+-- Copying existing CS2D commands (taken from the config) and copying them into the global table 
+-- just in case if initial CS2D commands are set to be removed.
 local funcStr = "cas._cs2dCommands = {"
 for key, value in pairs(cas._config.cs2dCommands) do
 	funcStr = funcStr .. value .. " = " .. value ..", "
@@ -27,7 +28,8 @@ initDebugger:log("Config has been successfully loaded.")
 
 
 initDebugger:log("Loading AS functionality classes...")
+initDebugger:log("... Loading hook class ...")
 dofile(cas._pathToSource .. "/core/hook.lua")
 initDebugger:log("AS functionality classes were successfully loaded.")
 
-initDebugger:log("Initialization was successful.")
+initDebugger:infoMessage("AS initialization was successful.")
