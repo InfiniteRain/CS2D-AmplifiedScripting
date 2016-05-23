@@ -55,6 +55,11 @@ function cas.hook.new(event, func, priority, label)
 	local self = {}
 	setmetatable(self, cas.hook)
 	
+	local proxy = newproxy(true)
+	local proxyMeta = getmetatable(proxy)
+	proxyMeta.__gc = function() if self.destructor then self:destructor() end end
+	rawset(self, '__proxy', proxy)
+	
 	-- Assigning necessary fields.
 	self._func = func
 	self._event = event
@@ -69,7 +74,8 @@ function cas.hook.new(event, func, priority, label)
 	end
 	
 	cas.hook._hooks[self._label] = func -- Inserts the provided hook function into the cas.hook._hooks table.
-	cas._cs2dCommands.addhook(event, "cas.hook._hooks." .. self._label, priority) -- Adds the hook.
+	cas._cs2dCommands.addhook(event, "cas.hook._hooks." .. self._label, self._priority) -- Adds the hook.
+	cas.hook._debug:infoMessage("Hook with '".. self._event .."' event, labeled as '".. self._label .."' was initialized.")
 
 	return self
 end
@@ -77,6 +83,11 @@ end
 ----------------------
 -- Instance methods --
 ----------------------
+
+-- Destructor.
+function cas.hook:destructor()
+	pcall(self:free())
+end
 
 -- Frees the hook, meaning that cs2d will stop executing the hooked function.
 function cas.hook:free()
@@ -86,12 +97,18 @@ function cas.hook:free()
 	
 	cas._cs2dCommands.freehook(self._event, "cas.hook._hooks." .. self._label)
 	cas.hook._hooks[self._label] = nil
+	
+	cas.hook._debug:infoMessage("Hook with '".. self._event .."' event, labeled as '".. self._label .."' was freed.")
 end
 
 --== Getters ==--
 
 -- Gets hooked function.
 function cas.hook:getFunction()
+	if self._freed then
+		error("This hook was already freed. It's better if you dispose of this instance.")
+	end
+
 	return self._func
 end
 
@@ -105,6 +122,10 @@ function cas.hook:setFunction(func)
 		error("Passed \"func\" parameter is not valid. Function expected, ".. type(func) .." passed.")
 	end
 	
+	if self._freed then
+		error("This hook was already freed. It's better if you dispose of this instance.")
+	end
+	
 	self._func = func
 	cas.hook._hooks[self._label] = func
 end
@@ -114,3 +135,4 @@ end
 -------------------
 
 cas.hook._hooks = {}
+cas.hook._debug = cas.debug.new(cas.color.new(115, 110, 255), "AS Hook")
