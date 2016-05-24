@@ -52,7 +52,7 @@ function cas.timer:destructor()
 end
 
 -- Starts the timer with provided interval and repetitions.
-function cas.timer:start(milliseconds, repetitions)
+function cas.timer:start(milliseconds, repetitions, ...)
 	-- Checks if all the passed parameters were correct.
 	if not milliseconds then
 		error("No parameters were passed, expected at least 1 parameter.")
@@ -76,9 +76,10 @@ function cas.timer:start(milliseconds, repetitions)
 	cas.timer._timerFuncs[self._funcLabel] = {
 		repetition = repetitions, -- Amount of repetitions left.
 		originalFunc = self._func, -- The original function, passed as the constructor parameter.
+		parameters = {...},
 		func = function(label) -- Function which will be run by the timer itself, makes sure to 
 							   -- remove its entry from cas.timer._timerFuncs table once finished.
-			cas.timer._timerFuncs[label].originalFunc()
+			cas.timer._timerFuncs[label].originalFunc(unpack(cas.timer._timerFuncs[label].parameters))
 			cas.timer._timerFuncs[label].repetition = cas.timer._timerFuncs[label].repetition - 1
 			if cas.timer._timerFuncs[label].repetition <= 0 then
 				cas.timer._timerFuncs[label] = nil
@@ -88,10 +89,11 @@ function cas.timer:start(milliseconds, repetitions)
 	
 	-- Initiating the timer.
 	cas._cs2dCommands.timer(milliseconds, "cas.timer._timerFuncs.".. self._funcLabel ..".func", self._funcLabel, repetitions)
+	freetimer("cas.timer._timerFuncs.".. self._funcLabel ..".func")
 end
 
 -- Starts the timer with provided interval, will be run constantly until stopped.
-function cas.timer:startConstantly(milliseconds)
+function cas.timer:startConstantly(milliseconds, ...)
 	-- Checks if all the passed parameters were correct.
 	if not milliseconds then
 		error("No parameters were passed, expected at least 1 parameter.")
@@ -105,15 +107,21 @@ function cas.timer:startConstantly(milliseconds)
 	end
 	
 	-- Makes the timer entry.
-	cas.timer._timerFuncs[self._funcLabel] = {func = self._func}
+	cas.timer._timerFuncs[self._funcLabel] = {
+		originalFunc = self._func,
+		parameters = {...},
+		func = function(label)
+			cas.timer._timerFuncs[label].originalFunc(unpack(cas.timer._timerFuncs[label].parameters))
+		end
+	}
 	
 	-- Initiating the timer.
-	cas._cs2dCommands.timer(milliseconds, "cas.timer._timerFuncs.".. self._funcLabel ..".func", "", 0)
+	cas._cs2dCommands.timer(milliseconds, "cas.timer._timerFuncs.".. self._funcLabel ..".func", self._funcLabel, 0)
 end
 
 -- Stops the timer.
 function cas.timer:stop()
-	cas._cs2dCommands.freetimer("cas.timer._timerFuncs.".. self._funcLabel ..".func") -- Frees the timer.
+	cas._cs2dCommands.freetimer("cas.timer._timerFuncs.".. self._funcLabel ..".func", self._funcLabel) -- Frees the timer.
 	cas.timer._timerFuncs[self._funcLabel] = nil -- Removes the timer entry.
 end
 
@@ -131,7 +139,6 @@ function cas.timer:isRunConstantly()
 	end
 	
 	return false
-	--return cas.timer._timerFuncs[self._funcLabel] and cas.timer._timerFuncs[self._funcLabel].repetition == nil
 end
 
 -- Gets the current repetition.
