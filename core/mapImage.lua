@@ -61,9 +61,52 @@ function cas.mapImage.new(path, mode, visibleToPlayer)
 	self._blend = 0
 	self._color = cas.color.white
 	
+	-- Identifies if any of the tween actions are happening.
 	self._tMoving = false
 	self._tRotating = false
+	self._tChangingScale = false
+	self._tChangingColor = false
+	self._tChangingAlpha = false
 	self._tRotatingConstantly = false
+	
+	-- Values tween functions trying to reach. (F stands for finishing.)
+	self._tMovingFPosition = {0, 0}
+	self._tRotatingFAngle = 0
+	self._tChangingScaleFScale = {0, 0}
+	self._tChangingColorFColor = {0, 0, 0}
+	self._tChangingAlphaFAlpha = 0
+	
+	-- Values tween functions started with. (S stand for starting.)
+	self._tChangingScaleSScale = {0, 0}
+	self._tChangingColorSColor = {0, 0, 0}
+	self._tChangingAlphaSAlpha = 0
+	
+	-- Information about timers for tweens functions.
+	-- S stands for the millisecond the timer started at. (starting)
+	-- N stands for the milliseconds the timer has to run for. (needed)
+	self._tChangingAlphaTimerS = 0
+	self._tChangingAlphaTimerN = 0
+	
+	-- Timers needed for each tween action.
+	self._tMovingTimer = cas.timer.new(function(self) 
+		self._tMoving = false 
+		self._x = self._tMovingFPosition[1]
+		self._y = self._tMovingFPosition[2]
+	end)
+	self._tRotatingTimer = cas.timer.new(function(self) 
+		self._tRotating = false 
+		self._angle = self._tRotatingFAngle
+	end)
+	self._tChangingScaleTimer = cas.timer.new(function(self) 
+		self._tChangingScale = false
+	end)
+	self._tChangingColorTimer = cas.timer.new(function(self) 
+		self._tChangingColor = false 
+	end)
+	self._tChangingAlphaTimer = cas.timer.new(function(self) 
+		self._tChangingAlpha = false 
+		self._alpha = self._tChangingAlphaFAlpha
+	end)
 	
 	-- Creating the image.
 	self._id = cas._cs2dCommands.image(path, 0, 0, cas.mapImage._modes[mode], visibleToPlayer)
@@ -114,6 +157,172 @@ function cas.mapImage:free()
 	end
 end
 
+--== Tween functions, starters ==--
+
+function cas.mapImage:tweenMove(time, x, y)
+	if not (time and x and y) then
+		error("Less than 3 parameters were passed, expected at least 3 parameters.")
+	elseif type(time) ~= "number" then
+		error("Passed \"time\" parameter is not valid. Number expected, ".. type(time) .." passed.")
+	elseif type(x) ~= "number" then
+		error("Passed \"x\" parameter is not valid. Number expected, ".. type(x) .." passed.")
+	elseif type(y) ~= "number" then
+		error("Passed \"y\" parameter is not valid. Number expected, ".. type(y) .." passed.")
+	end
+	
+	if self._freed then
+		error("This map image was already freed. It's better if you dispose of this instance.")
+	end
+	
+	if self._tMoving then
+		error("This map image is already being moved.")
+	end
+	
+	self._tMoving = true
+	self._tMovingFPosition = {x, y}
+	cas._cs2dCommands.tweenMove(self._id, time, x, y)
+	self._tMovingTimer:start(time, 1, self)
+end
+
+function cas.mapImage:tweenRotate(time, angle)
+	if not (time and angle) then
+		error("Less than 2 parameters were passed, expected at least 2 parameters.")
+	elseif type(time) ~= "number" then
+		error("Passed \"time\" parameter is not valid. Number expected, ".. type(time) .." passed.")
+	elseif type(angle) ~= "number" then
+		error("Passed \"angle\" parameter is not valid. Number expected, ".. type(angle) .." passed.")
+	end
+	
+	if self._freed then
+		error("This map image was already freed. It's better if you dispose of this instance.")
+	end
+	
+	if self._tRotating then
+		error("This map image is already being rotated.")
+	elseif self._tRotatingConstantly then
+		error("This map image is already being rotated, but constantly.")
+	end
+	
+	self._tRotating = true
+	self._tRotatingFAngle = angle
+	cas._cs2dCommands.tween_rotate(self._id, time, angle)
+	self._tRotatingTimer:start(time, 1, self)
+end
+
+function cas.mapImage:tweenRotateConstantly(speed)
+	if not speed then
+		error("No parameters were passed, expected at least 1 parameter.")
+	elseif type(speed) ~= "number" then
+		error("Passed \"speed\" parameter is not valid. Number expected, ".. type(speed) .." passed.")
+	end
+	
+	if self._freed then
+		error("This map image was already freed. It's better if you dispose of this instance.")
+	end
+	
+	if self._tRotatingConstantly then
+		error("This map image is already being rotated constantly.")
+	elseif self._tRotating then
+		error("This map image is already being rotated, but not constantly.")
+	end
+	
+	self._tRotatingConstantly = true
+	cas._cs2dCommands.tween_rotateconstantly(self._id, speed)
+end
+
+function cas.mapImage:tweenAlpha(time, alpha)
+	if not (time and alpha) then
+		error("Less than 2 parameters were passed, expected at least 2 parameters.")
+	elseif type(time) ~= "number" then
+		error("Passed \"time\" parameter is not valid. Number expected, ".. type(time) .." passed.")
+	elseif type(alpha) ~= "number" then
+		error("Passed \"alpha\" parameter is not valid. Number expected, ".. type(alpha) .." passed.")
+	end
+	
+	if self._freed then
+		error("This map image was already freed. It's better if you dispose of this instance.")
+	end
+	
+	if self._tChangingAlpha then
+		error("Alpha of this map image is already being changed.")
+	end
+	
+	self._tChangingAlpha = true
+	self._tChangingAlphaFAlpha = alpha
+	self._tChangingAlphaSAlpha = self._alpha
+	self._tChangingAlphaTimerS = os.clock() * 1000
+	self._tChangingAlphaTimerN = time
+	cas._cs2dCommands.tween_alpha(self._id, time, alpha)
+	self._tChangingAlphaTimer:start(time, 1, self)
+end
+
+--== Tween functions, stoppers ==--
+
+function cas.mapImage:stopMoving()
+	if self._freed then
+		error("This map image was already freed. It's better if you dispose of this instance.")
+	end
+	
+	if not self._tMoving then
+		error("This map image is not being moved.")
+	end
+	
+	local nx, ny = self:getPosition()
+	cas._cs2dCommands.tween_move(self._id, 0, nx, ny)
+	self._x = nx
+	self._y = ny
+	self._tMovingTimer:stop()
+	self._tMoving = false
+end
+
+function cas.mapImage:stopRotating()
+	if self._freed then
+		error("This map image was already freed. It's better if you dispose of this instance.")
+	end
+	
+	if not self._tRotating then
+		if self._tRotatingConstantly then
+			error("This map image is not being rotated constantly.")
+		else
+			error("This map image is not being rotated.")
+		end
+	end
+	
+	cas._cs2dCommands.tween_rotate(self._id, 0, self:getAngle())
+	self._angle = self:getAngle()
+	self._tRotatingTimer:stop()
+	self._tRotating = false
+end
+
+function cas.mapImage:stopRotatingConstantly()
+	if self._freed then
+		error("This map image was already freed. It's better if you dispose of this instance.")
+	end
+	
+	if not self._tRotatingConstantly then
+		error("This map image is not being rotated constantly.")
+	end
+	
+	cas._cs2dCommands.tween_rotateconstantly(self._id, 0)
+	self._angle = self:getAngle()
+	self._tRotatingConstantly = false
+end
+
+function cas.mapImage:stopChangingAlpha()
+	if self._freed then
+		error("This map image was already freed. It's better if you dispose of this instance.")
+	end
+	
+	if not self._tChangingAlpha then
+		error("Alpha of this map image is not being changed.")
+	end
+	
+	cas._cs2dCommands.tween_alpha(self._id, 0, self:getAlpha())
+	self._alpha = self:getAlpha()
+	self._tChangingAlphaTimer:stop()
+	self._tChangingAlpha = false
+end
+
 --== Setters ==--
 
 -- Sets the position of the map image.
@@ -128,6 +337,10 @@ function cas.mapImage:setPosition(x, y)
 	
 	if self._freed then
 		error("This map image was already freed. It's better if you dispose of this instance.")
+	end
+	
+	if self._tMoving then
+		error("This map image is being moved, stop the tween function before settings its position.")
 	end
 	
 	self._x = x
@@ -146,6 +359,12 @@ function cas.mapImage:setAngle(angle)
 	
 	if self._freed then
 		error("This map image was already freed. It's better if you dispose of this instance.")
+	end
+	
+	if self._tRotating then
+		error("This map image is being rotated, stop the tween function before setting its angle.")
+	elseif self._tRotatingConstantly then
+		error("This map image is being rotated constantly, stop the tween function before setting its angle.")
 	end
 	
 	self._angle = angle
@@ -248,7 +467,8 @@ function cas.mapImage:getAngle()
 	end
 	
 	if self._tRotating or self._tRotatingConstantly then
-		return -180 + (cas._cs2dCommands.object(self._id, 'rot') % 360) 
+		local angle = cas._cs2dCommands.object(self._id, 'rot') % 360
+		return angle <= 180 and angle or -180 + (angle - 180)
 	else
 		return self._angle
 	end
@@ -278,7 +498,14 @@ function cas.mapImage:getAlpha()
 		error("This map image was already freed. It's better if you dispose of this instance.")
 	end
 	
-	return self._alpha
+	if self._tChangingAlpha then
+		local starting, finishing = self._tChangingAlphaSAlpha, self._tChangingAlphaFAlpha
+		local timerStarted, timerNeeded = self._tChangingAlphaTimerS, self._tChangingAlphaTimerN
+		local multiplier = (((os.clock() * 1000) - timerStarted) / timerNeeded)
+		return self._tChangingAlphaSAlpha + (self._tChangingAlphaFAlpha - self._tChangingAlphaSAlpha) * multiplier
+	else
+		return self._alpha
+	end
 end
 
 -- Gets the blend of the map image.
