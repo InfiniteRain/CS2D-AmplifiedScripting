@@ -7,7 +7,7 @@ cas = { -- The global table which holds everything this mod uses.
 dofile(cas._pathToSource .. "/core/color.lua")
 dofile(cas._pathToSource .. "/core/debug.lua")
 
-local initDebugger = cas.debug.new(cas.color.white, "AS initialization") -- Creating the debugger for this initialization process.
+local initDebugger = cas.debug.new(cas.color.white, "AS Init") -- Creating the debugger for this initialization process.
 initDebugger:setActive(true) -- Making it active.
 initDebugger:log("Initializing Amplified Scripting...")
 initDebugger:log("Color and debugger classes have been successfully loaded.")
@@ -30,23 +30,28 @@ initDebugger:log("Config has been successfully loaded.")
 initDebugger:log("Loading AS functionality classes...")
 initDebugger:log("... Loading hook class ...")
 dofile(cas._pathToSource .. "/core/hook.lua") -- Hook class
+initDebugger:log("... Loading timer class ...")
+dofile(cas._pathToSource .. "/core/timer.lua") -- Timer class
 initDebugger:log("... Loading mapImage class ...")
 dofile(cas._pathToSource .. "/core/mapImage.lua") -- Map image class
 
---i = cas.mapImage.new('gfx/block.bmp', 'top')
 -- Hooked function for all the image classes, frees all the images on round restart.
 local function imageStartround(mode)
 	for key, value in pairs(cas.mapImage._images) do
 		value._freed = true
 	end
-	cas.mapImage._images = {}
+	cas.mapImage._images = setmetatable({}, {__mode = "kv"})
 end
 
-cas._imageStartround = cas.hook.new("startround", imageStartround, -255, "_imageStartround")
+cas._imageStartround = cas.hook.new("startround", imageStartround, -255, "imageStartround")
 
 initDebugger:log("AS functionality classes were successfully loaded.")
 initDebugger:infoMessage("AS initialization was successful.")
-
+----------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------
 --[[img = {}
 for i = 1, 100 do
 	img[i] = cas.mapImage.new('gfx/block.bmp', 'top')
@@ -61,3 +66,6 @@ function k()
 		print(k)
 	end
 end]]
+
+--cas.timer.new(function() parse("msg \"Hello World!\"") end):startConstantly(1000, 5)
+--collectgarbage()
