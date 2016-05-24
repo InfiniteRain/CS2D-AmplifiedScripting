@@ -157,4 +157,4 @@ end
 -- Static fields --
 -------------------
 
-cas.timer._timerFuncs = {} -- Table for timer entries.
+cas.timer._timerFuncs = {} -- Table for timer entries. Hello
