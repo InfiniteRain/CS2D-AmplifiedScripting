@@ -1,4 +1,4 @@
--- Initializing the map image class
+-- Initializing the image class
 cas.mapImage = {}
 cas.mapImage.__index = cas.mapImage
 
@@ -41,11 +41,6 @@ function cas.mapImage.new(path, mode, visibleToPlayer)
 	local self = {}
 	setmetatable(self, cas.mapImage)
 	
-	local proxy = newproxy(true)
-	local proxyMeta = getmetatable(proxy)
-	proxyMeta.__gc = function() if self.destructor then self:destructor() end end
-	rawset(self, '__proxy', proxy)
-	
 	-- Assigning necessary fields.
 	self._path = path
 	self._mode = mode
@@ -61,10 +56,6 @@ function cas.mapImage.new(path, mode, visibleToPlayer)
 	self._blend = 0
 	self._color = cas.color.white
 	
-	self._tMoving = false
-	self._tRotating = false
-	self._tRotatingConstantly = false
-	
 	-- Creating the image.
 	self._id = cas._cs2dCommands.image(path, 0, 0, cas.mapImage._modes[mode], visibleToPlayer)
 	self._freed = false
@@ -78,11 +69,6 @@ end
 ----------------------
 -- Instance methods --
 ----------------------
-
--- Destructor.
-function cas.mapImage:destructor()
-	pcall(self:free()) -- Freeing the map image upon garbage collection.
-end
 
 -- Frees the image and removes it from the "_images" table. "_images" table is necessary to free
 -- every map image on startround.
@@ -234,11 +220,7 @@ function cas.mapImage:getPosition()
 		error("This map image was already freed. It's better if you dispose of this instance.")
 	end
 	
-	if self._tMoving then
-		return cas._cs2dCommands.object(self._id, 'x'), cas._cs2dCommands.object(self._id, 'y')
-	else
-		return self._x, self._y
-	end
+	return self._x, self._y
 end
 
 -- Gets the angle of the map image.
@@ -247,11 +229,7 @@ function cas.mapImage:getAngle()
 		error("This map image was already freed. It's better if you dispose of this instance.")
 	end
 	
-	if self._tRotating or self._tRotatingConstantly then
-		return -180 + (cas._cs2dCommands.object(self._id, 'rot') % 360) 
-	else
-		return self._angle
-	end
+	return self._angle
 end
 
 -- Gets the scale of the map image.
@@ -318,8 +296,7 @@ end
 -- Static fields --
 -------------------
 
-cas.mapImage._images = setmetatable({}, {__mode = "kv"}) -- Holds the loaded images, also serves as
-														 -- a weak table.
+cas.mapImage._images = {} -- Holds the loaded images.
 cas.mapImage._modes = { -- Holds the image modes.
 	["floor"] = 0, 
 	["top"] = 1, 

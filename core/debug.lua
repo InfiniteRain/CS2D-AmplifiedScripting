@@ -20,11 +20,6 @@ function cas.debug.new(color, tag)
 	local self = {}
 	setmetatable(self, cas.debug)
 	
-	local proxy = newproxy(true)
-	local proxyMeta = getmetatable(proxy)
-	proxyMeta.__gc = function() if self.destructor then self:destructor() end end
-	rawset(self, '__proxy', proxy)
-	
 	self._color = color
 	self._tag = tag
 	self._active = false

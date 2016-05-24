@@ -18,11 +18,6 @@ function cas.color.new(red, green, blue)
 	local self = {}
 	setmetatable(self, cas.color)
 	
-	local proxy = newproxy(true)
-	local proxyMeta = getmetatable(proxy)
-	proxyMeta.__gc = function() if self.destructor then self:destructor() end end
-	rawset(self, '__proxy', proxy)
-	
 	self._red = red
 	self._green = green
 	self._blue = blue
