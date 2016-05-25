@@ -46,7 +46,8 @@ end
 
 -- Destructor.
 function cas.timer:destructor()
-	if not cas.timer._timerFuncs[self._funcLabel].repetition then -- Checks if the timer is being constantly run.
+	if cas.timer._timerFuncs[self._funcLabel] and
+		not cas.timer._timerFuncs[self._funcLabel].repetition then -- Checks if the timer is being constantly run.
 		self:stop() -- If it is, stops the timer.
 	end
 end

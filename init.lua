@@ -4,6 +4,7 @@ cas = { -- The global table which holds everything this mod uses.
 };
 
 -- Loading the first few classes which are essential for debugging.
+dofile(cas._pathToSource .. "/core/class.lua")
 dofile(cas._pathToSource .. "/core/color.lua")
 dofile(cas._pathToSource .. "/core/debug.lua")
 
@@ -32,8 +33,12 @@ initDebugger:log("... Loading hook class ...")
 dofile(cas._pathToSource .. "/core/hook.lua") -- Hook class
 initDebugger:log("... Loading timer class ...")
 dofile(cas._pathToSource .. "/core/timer.lua") -- Timer class
+initDebugger:log("... Loading base image class ...")
+dofile(cas._pathToSource .. "/core/_image.lua") -- Image class
 initDebugger:log("... Loading mapImage class ...")
-dofile(cas._pathToSource .. "/core/mapImage.lua") -- Map image class
+dofile(cas._pathToSource .. "/core/mapImage.lua") -- Image class
+initDebugger:log("... Loading hudImage class ...")
+dofile(cas._pathToSource .. "/core/hudImage.lua") -- Image class
 
 -- Hooked function for all the image classes, frees all the images on round restart.
 local function imageStartround(mode)

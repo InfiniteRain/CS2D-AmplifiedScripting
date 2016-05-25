@@ -1,24 +1,20 @@
--- Initializing mapImage class.
-cas.mapImage = {}
-cas.mapImage.__index = cas.mapImage
+-- Initalizing hudImage class.
+cas.hudImage = {}
+cas.hudImage.__index = cas.hudImage
 
-setmetatable(cas.mapImage, {__index = cas._image}) -- Inherit from base image class.
+setmetatable(cas.hudImage, {__index = cas._image}) -- Inherit from base image class.
 
 --------------------
 -- Static methods --
 --------------------
 
--- Constructor. Loads a map image from path with corresponding mode. You can also show it only to access
--- single player by using "visibleToPlayer" parameter.
-function cas.mapImage.new(path, mode, visibleToPlayer)
+function cas.hudImage.new(path, visibleToPlayer)
 	-- Checks if all the passed parameters were correct.
 	local visibleToPlayer = visibleToPlayer or 0
-	if not (path and mode) then
-		error("Less than 2 parameters were passed, expected at least 2 parameters.")
+	if not path then
+		error("No parameters were passed, expected at least 1 parameter.")
 	elseif type(path) ~= "string" then
 		error("Passed \"path\" parameter is not valid. String expected, ".. type(path) .." passed.")
-	elseif type(mode) ~= "string" then
-		error("Passed \"mode\" parameter is not valid. String expected, ".. type(mode) .." passed.")
 	end
 	if visibleToPlayer then
 		if type(visibleToPlayer) ~= "number" then
@@ -34,14 +30,9 @@ function cas.mapImage.new(path, mode, visibleToPlayer)
 		file:close()
 	end
 	
-	-- Checks if the passed mode exists.
-	if not cas.mapImage._modes[mode] then
-		error("Passed \"mode\" value does not represent a valid mode.")
-	end
-	
 	-- Creates the instance itself.
 	local self = {}
-	setmetatable(self, cas.mapImage)
+	setmetatable(self, cas.hudImage)
 	
 	local proxy = newproxy(true)
 	local proxyMeta = getmetatable(proxy)
@@ -126,7 +117,7 @@ function cas.mapImage.new(path, mode, visibleToPlayer)
 	}
 	
 	-- Creating the image.
-	self._id = cas._cs2dCommands.image(path, 0, 0, cas.mapImage._modes[mode], visibleToPlayer)
+	self._id = cas._cs2dCommands.image(path, 0, 0, 2, visibleToPlayer)
 	self._freed = false
 	
 	-- Adds the image into the "_images" table.
@@ -138,10 +129,3 @@ end
 -------------------
 -- Static fields --
 -------------------
-
--- Strings, representing cs2d image modes.
-cas.mapImage._modes = {
-	["floor"] = 0,
-	["top"] = 1,
-	["superTop"] = 3
-}
