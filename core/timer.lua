@@ -1,13 +1,12 @@
 -- Initializing the timer class
-cas.timer = {}
-cas.timer.__index = cas.timer
+cas.timer = cas.class()
 
---------------------
--- Static methods --
---------------------
+----------------------
+-- Instance methods --
+----------------------
 
 -- Constructor. Creates a timer with a function it supposed to run.
-function cas.timer.new(func)
+function cas.timer:constructor(func)
 	-- Checks if all the passed parameters were correct.
 	if not func then
 		error("No parameters were passed, expected at least 1 parameter.")
@@ -15,34 +14,21 @@ function cas.timer.new(func)
 		error("Passed \"func\" parameter is not valid. Function expected, ".. type(func) .." passed.")
 	end
 	
-	-- Creates the instance itself.
-	local self = {}
-	setmetatable(self, cas.timer)
-	
-	-- Makes sure destructor works.
-	local proxy = newproxy(true)
-	local proxyMeta = getmetatable(proxy)
-	proxyMeta.__gc = function() if self.destructor then self:destructor() end end
-	rawset(self, '__proxy', proxy)
-	
 	-- Assigning necessary fields.
 	self._funcLabel = "func"
 	self._repetitions = 0
 	
 	local count = 1
-	while cas.timer._timerFuncs[self._funcLabel] do
+	while cas.timer._timerLabels[self._funcLabel] do
 		count = count + 1
 		self._funcLabel = "func" .. count 
 	end
+	cas.timer._timerLabels[self._funcLabel] = true
 	
 	self._func = func
 	
-	return self
+	self._debug:log("Timer \"".. tostring(self) .."\" initialized.")
 end
-
-----------------------
--- Instance methods --
-----------------------
 
 -- Destructor.
 function cas.timer:destructor()
@@ -50,6 +36,10 @@ function cas.timer:destructor()
 		not cas.timer._timerFuncs[self._funcLabel].repetition then -- Checks if the timer is being constantly run.
 		self:stop() -- If it is, stops the timer.
 	end
+	
+	cas.timer._timerLabels[self._funcLabel] = nil
+	
+	self._debug:log("Timer \"".. tostring(self) .."\" garbage collected.")
 end
 
 -- Starts the timer with provided interval and repetitions.
@@ -77,13 +67,15 @@ function cas.timer:start(milliseconds, repetitions, ...)
 	cas.timer._timerFuncs[self._funcLabel] = {
 		repetition = repetitions, -- Amount of repetitions left.
 		originalFunc = self._func, -- The original function, passed as the constructor parameter.
-		parameters = {...},
+		parameters = setmetatable({...}, {__mode = "kv"}),
 		func = function(label) -- Function which will be run by the timer itself, makes sure to 
 							   -- remove its entry from cas.timer._timerFuncs table once finished.
 			cas.timer._timerFuncs[label].originalFunc(unpack(cas.timer._timerFuncs[label].parameters))
 			cas.timer._timerFuncs[label].repetition = cas.timer._timerFuncs[label].repetition - 1
 			if cas.timer._timerFuncs[label].repetition <= 0 then
 				cas.timer._timerFuncs[label] = nil
+				
+				self._debug:log("Timer \"".. tostring(self) .."\" has been stopped. (planned)")
 			end
 		end
 	}
@@ -91,6 +83,8 @@ function cas.timer:start(milliseconds, repetitions, ...)
 	-- Initiating the timer.
 	cas._cs2dCommands.timer(milliseconds, "cas.timer._timerFuncs.".. self._funcLabel ..".func", self._funcLabel, repetitions)
 	freetimer("cas.timer._timerFuncs.".. self._funcLabel ..".func")
+	
+	self._debug:log("Timer \"".. tostring(self) .."\" started with interval of ".. milliseconds .." and ".. repetitions .." repetitions.")
 end
 
 -- Starts the timer with provided interval, will be run constantly until stopped.
@@ -110,7 +104,7 @@ function cas.timer:startConstantly(milliseconds, ...)
 	-- Makes the timer entry.
 	cas.timer._timerFuncs[self._funcLabel] = {
 		originalFunc = self._func,
-		parameters = {...},
+		parameters = setmetatable({...}, {__mode = "kv"}),
 		func = function(label)
 			cas.timer._timerFuncs[label].originalFunc(unpack(cas.timer._timerFuncs[label].parameters))
 		end
@@ -118,12 +112,16 @@ function cas.timer:startConstantly(milliseconds, ...)
 	
 	-- Initiating the timer.
 	cas._cs2dCommands.timer(milliseconds, "cas.timer._timerFuncs.".. self._funcLabel ..".func", self._funcLabel, 0)
+	
+	self._debug:log("Timer \"".. tostring(self) .."\" started constantly with interval of ".. time ..".")
 end
 
 -- Stops the timer.
 function cas.timer:stop()
 	cas._cs2dCommands.freetimer("cas.timer._timerFuncs.".. self._funcLabel ..".func", self._funcLabel) -- Frees the timer.
 	cas.timer._timerFuncs[self._funcLabel] = nil -- Removes the timer entry.
+	
+	self._debug:log("Timer \"".. tostring(self) .."\" has been stopped. (unplanned)")
 end
 
 --== Getters ==--
@@ -158,4 +156,7 @@ end
 -- Static fields --
 -------------------
 
-cas.timer._timerFuncs = {} -- Table for timer entries. Hello
+cas.timer._timerLabels = {} -- Table used for timer labels.
+cas.timer._timerFuncs = {} -- Table for timer entries.
+cas.timer._debug = cas.debug.new(cas.color.yellow, "AS Timer") -- Debug for timers.
+cas.timer._debug:setActive(true)

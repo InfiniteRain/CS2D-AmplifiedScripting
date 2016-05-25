@@ -1,34 +1,9 @@
 -- Initializing the color class.
-cas.color = {}
-cas.color.__index = cas.color
+cas.color = cas.class()
 
 --------------------
 -- Static methods --
 --------------------
-
--- Constructor. Creates an instance of the color class and returns it. Takes RGB color values as 
--- parameters to define the color the instance is supposed to represent.
-function cas.color.new(red, green, blue)
-	if not (red and green and blue) then
-		error("Less than 3 parameters were passed, expected at least 3 parameters.")
-	elseif not cas.color.isCorrectFormat(red, green, blue) then
-		error("Passed parameters contained unsuitable values for color instance.")
-	end
-	
-	local self = {}
-	setmetatable(self, cas.color)
-	
-	local proxy = newproxy(true)
-	local proxyMeta = getmetatable(proxy)
-	proxyMeta.__gc = function() if self.destructor then self:destructor() end end
-	rawset(self, '__proxy', proxy)
-	
-	self._red = red
-	self._green = green
-	self._blue = blue
-	
-	return self
-end
 
 -- Checks if the passed parameters are suitable for color representation. All the passed parameters
 -- have to be numbers, being in range of 0 and 255 while not containing a floating point.
@@ -49,6 +24,20 @@ end
 ----------------------
 -- Instance Methods --
 ----------------------
+
+-- Constructor. Creates an instance of the color class and returns it. Takes RGB color values as 
+-- parameters to define the color the instance is supposed to represent.
+function cas.color:constructor(red, green, blue)
+	if not (red and green and blue) then
+		error("Less than 3 parameters were passed, expected at least 3 parameters.")
+	elseif not cas.color.isCorrectFormat(red, green, blue) then
+		error("Passed parameters contained unsuitable values for color instance.")
+	end
+	
+	self._red = red
+	self._green = green
+	self._blue = blue
+end
 
 -- This method will be called whenever a tostring() function is called with the instance of this
 -- class as an parameter. Returns a string which is used to change the message's color, in the 

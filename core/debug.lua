@@ -1,14 +1,13 @@
 -- Initializing the debug class
-cas.debug = {}
-cas.debug.__index = cas.debug
+cas.debug = cas.class()
 
---------------------
--- Static methods --
---------------------
+----------------------
+-- Instance methods --
+----------------------
 
 -- Constructor. Creates an instance of the debug class and returns it. Takes color and tag values 
 -- as parameters.
-function cas.debug.new(color, tag)
+function cas.debug:constructor(color, tag)
 	if not (color and tag) then
 		error("Less than 2 parameters were passed, expected at least 2 parameters.")
 	elseif getmetatable(color) ~= cas.color then
@@ -17,24 +16,10 @@ function cas.debug.new(color, tag)
 		error("Passed \"tag\" parameter is not valid. String expected, ".. type(tag) .." passed.")
 	end
 	
-	local self = {}
-	setmetatable(self, cas.debug)
-	
-	local proxy = newproxy(true)
-	local proxyMeta = getmetatable(proxy)
-	proxyMeta.__gc = function() if self.destructor then self:destructor() end end
-	rawset(self, '__proxy', proxy)
-	
 	self._color = color
 	self._tag = tag
 	self._active = false
-	
-	return self
 end
-
-----------------------
--- Instance methods --
-----------------------
 
 -- Will create an entry in the debug log.
 function cas.debug:log(message)

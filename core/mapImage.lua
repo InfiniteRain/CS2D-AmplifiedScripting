@@ -1,16 +1,13 @@
 -- Initializing mapImage class.
-cas.mapImage = {}
-cas.mapImage.__index = cas.mapImage
+cas.mapImage = cas.class(cas._image)
 
-setmetatable(cas.mapImage, {__index = cas._image}) -- Inherit from base image class.
-
---------------------
--- Static methods --
---------------------
+----------------------
+-- Instance methods --
+----------------------
 
 -- Constructor. Loads a map image from path with corresponding mode. You can also show it only to access
 -- single player by using "visibleToPlayer" parameter.
-function cas.mapImage.new(path, mode, visibleToPlayer)
+function cas.mapImage:constructor(path, mode, visibleToPlayer)
 	-- Checks if all the passed parameters were correct.
 	local visibleToPlayer = visibleToPlayer or 0
 	if not (path and mode) then
@@ -38,15 +35,6 @@ function cas.mapImage.new(path, mode, visibleToPlayer)
 	if not cas.mapImage._modes[mode] then
 		error("Passed \"mode\" value does not represent a valid mode.")
 	end
-	
-	-- Creates the instance itself.
-	local self = {}
-	setmetatable(self, cas.mapImage)
-	
-	local proxy = newproxy(true)
-	local proxyMeta = getmetatable(proxy)
-	proxyMeta.__gc = function() if self.destructor then self:destructor() end end
-	rawset(self, '__proxy', proxy)
 	
 	-- Assigning necessary fields.
 	self._path = path
@@ -131,8 +119,6 @@ function cas.mapImage.new(path, mode, visibleToPlayer)
 	
 	-- Adds the image into the "_images" table.
 	table.insert(cas.mapImage._images, self)
-	
-	return self
 end
 
 -------------------

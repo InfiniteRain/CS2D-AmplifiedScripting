@@ -15,7 +15,7 @@ cas.class = function(inheritsFrom)
 	
 	-- If there was a class passed, then inherit properties from it.
 	if inheritsFrom then
-		setmetatable(class, {__index == inheritsFrom})
+		setmetatable(class, {__index = inheritsFrom})
 	end
 	
 	-- Creates an instance of the class.
@@ -30,26 +30,15 @@ cas.class = function(inheritsFrom)
 		local proxy = newproxy(true)
 		local proxyMeta = getmetatable(proxy)
 		proxyMeta.__gc = function() 
-			if class.destructor then 
-				class:destructor() 
+			if instance.destructor then 
+				instance:destructor() 
 			end	
 		end
-		rawset(class, '__proxy', proxy)
+		rawset(instance, '__proxy', proxy)
 		
 		-- If the instance has the constructor declared, then call it.
 		if instance.constructor then
 			instance:constructor(...)
-		end
-		
-		-- Checks if this is an instance of another class.
-		function instance:isInstanceOf(aClass)
-			if not aClass then
-				error("No parameters were passed, expected at least 1 parameter.")
-			elseif type(aClass) ~= "table" then
-				error("Passed \"aClass\" parameter is not valid. Table expected, ".. type(aClass) .." passed.")
-			end
-			
-			return getmetatable(self) == aClass 
 		end
 		
 		-- Returns the instance.

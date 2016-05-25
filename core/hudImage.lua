@@ -1,14 +1,11 @@
 -- Initalizing hudImage class.
-cas.hudImage = {}
-cas.hudImage.__index = cas.hudImage
+cas.hudImage = cas.class(cas._image)
 
-setmetatable(cas.hudImage, {__index = cas._image}) -- Inherit from base image class.
+----------------------
+-- Instance methods --
+----------------------
 
---------------------
--- Static methods --
---------------------
-
-function cas.hudImage.new(path, visibleToPlayer)
+function cas.hudImage:constructor(path, visibleToPlayer)
 	-- Checks if all the passed parameters were correct.
 	local visibleToPlayer = visibleToPlayer or 0
 	if not path then
@@ -29,15 +26,6 @@ function cas.hudImage.new(path, visibleToPlayer)
 	else
 		file:close()
 	end
-	
-	-- Creates the instance itself.
-	local self = {}
-	setmetatable(self, cas.hudImage)
-	
-	local proxy = newproxy(true)
-	local proxyMeta = getmetatable(proxy)
-	proxyMeta.__gc = function() if self.destructor then self:destructor() end end
-	rawset(self, '__proxy', proxy)
 	
 	-- Assigning necessary fields.
 	self._path = path
@@ -122,10 +110,4 @@ function cas.hudImage.new(path, visibleToPlayer)
 	
 	-- Adds the image into the "_images" table.
 	table.insert(cas.mapImage._images, self)
-	
-	return self
 end
-
--------------------
--- Static fields --
--------------------

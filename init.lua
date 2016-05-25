@@ -40,16 +40,6 @@ dofile(cas._pathToSource .. "/core/mapImage.lua") -- Image class
 initDebugger:log("... Loading hudImage class ...")
 dofile(cas._pathToSource .. "/core/hudImage.lua") -- Image class
 
--- Hooked function for all the image classes, frees all the images on round restart.
-local function imageStartround(mode)
-	for key, value in pairs(cas.mapImage._images) do
-		value._freed = true
-	end
-	cas.mapImage._images = setmetatable({}, {__mode = "kv"})
-end
-
-cas._imageStartround = cas.hook.new("startround", imageStartround, -255, "imageStartround")
-
 initDebugger:log("AS functionality classes were successfully loaded.")
 initDebugger:infoMessage("AS initialization was successful.")
 ----------------------------------------------------------------------------------------------------------------------------------------------------

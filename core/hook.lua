@@ -1,15 +1,14 @@
 -- Initializing the debug class.
-cas.hook = {}
-cas.hook.__index = cas.hook
+cas.hook = cas.class()
 
 --------------------
 -- Static methods --
 --------------------
 
--- Creates new hook object. Event represents the cs2d hook name, func is the actual function (not a
--- string!) and priority is the optional priority value for the cs2d hook. Label is the name the 
--- hook function will have in the cas.hook._hooks table.
-function cas.hook.new(event, func, priority, label)
+-- Constructor. Event represents the cs2d hook name, func is the actual function (not a string!)
+-- and priority is the optional priority value for the cs2d hook. Label is the name the hook
+-- function will have in the cas.hook._hooks table.
+function cas.hook:constructor(event, func, priority, label)
 	-- Checks if all the passed parameters were correct.
 	if not (func and event) then
 		error("Less than 2 parameters were passed, expected at least 2 parameters.")
@@ -51,15 +50,6 @@ function cas.hook.new(event, func, priority, label)
 		end
 	end
 	
-	-- Creates the instance itself.
-	local self = {}
-	setmetatable(self, cas.hook)
-	
-	local proxy = newproxy(true)
-	local proxyMeta = getmetatable(proxy)
-	proxyMeta.__gc = function() if self.destructor then self:destructor() end end
-	rawset(self, '__proxy', proxy)
-	
 	-- Assigning necessary fields.
 	self._func = func
 	self._event = event
@@ -76,13 +66,7 @@ function cas.hook.new(event, func, priority, label)
 	cas.hook._hooks[self._label] = func -- Inserts the provided hook function into the cas.hook._hooks table.
 	cas._cs2dCommands.addhook(event, "cas.hook._hooks." .. self._label, self._priority) -- Adds the hook.
 	cas.hook._debug:infoMessage("Hook with '".. self._event .."' event, labeled as '".. self._label .."' was initialized.")
-
-	return self
 end
-
-----------------------
--- Instance methods --
-----------------------
 
 -- Destructor.
 function cas.hook:destructor()

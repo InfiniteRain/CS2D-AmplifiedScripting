@@ -1,14 +1,23 @@
 -- Initializing the _image class
-cas._image = {}
-cas._image.__index = cas._image
+cas._image = cas.class()
 
 --------------------
 -- Static methods --
 --------------------
 
+function cas._image._printDebug()
+	for k, v in pairs(cas._image._images) do
+		print(tostring(v))
+	end
+end
+
+----------------------
+-- Instance methods --
+----------------------
+
 -- Constructor. Loads an image from path with corresponding mode. You can also show it only to access
 -- single player by using "visibleToPlayer" parameter.
-function cas._image.new(path, mode, visibleToPlayer)
+function cas._image:constructor(path, mode, visibleToPlayer)
 	-- Checks if all the passed parameters were correct.
 	local visibleToPlayer = visibleToPlayer or 0
 	if not (path and mode) then
@@ -36,15 +45,6 @@ function cas._image.new(path, mode, visibleToPlayer)
 	if not ((mode >= 0 and mode <= 3) or (mode >= 101 and mode <= 164) or (mode >= 201 and mode <= 232)) then
 		error("Passed \"mode\" value does not represent a valid mode.")
 	end
-	
-	-- Creates the instance itself.
-	local self = {}
-	setmetatable(self, cas._image)
-	
-	local proxy = newproxy(true)
-	local proxyMeta = getmetatable(proxy)
-	proxyMeta.__gc = function() if self.destructor then self:destructor() end end
-	rawset(self, '__proxy', proxy)
 	
 	-- Assigning necessary fields.
 	self._path = path
@@ -129,23 +129,11 @@ function cas._image.new(path, mode, visibleToPlayer)
 	
 	-- Adds the image into the "_images" table.
 	table.insert(cas._image._images, self)
-	
-	return self
 end
-
-
-function cas._image._printDebug()
-	for k, v in pairs(cas._image._images) do
-		print(tostring(v))
-	end
-end
-
-----------------------
--- Instance methods --
-----------------------
 
 -- Destructor.
 function cas._image:destructor()
+	print("tr")
 	if not self._freed then
 		self:free() -- Freeing the image upon garbage collection.
 	end
@@ -154,7 +142,6 @@ end
 -- Frees the image and removes it from the "_images" table. "_images" table is necessary to free
 -- every image on startround.
 function cas._image:free()
-	print("Reached.")
 	if self._freed then
 		error("This image was already freed. It's better if you dispose of this instance.")
 	end
@@ -708,10 +695,20 @@ end
 -------------------
 
 cas._image._images = setmetatable({}, {__mode = "kv"}) -- Holds the loaded images, also serves as
-														 -- a weak table.
+													   -- a weak table.
 cas._image._blendModes = { -- Holds the image blend modes.
 	["normal"] = 0,
 	["light"] = 1,
 	["shade"] = 2,
 	["solid"] = 3
 }
+
+-- Hook which frees all the image upon start round.
+cas._image._imageStartroundHook = {}
+cas._image._imageStartroundHook.func = function(mode)
+	for key, value in pairs(cas._image._images) do
+		value._freed = true
+	end
+	cas._image._images = setmetatable({}, {__mode = "kv"})
+end
+cas._image._imageStartroundHook.hook = cas.hook.new("startround", cas._image._imageStartroundHook.func, -255, "_imageStartround")
