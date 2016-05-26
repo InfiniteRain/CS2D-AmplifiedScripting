@@ -712,3 +712,7 @@ cas._image._imageStartroundHook.func = function(mode)
 	cas._image._images = setmetatable({}, {__mode = "kv"})
 end
 cas._image._imageStartroundHook.hook = cas.hook.new("startround", cas._image._imageStartroundHook.func, -255, "_imageStartround")
+
+-- Hook which frees all the images which are player dependant. For example, if the image is visible
+-- only to a player or is following one.
+cas._image._imageLeaveHook = {}

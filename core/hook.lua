@@ -1,9 +1,9 @@
 -- Initializing the debug class.
 cas.hook = cas.class()
 
---------------------
--- Static methods --
---------------------
+----------------------
+-- Instacne methods --
+----------------------
 
 -- Constructor. Event represents the cs2d hook name, func is the actual function (not a string!)
 -- and priority is the optional priority value for the cs2d hook. Label is the name the hook

@@ -29,6 +29,8 @@ initDebugger:log("Config has been successfully loaded.")
 
 -- Loading classes
 initDebugger:log("Loading AS functionality classes...")
+initDebugger:log("... Loading player class ...")
+dofile(cas._pathToSource .. "/core/player.lua") -- Player class
 initDebugger:log("... Loading hook class ...")
 dofile(cas._pathToSource .. "/core/hook.lua") -- Hook class
 initDebugger:log("... Loading timer class ...")

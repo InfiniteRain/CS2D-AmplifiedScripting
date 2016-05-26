@@ -38,7 +38,7 @@ function cas.mapImage:constructor(path, mode, visibleToPlayer)
 	
 	-- Assigning necessary fields.
 	self._path = path
-	self._mode = mode
+	self._mode = cas.mapImage._modes[mode]
 	self._visibleToPlayer = 0
 	
 	self._x = 0

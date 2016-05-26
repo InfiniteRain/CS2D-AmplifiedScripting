@@ -29,7 +29,7 @@ function cas.hudImage:constructor(path, visibleToPlayer)
 	
 	-- Assigning necessary fields.
 	self._path = path
-	self._mode = mode
+	self._mode = 2
 	self._visibleToPlayer = 0
 	
 	self._x = 0
