@@ -66,3 +66,12 @@ end]]
 
 --cas.timer.new(function() parse("msg \"Hello World!\"") end):startConstantly(1000, 5)
 --collectgarbage()
+
+--[[local img = image('gfx/block.bmp', 64, 64, 0)
+imagepos(img, 50, 50, 20)
+imagealpha(img, 0.5)]]
+
+--[[local coolImage = cas.mapImage.new('gfx/block.bmp', 'top')
+coolImage:setPosition(50, 50)
+coolImage:setAngle(20)
+coolImage:setAlpha(0.5)]]

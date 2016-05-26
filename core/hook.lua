@@ -2,7 +2,7 @@
 cas.hook = cas.class()
 
 ----------------------
--- Instacne methods --
+-- Instance methods --
 ----------------------
 
 -- Constructor. Event represents the cs2d hook name, func is the actual function (not a string!)
@@ -30,11 +30,10 @@ function cas.hook:constructor(event, func, priority, label)
 		end
 	end
 	
-	
 	-- Checks if the passed event is a correct cs2d hook.
 	local match = false
 	for key, value in pairs(cas._config.cs2dHooks) do
-		if event == value then
+		if event == value[1] then
 			match = true
 			break
 		end
