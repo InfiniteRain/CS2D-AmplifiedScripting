@@ -75,3 +75,9 @@ imagealpha(img, 0.5)]]
 coolImage:setPosition(50, 50)
 coolImage:setAngle(20)
 coolImage:setAlpha(0.5)]]
+
+function kek(pl, x, y, walked)
+	print(pl)
+end
+
+local hook = cas.hook.new("move", kek)

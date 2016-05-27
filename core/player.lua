@@ -14,7 +14,17 @@ function cas.player.getObject(playerID)
 		error("Passed \"playerID\" parameter represents a non-existent player.")
 	end
 	
+	for key, value in pairs(cas.player._instances) do
+		if value._id == playerID then
+			return value
+		end
+	end
 	
+	cas.player._allowCreation = true
+	local player = cas.player.new(playerID)
+	cas.player._allowCreation = false
+	
+	return player
 end
 
 ----------------------
@@ -32,6 +42,12 @@ function cas.player:constructor(playerID)
 	
 	if not cas.player._allowCreation then
 		error("Instantiation of this class is not allowed.")
+	end
+	
+	for key, value in pairs(cas.player._instances) do
+		if value._id == playerID then
+			error("Instance with the same player ID already exists.")
+		end
 	end
 	
 	self._id = playerID

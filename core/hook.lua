@@ -33,7 +33,7 @@ function cas.hook:constructor(event, func, priority, label)
 	-- Checks if the passed event is a correct cs2d hook.
 	local match = false
 	for key, value in pairs(cas._config.cs2dHooks) do
-		if event == value[1] then
+		if event == key then
 			match = true
 			break
 		end
@@ -62,14 +62,35 @@ function cas.hook:constructor(event, func, priority, label)
 		self._label = event .. count
 	end
 	
-	cas.hook._hooks[self._label] = func -- Inserts the provided hook function into the cas.hook._hooks table.
-	cas._cs2dCommands.addhook(event, "cas.hook._hooks." .. self._label, self._priority) -- Adds the hook.
+	cas.hook._hooks[self._label] = {
+		originalFunc = func,
+		func = function(...)
+			local params = {...}
+			print("cas._config.cs2dHooks[".. self._event .."].player")
+			if cas._config.cs2dHooks[self._event].player then
+				for key, value in pairs(cas._config.cs2dHooks[self._event].player) do
+					local playerID = params[value]
+					if playerID >= 1 and playerID <= 32 then
+						params[value] = cas._player.getObject(playerID)
+					else
+						params[value] = false
+					end
+				end
+			end
+			
+			cas.hook._hooks[self._label].originalFunc(unpack(params))
+		end
+	}
+	
+	cas._cs2dCommands.addhook(event, "cas.hook._hooks." .. self._label ..".func", self._priority) -- Adds the hook.
 	cas.hook._debug:infoMessage("Hook with '".. self._event .."' event, labeled as '".. self._label .."' was initialized.")
 end
 
 -- Destructor.
 function cas.hook:destructor()
-	pcall(self:free())
+	if not self._freed then
+		self:free()
+	end
 end
 
 -- Frees the hook, meaning that cs2d will stop executing the hooked function.
