@@ -104,7 +104,7 @@ return
 		["minute"] = {},
 		["move"] = {player = {1}},
 		["movetile"] = {player = {1}},
-		["ms100"]= {},
+		["ms100"] = {},
 		["name"] = {player = {1}},
 		["objectdamage"] = {player = {3}},
 		["objectkill"] = {player = {2}},

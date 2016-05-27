@@ -18,7 +18,7 @@ cas.class = function(inheritsFrom)
 		setmetatable(class, {__index = inheritsFrom})
 	end
 	
-	-- Creates an instance of the class.
+	-- Creates a new instance of the class.
 	function class.new(...)
 		-- Initializes the instance.
 		local instance = setmetatable({}, class)

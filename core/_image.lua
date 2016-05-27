@@ -133,7 +133,6 @@ end
 
 -- Destructor.
 function cas._image:destructor()
-	print("tr")
 	if not self._freed then
 		self:free() -- Freeing the image upon garbage collection.
 	end

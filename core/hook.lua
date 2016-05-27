@@ -66,12 +66,11 @@ function cas.hook:constructor(event, func, priority, label)
 		originalFunc = func,
 		func = function(...)
 			local params = {...}
-			print("cas._config.cs2dHooks[".. self._event .."].player")
 			if cas._config.cs2dHooks[self._event].player then
 				for key, value in pairs(cas._config.cs2dHooks[self._event].player) do
 					local playerID = params[value]
 					if playerID >= 1 and playerID <= 32 then
-						params[value] = cas._player.getObject(playerID)
+						params[value] = cas.player.getObject(playerID)
 					else
 						params[value] = false
 					end
