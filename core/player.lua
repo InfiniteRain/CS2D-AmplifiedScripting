@@ -7,9 +7,7 @@ cas.player = cas.class()
 
 -- Returns the player instance from the passed player ID.
 function cas.player.getInstance(playerID)
-	if not playerID then
-		error("No parameters were passed, expected at least 1 parameter.")
-	elseif type(playerID) ~= "number" then
+	if type(playerID) ~= "number" then
 		error("Passed \"playerID\" parameter is not valid. Number expected, ".. type(playerID) .." passed.")
 	elseif not cas._cs2dCommands.player(playerID, 'exists') then
 		error("Passed \"playerID\" parameter represents a non-existent player.")
@@ -94,9 +92,7 @@ end
 
 -- Constructor. Creates a player object with corresponding ID.
 function cas.player:constructor(playerID)
-	if not playerID then
-		error("No parameters were passed, expected at least 1 parameter.")
-	elseif type(playerID) ~= "number" then
+	if type(playerID) ~= "number" then
 		error("Passed \"playerID\" parameter is not valid. Number expected, ".. type(playerID) .." passed.")
 	elseif not cas._cs2dCommands.player(playerID, 'exists') then
 		error("Passed \"playerID\" parameter represents a non-existent player.")
@@ -498,6 +494,10 @@ function cas.player:IPBan(duration, reason)
 		end
 	end
 	
+	if not self:exists() then
+		error("Player of this instance doesn't exist.")
+	end
+	
 	if duration == "permanent" then
 		cas.console.parse("banip", self:getIP(), 0, reason)
 	elseif duration == "default" then
@@ -521,6 +521,10 @@ function cas.player:nameBan(duration, reason)
 		if type(reason) ~= "string" then
 			error("Passed \"reason\" parameter is not valid. String expected, ".. type(reason) .." passed.")
 		end
+	end
+	
+	if not self:exists() then
+		error("Player of this instance doesn't exist.")
 	end
 	
 	if duration == "permanent" then
@@ -548,6 +552,10 @@ function cas.player:usgnBan(duration, reason)
 		end
 	end
 	
+	if not self:exists() then
+		error("Player of this instance doesn't exist.")
+	end
+	
 	if not self:getUSGN() then
 		error("This player is not logged in.")
 	end
@@ -562,9 +570,7 @@ function cas.player:usgnBan(duration, reason)
 end
 
 function cas.player:consoleMessage(message, color)
-	if not message then
-		error("No parameters were passed, expected at least 1 parameter.")
-	elseif type(message) ~= "string" then
+	if type(message) ~= "string" then
 		error("Passed \"message\" parameter is not valid. String expected, ".. type(message) .." passed.")
 	end
 	if color then
@@ -573,13 +579,15 @@ function cas.player:consoleMessage(message, color)
 		end
 	end
 	
+	if not self:exists() then
+		error("Player of this instance doesn't exist.")
+	end
+	
 	cas.console.parse("cmsg", (color and tostring(color) or "") .. message, self._id)
 end
 
 function cas.player:customKill(killer, weapon, weaponImage)
-	if not (killer ~= nil and weapon) then
-		error("Less than 2 parameters were passed, expected at least 2 parameters.")
-	elseif not (killer == false or getmetatable(killer) == cas.player) then
+	if not (killer == false or getmetatable(killer) == cas.player) then
 		error("Passed \"killer\" parameter is not valid. False or instance of \"cas.player\" expected.")
 	elseif type(weapon) ~= "string" then
 		error("Passed \"weapon\" parameter is not valid. String expected, ".. type(weapon) .." passed.")
@@ -588,6 +596,10 @@ function cas.player:customKill(killer, weapon, weaponImage)
 		if type(weaponImage) ~= "string" then
 			error("Passed \"weaponImage\" parameter is not valid. String expected, ".. type(weaponImage) .." passed.")
 		end
+	end
+	
+	if not self:exists() then
+		error("Player of this instance doesn't exist.")
 	end
 	
 	if self:getHealth() <= 0 then
@@ -608,10 +620,12 @@ function cas.player:customKill(killer, weapon, weaponImage)
 end
 
 function cas.player:equip(itemType)
-	if not itemType then
-		error("No parameters were passed, expected at least 1 parameter.")
-	elseif getmetatable(itemType) ~= cas.itemType then
+	if getmetatable(itemType) ~= cas.itemType then
 		error("Passed \"itemType\" parameter is not an instance of the \"cas.itemType\" class.")
+	end
+	
+	if not self:exists() then
+		error("Player of this instance doesn't exist.")
 	end
 	
 	if self:getHealth() <= 0 then
@@ -622,10 +636,12 @@ function cas.player:equip(itemType)
 end
 
 function cas.player:flash(intentsity)
-	if not intentsity then
-		error("No parameters were passed, expected at least 1 parameter.")
-	elseif type(intentsity) ~= "number" then
+	if type(intentsity) ~= "number" then
 		error("Passed \"intentsity\" parameter is not valid. Number expected, ".. type(intentsity) .." passed.")
+	end
+	
+	if not self:exists() then
+		error("Player of this instance doesn't exist.")
 	end
 	
 	if self:getHealth() <= 0 then
@@ -642,15 +658,342 @@ function cas.player:kick(reason)
 		end
 	end
 	
+	if not self:exists() then
+		error("Player of this instance doesn't exist.")
+	end
+	
 	cas.console.parse("kick", self._id, reason)
 end
 
 function cas.player:kill()
+	if not self:exists() then
+		error("Player of this instance doesn't exist.")
+	end
+	
 	if self:getHealth() <= 0 then
 		error("This player is already dead.")
 	end
 	
 	cas.console.parse("killplayer", self._id)
+end 
+
+function cas.player:makeTerrorist()
+	if not self:exists() then
+		error("Player of this instance doesn't exist.")
+	end
+	
+	if self:getTeam() == 1 then
+		error("This player is already a terrorist.")
+	end
+	
+	cas.console.parse("maket", self._id)
+end
+
+function cas.player:makeCounterTerrorist()
+	if not self:exists() then
+		error("Player of this instance doesn't exist.")
+	end
+	
+	if self:getTeam() == 2 or self:getTeam() == 3 then
+		error("This player is already a counter-terrorist.")
+	end
+	
+	cas.console.parse("makect", self._id)
+end
+
+function cas.player:makeSpectator()
+	if not self:exists() then
+		error("Player of this instance doesn't exist.")
+	end
+	
+	if self:getTeam() == 0 then
+		error("This player is already a spectator.")
+	end
+	
+	cas.console.parse("makespec", self._id)
+end
+
+function cas.player:reroute(address)
+	if not self:exists() then
+		error("Player of this instance doesn't exist.")
+	end
+
+	if type(address) ~= "string" then
+		error("Passed \"address\" parameter is not valid. String expected, ".. type(address) .." passed.")
+	end
+	
+	cas.console.parse("reroute", address)
+end
+
+function cas.player:setAmmo(itemType, ammoin, ammo)
+	if getmetatable(itemType) ~= cas.itemType then
+		error("Passed \"itemType\" parameter is not an instance of the \"cas.itemType\" class.")
+	elseif not ((type(ammoin) == "boolean" and not ammoin) or (type(ammoin) == "number")) then
+		error("Passed \"ammoin\" parameter is not valid. False or number expected, ".. type(ammoin) .." passed.")
+	elseif not ((type(ammo) == "boolean" and not ammo) or (type(ammo) == "number")) then
+		error("Passed \"ammo\" parameter is not valid. False or number expected, ".. type(ammo) .." passed.")
+	end
+	if ammoin then
+		if not (ammoin >= 0 and ammoin <= 999) then
+			error("Passed \"ammoin\" value (as a number) has to be in the range of 0 and 999.")
+		end
+	end
+	if ammo then
+		if not (ammo >= 0 and ammo <= 999) then
+			error("Passed \"ammo\" value (as a number) has to be in the range of 0 and 999.")
+		end
+	end
+	
+	if not self:exists() then
+		error("Player of this instance doesn't exist.")
+	end
+	
+	cas.console.parse("setammo", self._id, itemType._typeId, ammoin and ammoin or 1000, ammo and ammo or 1000)
+end
+
+function cas.player:setArmor(armor)
+	if type(armor) ~= "number" then
+		error("Passed \"armor\" parameter is not valid. Number expected, ".. type(armor) .." passed.")
+	end
+	if not (armor >= 0 and armor <= 255) then
+		error("Passed \"armor\" value has to be a number in the range of 0 and 255.")
+	end
+	
+	if not self:exists() then
+		error("Player of this instance doesn't exist.")
+	end
+	
+	if self:getHealth() <= 0 then
+		error("This player is dead.")
+	end
+	
+	cas.console.parse("setarmor", self._id, armor)
+end
+
+function cas.player:setDeaths(deaths)
+	if type(deaths) ~= "number" then
+		error("Passed \"deaths\" parameter is not valid. Number expected, ".. type(deaths) .." passed.")
+	end
+	if deaths < 0 then
+		error("Passed \"deaths\" value has to be a number larger than 0.")
+	end
+	
+	if not self:exists() then
+		error("Player of this instance doesn't exist.")
+	end
+	
+	cas.console.parse("setdeaths", self._id, deaths)
+end
+
+function cas.player:setHealth(health)
+	if type(health) ~= "number" then
+		error("Passed \"health\" parameter is not valid. Number expected, ".. type(health) .." passed.")
+	end
+	if not (health >= 0 and health <= 250 ) then
+		error("Passed \"health\" value has to be a number in the range of 0 and 250.")
+	end
+	
+	if not self:exists() then
+		error("Player of this instance doesn't exist.")
+	end
+	
+	if self:getHealth() <= 0 then
+		error("This player is dead.")
+	end
+	
+	cas.console.parse("sethealth", self._id, health)
+end
+
+function cas.player:setMaxHealth(health)
+	if type(health) ~= "number" then
+		error("Passed \"health\" parameter is not valid. Number expected, ".. type(health) .." passed.")
+	end
+	if not (health >= 0 and health <= 250 ) then
+		error("Passed \"health\" value has to be a number in the range of 0 and 250.")
+	end
+	
+	if not self:exists() then
+		error("Player of this instance doesn't exist.")
+	end
+	
+	if self:getHealth() <= 0 then
+		error("This player is dead.")
+	end
+	
+	cas.console.parse("setmaxhealth", self._id, health)
+end
+
+function cas.player:setMoney(money)
+	if type(money) ~= "number" then
+		error("Passed \"money\" parameter is not valid. Number expected, ".. type(money) .." passed.")
+	end
+	if not (money >= 0 and money <= 16000) then
+		error("Passed \"money\" value has to be a number in the range of 0 and 16000.")
+	end
+	
+	if not self:exists() then
+		error("Player of this instance doesn't exist.")
+	end
+
+	cas.console.parse("setmoney", self._id, money)
+end
+
+function cas.player:setName(name, hide)
+	if type(name) ~= "string" then
+		error("Passed \"name\" parameter is not valid. String expected, ".. type(name) .." passed.")
+	end
+	if hide then
+		if type(hide) ~= "boolean" then
+			error("Passed \"hide\" parameter is not valid. Boolean expected, ".. type(hide) .." passed.")
+		end
+	end
+	
+	if not self:exists() then
+		error("Player of this instance doesn't exist.")
+	end
+	
+	cas.console.parse("setname", self._id, name, hide and 1 or 0)
+end
+
+function cas.player:setPosition(x, y)
+	if type(x) ~= "number" then
+		error("Passed \"x\" parameter is not valid. Number expected, ".. type(x) .." passed.")
+	elseif type(y) ~= "number" then
+		error("Passed \"y\" parameter is not valid. Number expected, ".. type(y) .." passed.")
+	end
+	
+	if not self:exists() then
+		error("Player of this instance doesn't exist.")
+	end
+	
+	if self:getHealth() <= 0 then
+		error("This player is dead.")
+	end
+	
+	cas.console.parse("setpos", self._id, x, y)
+end
+
+function cas.player:setScore(score)
+	if type(score) ~= "number" then
+		error("Passed \"score\" parameter is not valid. Number expected, ".. type(score) .." passed.")
+	end
+	if score < 0 then
+		error("Passed \"score\" value has to be a number larger than 0.")
+	end
+	
+	if not self:exists() then
+		error("Player of this instance doesn't exist.")
+	end
+	
+	cas.console.parse("setscore", self._id, score)
+end
+
+function cas.player:setWeapon(weapon)
+	if getmetatable(weapon) ~= cas.itemType then
+		error("Passed \"weapon\" parameter is not an instance of the \"cas.itemType\" class.")
+	end
+	
+	if not self:exists() then
+		error("Player of this instance doesn't exist.")
+	end
+	
+	if self:getHealth() <= 0 then
+		error("This player is dead.")
+	end
+	
+	cas.console.parse("setweapon", self._id, weapon._typeId)
+end
+
+function cas.player:shake(power)
+	if type(power) ~= "number" then
+		error("Passed \"power\" parameter is not valid. Number expected, ".. type(power) .." passed.")
+	end
+	if power < 0 then
+		error("Passed \"power\" value has to be a number larger than 0.")
+	end
+	
+	if not self:exists() then
+		error("Player of this instance doesn't exist.")
+	end
+	
+	cas.console.parse("shake", self._id, power)
+end
+
+function cas.player:slap()
+	if not self:exists() then
+		error("Player of this instance doesn't exist.")
+	end
+	
+	if self:getHealth() <= 0 then
+		error("This player is dead.")
+	end
+	
+	cas.console.parse("slap", self._id)
+end
+
+function cas.player:deathSlap()
+	if not self:exists() then
+		error("Player of this instance doesn't exist.")
+	end
+	
+	if self:getHealth() <= 0 then
+		error("This player is dead.")
+	end
+	
+	cas.console.parse("deathslap", self._id)
+end
+
+function cas.player:spawn(x, y)
+	if type(x) ~= "number" then
+		error("Passed \"x\" parameter is not valid. Number expected, ".. type(x) .." passed.")
+	elseif type(y) ~= "number" then
+		error("Passed \"y\" parameter is not valid. Number expected, ".. type(y) .." passed.")
+	end
+
+	if not self:exists() then
+		error("Player of this instance doesn't exist.")
+	end
+	
+	if self:getHealth() > 0 then
+		error("This player is alive.")
+	end
+	
+	if self:getTeam() == 0 then
+		error("This player is spectator.")
+	end
+	
+	cas.console.parse("spawnplayer", self._id)
+end
+
+function cas.player:setSpeed(speed)
+	if type(speed) ~= "number" then
+		error("Passed \"speed\" parameter is not valid. Number expected, ".. type(speed) .." passed.")
+	end
+	if not (speed >= -100 and speed <= 100) then
+		error("Passed \"speed\" value has to be a number in the range of -100 and 100.")
+	end
+	
+	if not self:exists() then
+		error("Player of this instance doesn't exist.")
+	end
+	
+	cas.console.parse("speedmod", self._id, speed)
+end
+
+function cas.player:strip(itemType)
+	if getmetatable(itemType) ~= cas.itemType then
+		error("Passed \"itemType\" parameter is not an instance of the \"cas.itemType\" class.")
+	end
+	
+	if not self:exists() then
+		error("Player of this instance doesn't exist.")
+	end
+	
+	if self:getHealth() <= 0 then
+		error("This player is dead.")
+	end
+	
+	cas.console.parse("strip", self._id, itemType._typeId)
 end
 
 -------------------

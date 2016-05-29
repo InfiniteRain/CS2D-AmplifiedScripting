@@ -10,18 +10,16 @@ cas.mapImage = cas.class(cas._image)
 function cas.mapImage:constructor(path, mode, visibleToPlayer)
 	-- Checks if all the passed parameters were correct.
 	local visibleToPlayer = visibleToPlayer or 0
-	if not (path and mode) then
-		error("Less than 2 parameters were passed, expected at least 2 parameters.")
-	elseif type(path) ~= "string" then
+	if type(path) ~= "string" then
 		error("Passed \"path\" parameter is not valid. String expected, ".. type(path) .." passed.")
 	elseif type(mode) ~= "string" then
 		error("Passed \"mode\" parameter is not valid. String expected, ".. type(mode) .." passed.")
 	end
-	if visibleToPlayer then
-		if type(visibleToPlayer) ~= "number" then
-			error("Passed \"visibleToPlayer\" parameter is not valid. Number expected, ".. type(visibleToPlayer) .." passed.")
+	if visibleToPlayer ~= 0 then
+		if getmetatable(visibleToPlayer) ~= cas.player then
+			error("Passed \"visibleToPlayer\" parameter is not an instance of the \"cas.player\" class.")
 		end
-	end
+ 	end
 	
 	-- Checks if the image exists.
 	local file = io.open(path, 'r')
@@ -39,7 +37,6 @@ function cas.mapImage:constructor(path, mode, visibleToPlayer)
 	-- Assigning necessary fields.
 	self._path = path
 	self._mode = cas.mapImage._modes[mode]
-	self._visibleToPlayer = 0
 	
 	self._x = 0
 	self._y = 0
@@ -114,7 +111,7 @@ function cas.mapImage:constructor(path, mode, visibleToPlayer)
 	}
 	
 	-- Creating the image.
-	self._id = cas._cs2dCommands.image(path, 0, 0, cas.mapImage._modes[mode], visibleToPlayer)
+	self._id = cas._cs2dCommands.image(path, 0, 0, cas.mapImage._modes[mode], visibleToPlayer ~= 0 and visibleToPlayer._id or 0)
 	self._freed = false
 	
 	-- Adds the image into the "_images" table.

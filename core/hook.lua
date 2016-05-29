@@ -10,9 +10,7 @@ cas.hook = cas.class()
 -- function will have in the cas.hook._hooks table.
 function cas.hook:constructor(event, func, priority, label)
 	-- Checks if all the passed parameters were correct.
-	if not (func and event) then
-		error("Less than 2 parameters were passed, expected at least 2 parameters.")
-	elseif type(func) ~= "function" then
+	if type(func) ~= "function" then
 		error("Passed \"func\" parameter is not valid. Function expected, ".. type(func) .." passed.")
 	elseif type(event) ~= "string" then
 		error("Passed \"event\" parameter is not valid. String expected, ".. type(event) .." passed.")
@@ -77,7 +75,7 @@ function cas.hook:constructor(event, func, priority, label)
 				end
 			end
 			
-			cas.hook._hooks[self._label].originalFunc(unpack(params))
+			return cas.hook._hooks[self._label].originalFunc(unpack(params))
 		end
 	}
 	
@@ -119,9 +117,7 @@ end
 
 -- Sets the hooked function.
 function cas.hook:setFunction(func)
-	if not func then
-		error("No parameters were passed, expected at least 1 parameter.")
-	elseif type(func) ~= "function" then
+	if type(func) ~= "function" then
 		error("Passed \"func\" parameter is not valid. Function expected, ".. type(func) .." passed.")
 	end
 	

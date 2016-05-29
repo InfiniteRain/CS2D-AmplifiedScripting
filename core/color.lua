@@ -28,9 +28,7 @@ end
 -- Constructor. Creates an instance of the color class and returns it. Takes RGB color values as 
 -- parameters to define the color the instance is supposed to represent.
 function cas.color:constructor(red, green, blue)
-	if not (red and green and blue) then
-		error("Less than 3 parameters were passed, expected at least 3 parameters.")
-	elseif not cas.color.isCorrectFormat(red, green, blue) then
+	if not cas.color.isCorrectFormat(red, green, blue) then
 		error("Passed parameters contained unsuitable values for color instance.")
 	end
 	
@@ -50,9 +48,7 @@ end
 
 -- Sets the color fields of the instance.
 function cas.color:setRGB(red, green, blue)
-	if not (red and green and blue) then
-		error("Less than 3 parameters were passed, expected at least 3 parameters.")
-	elseif not cas.color.isCorrectFormat(red, green, blue) then
+	if not cas.color.isCorrectFormat(red, green, blue) then
 		error("Passed parameters contained unsuitable values for color instance.")
 	end
 	
@@ -63,9 +59,7 @@ end
 
 -- Sets the red color field of the instance.
 function cas.color:setRed(red)
-	if not red then
-		error("No parameters were passed, expected at least 1 parameter.")
-	elseif not cas.color.isCorrectFormat(red) then
+	if not cas.color.isCorrectFormat(red) then
 		error("Passed parameter contained unsuitable value for color instance.")
 	end
 	
@@ -74,9 +68,7 @@ end
 
 -- Sets the green color field of the instance.
 function cas.color:setGreen(green)
-	if not red then
-		error("No parameters were passed, expected at least 1 parameter.")
-	elseif not cas.color.isCorrectFormat(red) then
+	if not cas.color.isCorrectFormat(red) then
 		error("Passed parameter contained unsuitable value for color instance.")
 	end
 	
@@ -85,9 +77,7 @@ end
 
 -- Sets the blue color field of the instance.
 function cas.color:setBlue(blue)
-	if not red then
-		error("No parameters were passed, expected at least 1 parameter.")
-	elseif not cas.color.isCorrectFormat(red) then
+	if not cas.color.isCorrectFormat(red) then
 		error("Passed parameter contained unsuitable value for color instance.")
 	end
 	

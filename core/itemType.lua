@@ -7,9 +7,7 @@ cas.itemType = cas.class()
 
 -- Turns cs2d item type id into a cas.itemType object.
 function cas.itemType.getInstance(typeID)
-	if not typeID then
-		error("No parameters were passed, expected at least 1 parameter.")
-	elseif type(typeID) ~= "number" then
+	if type(typeID) ~= "number" then
 		error("Passed \"typeID\" parameter is not valid. Number expected, ".. type(typeID) .." passed.")
 	end
 	
@@ -30,9 +28,7 @@ end
 
 -- Constructor.
 function cas.itemType:constructor(itemTypeID, passive, rightClickType, projectile)
-	if not (itemTypeID and passive ~= nil and rightClickType and projectile ~= nil) then
-		error("Less than 4 parameters were passed, expected at least 4 parameters.")
-	elseif type(itemTypeID) ~= "number" then
+	if type(itemTypeID) ~= "number" then
 		error("Passed \"itemTypeID\" parameter is not valid. Number expected, ".. type(itemTypeID) .." passed.")
 	elseif type(passive) ~= "boolean" then
 		error("Passed \"passive\" parameter is not valid. Boolean expected, ".. type(passive) .." passed.")

@@ -8,16 +8,14 @@ cas.hudImage = cas.class(cas._image)
 function cas.hudImage:constructor(path, visibleToPlayer)
 	-- Checks if all the passed parameters were correct.
 	local visibleToPlayer = visibleToPlayer or 0
-	if not path then
-		error("No parameters were passed, expected at least 1 parameter.")
-	elseif type(path) ~= "string" then
+	if type(path) ~= "string" then
 		error("Passed \"path\" parameter is not valid. String expected, ".. type(path) .." passed.")
 	end
-	if visibleToPlayer then
-		if type(visibleToPlayer) ~= "number" then
-			error("Passed \"visibleToPlayer\" parameter is not valid. Number expected, ".. type(visibleToPlayer) .." passed.")
+	if visibleToPlayer ~= 0 then
+		if getmetatable(visibleToPlayer) ~= cas.player then
+			error("Passed \"visibleToPlayer\" parameter is not an instance of the \"cas.player\" class.")
 		end
-	end
+ 	end
 	
 	-- Checks if the image exists.
 	local file = io.open(path, 'r')
@@ -30,7 +28,6 @@ function cas.hudImage:constructor(path, visibleToPlayer)
 	-- Assigning necessary fields.
 	self._path = path
 	self._mode = 2
-	self._visibleToPlayer = 0
 	
 	self._x = 0
 	self._y = 0
@@ -105,7 +102,7 @@ function cas.hudImage:constructor(path, visibleToPlayer)
 	}
 	
 	-- Creating the image.
-	self._id = cas._cs2dCommands.image(path, 0, 0, 2, visibleToPlayer)
+	self._id = cas._cs2dCommands.image(path, 0, 0, 2, visibleToPlayer ~= 0 and visibleToPlayer._id or 0)
 	self._freed = false
 	
 	-- Adds the image into the "_images" table.

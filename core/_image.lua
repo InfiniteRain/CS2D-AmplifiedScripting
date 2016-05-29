@@ -20,18 +20,16 @@ end
 function cas._image:constructor(path, mode, visibleToPlayer)
 	-- Checks if all the passed parameters were correct.
 	local visibleToPlayer = visibleToPlayer or 0
-	if not (path and mode) then
-		error("Less than 2 parameters were passed, expected at least 2 parameters.")
-	elseif type(path) ~= "string" then
+	if type(path) ~= "string" then
 		error("Passed \"path\" parameter is not valid. String expected, ".. type(path) .." passed.")
 	elseif type(mode) ~= "number" then
 		error("Passed \"mode\" parameter is not valid. Number expected, ".. type(mode) .." passed.")
 	end
-	if visibleToPlayer then
-		if type(visibleToPlayer) ~= "number" then
-			error("Passed \"visibleToPlayer\" parameter is not valid. Number expected, ".. type(visibleToPlayer) .." passed.")
+	if visibleToPlayer ~= 0 then
+		if getmetatable(visibleToPlayer) ~= cas.player then
+			error("Passed \"visibleToPlayer\" parameter is not an instance of the \"cas.player\" class.")
 		end
-	end
+ 	end
 	
 	-- Checks if the image exists.
 	local file = io.open(path, 'r')
@@ -49,7 +47,6 @@ function cas._image:constructor(path, mode, visibleToPlayer)
 	-- Assigning necessary fields.
 	self._path = path
 	self._mode = mode
-	self._visibleToPlayer = 0
 	
 	self._x = 0
 	self._y = 0
@@ -124,7 +121,7 @@ function cas._image:constructor(path, mode, visibleToPlayer)
 	}
 	
 	-- Creating the image.
-	self._id = cas._cs2dCommands.image(path, 0, 0, mode, visibleToPlayer)
+	self._id = cas._cs2dCommands.image(path, 0, 0, mode, visibleToPlayer ~= 0 and visibleToPlayer._id or 0)
 	self._freed = false
 	
 	-- Adds the image into the "_images" table.
@@ -179,9 +176,7 @@ end
 
 -- Tween move
 function cas._image:tweenMove(time, x, y)
-	if not (time and x and y) then
-		error("Less than 3 parameters were passed, expected at least 3 parameters.")
-	elseif type(time) ~= "number" then
+	if type(time) ~= "number" then
 		error("Passed \"time\" parameter is not valid. Number expected, ".. type(time) .." passed.")
 	elseif type(x) ~= "number" then
 		error("Passed \"x\" parameter is not valid. Number expected, ".. type(x) .." passed.")
@@ -205,9 +200,7 @@ end
 
 -- Tween rotate.
 function cas._image:tweenRotate(time, angle)
-	if not (time and angle) then
-		error("Less than 2 parameters were passed, expected at least 2 parameters.")
-	elseif type(time) ~= "number" then
+	if type(time) ~= "number" then
 		error("Passed \"time\" parameter is not valid. Number expected, ".. type(time) .." passed.")
 	elseif type(angle) ~= "number" then
 		error("Passed \"angle\" parameter is not valid. Number expected, ".. type(angle) .." passed.")
@@ -231,9 +224,7 @@ end
 
 -- Tween rotate constantly.
 function cas._image:tweenRotateConstantly(speed)
-	if not speed then
-		error("No parameters were passed, expected at least 1 parameter.")
-	elseif type(speed) ~= "number" then
+	if type(speed) ~= "number" then
 		error("Passed \"speed\" parameter is not valid. Number expected, ".. type(speed) .." passed.")
 	end
 	
@@ -253,9 +244,7 @@ end
 
 -- Tween scale.
 function cas._image:tweenScale(time, scaleX, scaleY)
-	if not (time and scaleX and scaleY) then
-		error("Less than 3 parameters were passed, expected at least 3 parameters.")
-	elseif type(time) ~= "number" then
+	if type(time) ~= "number" then
 		error("Passed \"time\" parameter is not valid. Number expected, ".. type(time) .." passed.")
 	elseif type(scaleX) ~= "number" then
 		error("Passed \"scaleX\" parameter is not valid. Number expected, ".. type(scaleX) .." passed.")
@@ -282,9 +271,7 @@ end
 
 -- Tween color.
 function cas._image:tweenColor(time, color)
-	if not (time and color) then
-		error("Less than 2 parameters were passed, expected at least 2 parameters.")
-	elseif type(time) ~= "number" then
+	if type(time) ~= "number" then
 		error("Passed \"time\" parameter is not valid. Number expected, ".. type(time) .." passed.")
 	elseif getmetatable(color) ~= cas.color then
 		error("Passed \"color\" parameter is not an instance of the \"cas.color\" class.")
@@ -309,9 +296,7 @@ end
 
 -- Tween alpha.
 function cas._image:tweenAlpha(time, alpha)
-	if not (time and alpha) then
-		error("Less than 2 parameters were passed, expected at least 2 parameters.")
-	elseif type(time) ~= "number" then
+	if type(time) ~= "number" then
 		error("Passed \"time\" parameter is not valid. Number expected, ".. type(time) .." passed.")
 	elseif type(alpha) ~= "number" then
 		error("Passed \"alpha\" parameter is not valid. Number expected, ".. type(alpha) .." passed.")
@@ -444,9 +429,7 @@ end
 
 -- Sets the position of the image.
 function cas._image:setPosition(x, y)
-	if not (x and y) then
-		error("Less than 2 parameters were passed, expected at least 2 parameters.")
-	elseif type(x) ~= "number" then
+	if type(x) ~= "number" then
 		error("Passed \"x\" parameter is not valid. Number expected, ".. type(x) .." passed.")
 	elseif type(y) ~= "number" then
 		error("Passed \"y\" parameter is not valid. Number expected, ".. type(y) .." passed.")
@@ -468,9 +451,7 @@ end
 
 -- Sets the angle of the image.
 function cas._image:setAngle(angle)
-	if not angle then
-		error("No parameters were passed, expected at least 1 parameter.")
-	elseif type(angle) ~= "number" then
+	if type(angle) ~= "number" then
 		error("Passed \"angle\" parameter is not valid. Number expected, ".. type(angle) .." passed.")
 	end
 	
@@ -491,9 +472,7 @@ end
 
 -- Sets the scale of the image.
 function cas._image:setScale(scaleX, scaleY)
-	if not (scaleX and scaleY) then
-		error("Less than 2 parameters were passed, expected at least 2 parameters.")
-	elseif type(scaleX) ~= "number" then
+	if type(scaleX) ~= "number" then
 		error("Passed \"scaleX\" parameter is not valid. Number expected, ".. type(scaleX) .." passed.")
 	elseif type(scaleY) ~= "number" then
 		error("Passed \"scaleY\" parameter is not valid. Number expected, ".. type(scaleY) .." passed.")
@@ -515,9 +494,7 @@ end
 
 -- Sets the color of the image.
 function cas._image:setColor(color)
-	if not color then
-		error("No parameters were passed, expected at least 1 parameter.")
-	elseif getmetatable(color) ~= cas.color then
+	if getmetatable(color) ~= cas.color then
 		error("Passed \"color\" parameter is not an instance of the \"cas.color\" class.")
 	end
 	
@@ -536,9 +513,7 @@ end
 
 -- Sets the alpha of the image.
 function cas._image:setAlpha(alpha)
-	if not alpha then
-		error("No parameters were passed, expected at least 1 parameter.")
-	elseif type(alpha) ~= "number" then
+	if type(alpha) ~= "number" then
 		error("Passed \"alpha\" parameter is not valid. Number expected, ".. type(alpha) .." passed.")
 	elseif not (alpha >= 0 and alpha <= 1) then
 		error("Passed \"alpha\" value has to be in the range of 0 - 1.")
@@ -559,9 +534,7 @@ end
 
 -- Sets the blend of the image.
 function cas._image:setBlend(blend)
-	if not blend then
-		error("No parameters were passed, expected at least 1 parameter.")
-	elseif type(blend) ~= "string" then
+	if type(blend) ~= "string" then
 		error("Passed \"blend\" parameter is not valid. String expected, ".. type(blend) .." passed.")
 	end
 	

@@ -8,9 +8,7 @@ cas.timer = cas.class()
 -- Constructor. Creates a timer with a function it supposed to run.
 function cas.timer:constructor(func)
 	-- Checks if all the passed parameters were correct.
-	if not func then
-		error("No parameters were passed, expected at least 1 parameter.")
-	elseif type(func) ~= "function" then
+	if type(func) ~= "function" then
 		error("Passed \"func\" parameter is not valid. Function expected, ".. type(func) .." passed.")
 	end
 	
@@ -45,9 +43,7 @@ end
 -- Starts the timer with provided interval and repetitions.
 function cas.timer:start(milliseconds, repetitions, ...)
 	-- Checks if all the passed parameters were correct.
-	if not milliseconds then
-		error("No parameters were passed, expected at least 1 parameter.")
-	elseif type(milliseconds) ~= "number" then
+	if type(milliseconds) ~= "number" then
 		error("Passed \"milliseconds\" parameter is not valid. Number expected, ".. type(milliseconds) .." passed.")
 	end
 	if repetitions then
@@ -90,9 +86,7 @@ end
 -- Starts the timer with provided interval, will be run constantly until stopped.
 function cas.timer:startConstantly(milliseconds, ...)
 	-- Checks if all the passed parameters were correct.
-	if not milliseconds then
-		error("No parameters were passed, expected at least 1 parameter.")
-	elseif type(milliseconds) ~= "number" then
+	if type(milliseconds) ~= "number" then
 		error("Passed \"milliseconds\" parameter is not valid. Number expected, ".. type(milliseconds) .." passed.")
 	end
 	
