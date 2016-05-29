@@ -90,7 +90,7 @@ end
 -- Instance methods --
 ----------------------
 
--- Constructor. Creates a player object with corresponding ID.
+-- Constructor. Creates a player instance with corresponding ID.
 function cas.player:constructor(playerID)
 	if type(playerID) ~= "number" then
 		error("Passed \"playerID\" parameter is not valid. Number expected, ".. type(playerID) .." passed.")
@@ -1000,5 +1000,5 @@ end
 -- Static fields --
 -------------------
 
-cas.player._allowCreation = false
-cas.player._instances = setmetatable({}, {__mode = "kv"})
+cas.player._allowCreation = false -- Defines if instantiation of this class is allowed.
+cas.player._instances = setmetatable({}, {__mode = "kv"}) -- A table of instances of this class.

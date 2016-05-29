@@ -5,10 +5,15 @@ cas._image = cas.class()
 -- Static methods --
 --------------------
 
-function cas._image._printDebug()
-	for k, v in pairs(cas._image._images) do
-		print(tostring(v))
+-- Returns the image instance from the passed image ID.
+function cas._image.getInstance(imageID) 
+	for key, value in pairs(cas._image._images) do
+		if imageID == value._id then
+			return value
+		end
 	end
+	
+	error("Passed \"imageID\" parameter represents a non-existent image.")
 end
 
 ----------------------

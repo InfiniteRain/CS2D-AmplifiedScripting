@@ -122,6 +122,7 @@ end
 -- Static fields --
 -------------------
 
+-- Gets itemTypes from the config and loads them as static fields of this class.
 cas.itemType._allowInstantiation = true
 for key, value in pairs(cas._config.cs2dItemTypes) do
 	cas.itemType[key] = cas.itemType.new(unpack(value))
