@@ -590,6 +590,10 @@ function cas.player:customKill(killer, weapon, weaponImage)
 		end
 	end
 	
+	if self:getHealth() <= 0 then
+		error("This player is already dead.")
+	end
+	
 	-- Checks if the weapon image exists.
 	if weaponImage then
 		local file = io.open(weaponImage, 'r')
@@ -600,8 +604,53 @@ function cas.player:customKill(killer, weapon, weaponImage)
 		end
 	end
 	
-	cas.console.parse("customkill", killer and killer or 0, weapon .. (weaponImage and ",".. weaponImage or ""), self._id)
+	cas.console.parse("customkill", killer and killer._id or 0, weapon .. (weaponImage and ",".. weaponImage or ""), self._id)
+end
+
+function cas.player:equip(itemType)
+	if not itemType then
+		error("No parameters were passed, expected at least 1 parameter.")
+	elseif getmetatable(itemType) ~= cas.itemType then
+		error("Passed \"itemType\" parameter is not an instance of the \"cas.itemType\" class.")
+	end
 	
+	if self:getHealth() <= 0 then
+		error("This player is dead.")
+	end
+	
+	cas.console.parse("equip", self._id, itemType._typeId)
+end
+
+function cas.player:flash(intentsity)
+	if not intentsity then
+		error("No parameters were passed, expected at least 1 parameter.")
+	elseif type(intentsity) ~= "number" then
+		error("Passed \"intentsity\" parameter is not valid. Number expected, ".. type(intentsity) .." passed.")
+	end
+	
+	if self:getHealth() <= 0 then
+		error("This player is dead.")
+	end
+	
+	cas.console.parse("flashplayer", self._id, intentsity)
+end
+
+function cas.player:kick(reason)
+	if reason then
+		if type(reason) ~= "string" then
+			error("Passed \"reason\" parameter is not valid. String expected, ".. type(reason) .." passed.")
+		end
+	end
+	
+	cas.console.parse("kick", self._id, reason)
+end
+
+function cas.player:kill()
+	if self:getHealth() <= 0 then
+		error("This player is already dead.")
+	end
+	
+	cas.console.parse("killplayer", self._id)
 end
 
 -------------------

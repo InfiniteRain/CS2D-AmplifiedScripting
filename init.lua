@@ -22,7 +22,7 @@ funcStr = funcStr .. "}"
 assert(loadstring(funcStr))()
 
 -- Loading classes
-dofile(cas._pathToSource .. "/core/item.lua") -- Item class 
+dofile(cas._pathToSource .. "/core/itemType.lua") -- Item type class 
 dofile(cas._pathToSource .. "/core/player.lua") -- Player class
 dofile(cas._pathToSource .. "/core/hook.lua") -- Hook class
 dofile(cas._pathToSource .. "/core/timer.lua") -- Timer class

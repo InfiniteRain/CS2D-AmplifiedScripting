@@ -20,7 +20,6 @@ function cas.console.parse(command, ...)
 	end
 	
 	cas._cs2dCommands.parse(commandString)
-	print(commandString)
 end
 
 -- Sends a message to every client's console.
