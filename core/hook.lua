@@ -65,13 +65,34 @@ function cas.hook:constructor(event, func, priority, label)
 		func = function(...)
 			local params = {...}
 			if cas._config.cs2dHooks[self._event].player then
+				-- Changing all the image ID's into instances of cas._image.
+				for key, value in pairs(cas._config.cs2dHooks[self._event].player) do
+					local imageID = params[value]
+					params[value] = cas._image.getInstance(imageID)
+				end
+				
+				-- Changing all the player ID's into instances of cas.player.
 				for key, value in pairs(cas._config.cs2dHooks[self._event].player) do
 					local playerID = params[value]
 					if playerID >= 1 and playerID <= 32 then
-						params[value] = cas.player.getObject(playerID)
+						params[value] = cas.player.getInstance(playerID)
 					else
 						params[value] = false
 					end
+				end
+				
+				-- Changing all the item type ID's into instances of cas.itemType.
+				for key, value in pairs(cas._config.cs2dHooks[self._event].itemType) do
+					local itemType = params[value]
+					if cas.itemType.typeExists(value) then
+						params[value] = cas.itemType.getInstance(itemType)
+					end
+				end
+				
+				-- Changing all the item ID's into instances of cas.groundItem.
+				for key, value in pairs(cas._config.cs2dHooks[self._event].groundItem) do
+					local item = params[value]
+					params[value] = cas.groundItem.getInstance(item)
 				end
 			end
 			

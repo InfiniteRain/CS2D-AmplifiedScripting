@@ -7,6 +7,10 @@ cas._image = cas.class()
 
 -- Returns the image instance from the passed image ID.
 function cas._image.getInstance(imageID) 
+	if type(imageID) ~= "number" then
+		error("Passed \"imageID\" parameter is not valid. Number expected, ".. type(imageID) .." passed.")
+	end
+
 	for key, value in pairs(cas._image._images) do
 		if imageID == value._id then
 			return value
@@ -452,6 +456,8 @@ function cas._image:setPosition(x, y)
 	self._y = y
 	
 	cas._cs2dCommands.imagepos(self._id, self._x, self._y, self._angle)
+	
+	return self
 end
 
 -- Sets the angle of the image.
@@ -473,6 +479,8 @@ function cas._image:setAngle(angle)
 	self._angle = angle
 	
 	cas._cs2dCommands.imagepos(self._id, self._x, self._y, self._angle)
+	
+	return self
 end
 
 -- Sets the scale of the image.
@@ -495,6 +503,8 @@ function cas._image:setScale(scaleX, scaleY)
 	self._scaleY = scaleY
 	
 	cas._cs2dCommands.imagescale(self._id, self._scaleX, self._scaleY)
+	
+	return self
 end
 
 -- Sets the color of the image.
@@ -514,6 +524,8 @@ function cas._image:setColor(color)
 	self._color = color
 	
 	cas._cs2dCommands.imagecolor(self._id, self._color:getRGB())
+	
+	return self
 end
 
 -- Sets the alpha of the image.
@@ -535,6 +547,8 @@ function cas._image:setAlpha(alpha)
 	self._alpha = alpha
 	
 	cas._cs2dCommands.imagealpha(self._id, self._alpha)
+	
+	return self
 end
 
 -- Sets the blend of the image.
@@ -550,6 +564,8 @@ function cas._image:setBlend(blend)
 	self._blend = cas._image._blendModes[blend]
 	
 	cas._cs2dCommands.imageblend(self._id, self._blend)
+	
+	return self
 end
 
 --== Getters ==--
@@ -665,6 +681,8 @@ function cas._image:getPlayer()
 	if self._visibleToPlayer == 0 then
 		error("This image is visible to everyone.")
 	end
+	
+	return self._visibleToPlayer
 end
 
 -------------------
@@ -688,7 +706,22 @@ cas._image._imageStartroundHook.func = function(mode)
 	end
 	cas._image._images = setmetatable({}, {__mode = "kv"})
 end
-cas._image._imageStartroundHook.hook = cas.hook.new("startround", cas._image._imageStartroundHook.func, -255, "_imageStartround")
+cas._image._imageStartroundHook.hook = cas.hook.new("startround", cas._image._imageStartroundHook.func, -9999, "_imageStartround")
+
+-- Hook which frees all the image associated with a single player (either following them or visible
+-- only to them.)
+cas._image._imageLeaveHook = {}
+cas._image._imageLeaveHook.func = function(player, reason)
+	for key, value in pairs(cas._image._images) do
+		if not value:isVisibleToEveryone() then
+			if value:getPlayer() == player then
+				value:free()
+			end
+		end
+		
+		
+	end
+end
 
 -- Hook which frees all the images which are player dependant. For example, if the image is visible
 -- only to a player or is following one.

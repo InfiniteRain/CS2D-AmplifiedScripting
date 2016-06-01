@@ -5,6 +5,23 @@ cas.itemType = cas.class()
 -- Static methods --
 --------------------
 
+-- Checks if the item under the passed type ID exists.
+function cas.itemType.typeExists(typeID)
+	if type(typeID) ~= "number" then
+		error("Passed \"typeID\" parameter is not valid. Number expected, ".. type(typeID) .." passed.")
+	end
+	
+	for key, value in pairs(cas.itemType) do
+		if getmetatable(value) == cas.itemType then
+			if value._typeId == typeID then
+				return true
+			end
+		end
+	end
+	
+	return false
+end
+
 -- Turns cs2d item type id into a cas.itemType object.
 function cas.itemType.getInstance(typeID)
 	if type(typeID) ~= "number" then
@@ -49,6 +66,8 @@ function cas.itemType:constructor(itemTypeID, passive, rightClickType, projectil
 end
 
 -- Everything that follows is self explanatory.
+
+--== Getters ==--
 
 function cas.itemType:getName()
 	return cas._cs2dCommands.itemtype(self._typeId, "name")
@@ -116,6 +135,21 @@ end
 
 function cas.itemType:getRecoil()
 	return cas._cs2dCommands.itemtype(self._typeId, 'recoil')
+end
+
+--== Setters/control ==--
+
+function cas.itemType:spawn(x, y)
+	if type(x) ~= "number" then
+		error("Passed \"x\" parameter is not valid. Number expected, ".. type(x) .." passed.")
+	elseif type(y) ~= "number" then
+		error("Passed \"y\" parameter is not valid. Number expected, ".. type(y) .." passed.")
+	end
+	if not (x >= 0 and y >= 0 and x <= map("xsize") and y <= map("ysize")) then
+		error("Position is out of map bounds!")
+	end
+	
+	cas.console.parse("spawnitem", self._typeId, x, y)
 end
 
 -------------------

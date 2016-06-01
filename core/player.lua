@@ -30,7 +30,7 @@ end
 function cas.player.getPlayers()
 	local players = {}
 	for key, value in pairs(cas._cs2dCommands.player(0, 'table')) do
-		table.insert(cas.player.getObject(value))
+		table.insert(players, cas.player.getInstance(value))
 	end
 	
 	return players
@@ -40,7 +40,7 @@ end
 function cas.player.getLivingPlayers()
 	local players = {}
 	for key, value in pairs(cas._cs2dCommands.player(0, 'tableliving')) do
-		table.insert(cas.player.getObject(value))
+		table.insert(players, cas.player.getInstance(value))
 	end
 	
 	return players
@@ -50,7 +50,7 @@ end
 function cas.player.getTerrorists()
 	local players = {}
 	for key, value in pairs(cas._cs2dCommands.player(0, 'team1')) do
-		table.insert(cas.player.getObject(value))
+		table.insert(players, cas.player.getInstance(value))
 	end
 	
 	return players
@@ -60,7 +60,7 @@ end
 function cas.player.getCounterTerrorists()
 	local players = {}
 	for key, value in pairs(cas._cs2dCommands.player(0, 'team2')) do
-		table.insert(cas.player.getObject(value))
+		table.insert(players, cas.player.getInstance(value))
 	end
 	
 	return players
@@ -70,7 +70,7 @@ end
 function cas.player.getLivingTerrorists()
 	local players = {}
 	for key, value in pairs(cas._cs2dCommands.player(0, 'team1living')) do
-		table.insert(cas.player.getObject(value))
+		table.insert(players, cas.player.getInstance(value))
 	end
 	
 	return players
@@ -80,7 +80,7 @@ end
 function cas.player.getLivingCounterTerrorists()
 	local players = {}
 	for key, value in pairs(cas._cs2dCommands.player(0, 'team2living')) do
-		table.insert(cas.player.getObject(value))
+		table.insert(players, cas.player.getInstance(value))
 	end
 	
 	return players
@@ -424,7 +424,7 @@ function cas.player:getKickVote()
 	end
 	
 	local player = cas._cs2dCommands.player(self._id, 'votekick')
-	return player ~= 0 and cas.player.getObject(player) or false
+	return player ~= 0 and cas.player.getInstance(player) or false
 end
 
 function cas.player:getMapVote()
