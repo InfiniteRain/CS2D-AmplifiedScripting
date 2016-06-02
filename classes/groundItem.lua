@@ -35,6 +35,7 @@ function cas.groundItem.getInstance(itemID)
 	return groundItem
 end
 
+-- Returns a table of all the items on the ground.
 function cas.groundItem.getGroundItems()
 	local groundItems = {}
 	for key, value in pairs(cas._cs2dCommands.item(0, "table")) do

@@ -69,12 +69,6 @@ end
 -- Overriding tween rotate method so that it won't be possible to do if the image is being 
 -- rotated with the player.
 function cas.playerImage:tweenRotate(time, angle)
-	if type(time) ~= "number" then
-		error("Passed \"time\" parameter is not valid. Number expected, ".. type(time) .." passed.")
-	elseif type(angle) ~= "number" then
-		error("Passed \"angle\" parameter is not valid. Number expected, ".. type(angle) .." passed.")
-	end
-	
 	if self._freed then
 		error("This image was already freed. It's better if you dispose of this instance.")
 	end
@@ -198,10 +192,6 @@ end
 -- Overriding the set angle method so that it would be impossible to use if the image is rotating
 -- with player.
 function cas.playerImage:setAngle(angle)
-	if type(angle) ~= "number" then
-		error("Passed \"angle\" parameter is not valid. Number expected, ".. type(angle) .." passed.")
-	end
-	
 	if self._freed then
 		error("This image was already freed. It's better if you dispose of this instance.")
 	end
