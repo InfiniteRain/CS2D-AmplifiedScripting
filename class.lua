@@ -1,4 +1,4 @@
--- Very simple OOP module used for AS which includes all the basic OOP implementations. The
+-- Very simple OOP module used for CAS which includes all the basic OOP implementations. The
 -- following function will return a class. It can also inherit properties from another class
 -- by passing the needed class as the first argument.
 cas.class = function(inheritsFrom)
@@ -15,7 +15,13 @@ cas.class = function(inheritsFrom)
 	
 	-- If there was a class passed, then inherit properties from it.
 	if inheritsFrom then
-		setmetatable(class, {__index = inheritsFrom})
+		-- Creating a table which hold original (non-overriden) properties.
+		class.super = setmetatable({}, {
+			__index = inheritsFrom, 
+			__call = function(_, ...) -- If it was called as a function, then call the constructor.
+				inheritsFrom.constructor(...) 
+			end})
+		setmetatable(class, {__index = inheritsFrom}) -- Inherit properties.
 	end
 	
 	-- Creates a new instance of the class.

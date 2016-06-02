@@ -38,6 +38,10 @@ function cas._image:constructor(path, mode, visibleToPlayer)
 		if getmetatable(visibleToPlayer) ~= cas.player then
 			error("Passed \"visibleToPlayer\" parameter is not an instance of the \"cas.player\" class.")
 		end
+		
+		if not visibleToPlayer:exists() then
+			error("Player of \"visibleToPlayer\" instance doesn't exist.")
+		end
  	end
 	
 	-- Checks if the image exists.
@@ -722,7 +726,3 @@ cas._image._imageLeaveHook.func = function(player, reason)
 		
 	end
 end
-
--- Hook which frees all the images which are player dependant. For example, if the image is visible
--- only to a player or is following one.
-cas._image._imageLeaveHook = {}
