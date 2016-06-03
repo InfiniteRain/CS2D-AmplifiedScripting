@@ -24,6 +24,7 @@ function cas.groundItem.getInstance(itemID)
 	
 	for key, value in pairs(cas.groundItem._instances) do
 		if value._id == itemID then
+			cas.groundItem._debug:log("Ground item \"".. tostring(value) .."\" was found in \"_instances\" table and returned.")
 			return value
 		end
 	end
@@ -68,25 +69,53 @@ function cas.groundItem:constructor(itemID)
 	end
 	
 	self._id = itemID
+	self._removed = false
+	
+	self._hasFadeoutTimer = self:hasFadeoutTimer()
+	local gm = cas._cs2dCommands.game("sv_gamemode")
+	if not (gm == "0" or gm == "4" or not (self._hasFadeoutTimer)) then
+		self._lifetime = self:getDropTimer()
+		self._fadeoutTimer = cas.timer.new(function(self)
+			self._lifetime = self._lifetime + 1
+			if self._lifetime >= tonumber(cas._cs2dCommands.game("mp_weaponfadeout")) then
+				cas.groundItem._debug:log("Ground item \"".. tostring(self) .."\"'s fade out timer is up.")
+			
+				self:remove()
+			end
+		end)
+		self._fadeoutTimer:startConstantly(1000, self)
+	end
+	
 	table.insert(cas.groundItem._instances, self)
+	
+	cas.groundItem._debug:log("Ground item \"".. tostring(self) .."\" was instantiated.")
 end
 
 -- Destructor.
 function cas.groundItem:destructor()
+	if not self._removed then
+		self._removed = true
+		if self._fadeoutTimer then
+			self._fadeoutTimer:stop()
+		end
+	end
+	
 	for key, value in pairs(cas.groundItem._instances) do
 		if value._id == self._id then
 			-- Removes the item from the cas.groundItem._instances table.
 			cas.groundItem._instances[key] = nil
 		end
 	end
+	
+	cas.groundItem._debug:log("Ground item \"".. tostring(self) .."\" was garbage collected.")
 end
 
 --== Getters ==--
 
 -- Gets the item ID of the item.
 function cas.groundItem:getItemID()
-	if not self:exists() then
-		error("Item of this instance doesn't exist.")
+	if self._removed then
+		error("The item of this instance was already removed. It's better if you dispose of this instance.")
 	end
 	
 	return self._id
@@ -101,24 +130,24 @@ function cas.groundItem:exists()
 end
 
 function cas.groundItem:getName()
-	if not self:exists() then
-		error("Item of this instance doesn't exist.")
+	if self._removed then
+		error("The item of this instance was already removed. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.item(self._id, "name")
 end
 
 function cas.groundItem:getType()
-	if not self:exists() then
-		error("Item of this instance doesn't exist.")
+	if self._removed then
+		error("The item of this instance was already removed. It's better if you dispose of this instance.")
 	end
 	
 	return cas.itemType.getInstance(cas._cs2dCommands.item(self._id, "type"))
 end
 
 function cas.groundItem:getPlayer()
-	if not self:exists() then
-		error("Item of this instance doesn't exist.")
+	if self._removed then
+		error("The item of this instance was already removed. It's better if you dispose of this instance.")
 	end
 	
 	local player = cas._cs2dCommands.item(self._id, "player")
@@ -126,32 +155,32 @@ function cas.groundItem:getPlayer()
 end
 
 function cas.groundItem:getAmmo()
-	if not self:exists() then
-		error("Item of this instance doesn't exist.")
+	if self._removed then
+		error("The item of this instance was already removed. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.item(self._id, "ammo")
 end
 
 function cas.groundItem:getAmmoin()
-	if not self:exists() then
-		error("Item of this instance doesn't exist.")
+	if self._removed then
+		error("The item of this instance was already removed. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.item(self._id, "ammoin")
 end
 
 function cas.groundItem:getMode()
-	if not self:exists() then
-		error("Item of this instance doesn't exist.")
+	if self._removed then
+		error("The item of this instance was already removed. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.item(self._id, "mode")
 end
 
 function cas.groundItem:getPosition()
-	if not self:exists() then
-		error("Item of this instance doesn't exist.")
+	if self._removed then
+		error("The item of this instance was already removed. It's better if you dispose of this instance.")
 	end
 	
 	return 
@@ -160,32 +189,36 @@ function cas.groundItem:getPosition()
 end
 
 function cas.groundItem:getX()
-	if not self:exists() then
-		error("Item of this instance doesn't exist.")
+	if self._removed then
+		error("The item of this instance was already removed. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.item(self._id, "x")
 end
 
 function cas.groundItem:getY()
-	if not self:exists() then
-		error("Item of this instance doesn't exist.")
+	if self._removed then
+		error("The item of this instance was already removed. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.item(self._id, "y")
 end
 
-function cas.groundItem:isDropped()
-	if not self:exists() then
-		error("Item of this instance doesn't exist.")
+function cas.groundItem:hasFadeoutTimer()
+	if self._removed then
+		error("The item of this instance was already removed. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.item(self._id, "dropped")
 end
 
 function cas.groundItem:getDropTimer()
-	if not self:exists() then
-		error("Item of this instance doesn't exist.")
+	if self._removed then
+		error("The item of this instance was already removed. It's better if you dispose of this instance.")
+	end
+	
+	if not self:hasFadeoutTimer() then
+		error("This item does not have a fadeout timer.")
 	end
 	
 	return cas._cs2dCommands.item(self._id, "droptimer")
@@ -194,11 +227,33 @@ end
 --== Setters/control ==--
 
 function cas.groundItem:remove()
-	if not self:exists() then
-		error("Item of this instance doesn't exist.")
+	if self._removed then
+		error("The item of this instance was already removed. It's better if you dispose of this instance.")
+	end
+	
+	local gm = cas._cs2dCommands.game("sv_gamemode")
+	if not (gm == "0" or gm == "4" or (not self._hasFadeoutTimer)) then
+		self._fadeoutTimer:stop()
 	end
 	
 	cas.console.parse("removeitem", self._id)
+	self._removed = true
+	
+	for key, value in pairs(cas.groundItem._instances) do
+		if value._id == self._id then
+			-- Removes the item from the cas.groundItem._instances table.
+			cas.groundItem._debug:log("Ground item \"".. tostring(value) .."\" was removed.")
+			cas.groundItem._instances[key] = nil
+			
+			return
+		end
+	end
+	
+	-- This error should usually never happen. It does happen when someone has modified the code or 
+	-- the code itself has bugs. Make sure you don't try to access the fields starting with an
+	-- underscore ("_") directly and instead use setters/getters for ground item manipulation as it 
+	-- can lead to bugs.
+	error("Field \"_removed\" of this instance was set to false yet it wasn't found in the \"_instances\" table.")
 end
 
 function cas.groundItem:setAmmo(ammoin, ammo)
@@ -218,8 +273,8 @@ function cas.groundItem:setAmmo(ammoin, ammo)
 		end
 	end
 	
-	if not self:exists() then
-		error("Item of this instance doesn't exist.")
+	if self._removed then
+		error("The item of this instance was already removed. It's better if you dispose of this instance.")
 	end
 	
 	cas.console.parse("setammo", self._id, 0, ammoin, ammo)
@@ -230,4 +285,6 @@ end
 -------------------
 
 cas.groundItem._allowCreation = false -- Defines if instantiation of this class is allowed.
-cas.groundItem._instances = setmetatable({}, {__mode == "kv"}) -- A table of instances of this class.
+cas.groundItem._instances = setmetatable({}, {__mode = "kv"}) -- A table of instances of this class.
+cas.groundItem._debug = cas.debug.new(cas.color.yellow, "CAS Ground Item") -- Debug for ground items.
+cas.groundItem._debug:setActive(true)

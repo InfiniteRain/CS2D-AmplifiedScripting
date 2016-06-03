@@ -5,6 +5,15 @@ cas.dynObject = cas.class()
 -- Static methods --
 --------------------
 
+-- Checks if the dynamic object under the passed ID exists.
+function cas.dynObject.idExists(objectID)
+	if type(objectID) ~= "number" then
+		error("Passed \"objectID\" parameter is not valid. Number expected, ".. type(objectID) .." passed.")
+	end
+	
+	return cas._cs2dCommands.object(objectID, "exists")
+end
+
 -- Returns the dynamic object instance from the passed onject ID.
 function cas.dynObject.getInstance(dynObjectID)
 	if type(dynObjectID) ~= "number" then
@@ -15,6 +24,7 @@ function cas.dynObject.getInstance(dynObjectID)
 	
 	for key, value in pairs(cas.dynObject._instances) do
 		if value._id == dynObjectID then
+			cas.dynObject._debug:log("Dynamic object \"".. tostring(value) .."\" was found in \"_instances\" table and returned.")
 			return value
 		end
 	end
@@ -58,24 +68,34 @@ function cas.dynObject:constructor(dynObjectID)
 	end
 	
 	self._id = dynObjectID
+	self._killed = false
+	
 	table.insert(cas.dynObject._instances, self)
+	
+	cas.dynObject._debug:log("Dynamic object \"".. tostring(self) .."\" was instantiated.")
 end
 
 function cas.dynObject:destructor()
+	if not self._killed then
+		self._killed = true
+	end
+	
 	for key, value in pairs(cas.dynObject._instances) do
 		if value._id == self._id then
 			-- Removes the dynamic object from the cas.dynObject._instances table.
 			cas.dynObject._instances[key] = nil
 		end
 	end
+	
+	cas.dynObject._debug:log("Dynamic object \"".. tostring(self) .."\" was garbage collected.")
 end
 
 --== Getters ==--
 
 -- Gets the ID of the dynamic object.
 function cas.dynObject:getID()
-	if not self:exists() then
-		error("Dynamic object of this instance doesn't exist.")
+	if self._killed then
+		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.")
 	end
 	
 	return self._id
@@ -90,48 +110,48 @@ function cas.dynObject:exists()
 end
 
 function cas.dynObject:getTypeName()
-	if not self:exists() then
-		error("Dynamic object of this instance doesn't exist.")
+	if self._killed then
+		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.object(self._id, 'typename')
 end
 
 function cas.dynObject:getType()
-	if not self:exists() then
-		error("Dynamic object of this instance doesn't exist.")
+	if self._killed then
+		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.object(self._id, 'type')
 end
 
 function cas.dynObject:getHealth()
-	if not self:exists() then
-		error("Dynamic object of this instance doesn't exist.")
+	if self._killed then
+		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.object(self._id, 'health')
 end
 
 function cas.dynObject:getMode()
-	if not self:exists() then
-		error("Dynamic object of this instance doesn't exist.")
+	if self._killed then
+		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.object(self._id, 'mode')
 end
 
 function cas.dynObject:getTeam()
-	if not self:exists() then
-		error("Dynamic object of this instance doesn't exist.")
+	if self._killed then
+		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.object(self._id, 'team')
 end
 
 function cas.dynObject:getPlayer()
-	if not self:exists() then
-		error("Dynamic object of this instance doesn't exist.")
+	if self._killed then
+		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.")
 	end
 	
 	if self:getType() == 30 then
@@ -142,8 +162,8 @@ function cas.dynObject:getPlayer()
 end
 
 function cas.dynObject:getNPCType()
-	if not self:exists() then
-		error("Dynamic object of this instance doesn't exist.")
+	if self._killed then
+		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.")
 	end
 	
 	if self:getType() ~= 30 then
@@ -154,8 +174,8 @@ function cas.dynObject:getNPCType()
 end
 
 function cas.dynObject:getPosition()
-	if not self:exists() then
-		error("Dynamic object of this instance doesn't exist.")
+	if self._killed then
+		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.")
 	end
 	
 	return
@@ -164,32 +184,32 @@ function cas.dynObject:getPosition()
 end
 
 function cas.dynObject:getX()
-	if not self:exists() then
-		error("Dynamic object of this instance doesn't exist.")
+	if self._killed then
+		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.object(self._id, 'x')
 end
 
 function cas.dynObject:getY()
-	if not self:exists() then
-		error("Dynamic object of this instance doesn't exist.")
+	if self._killed then
+		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.object(self._id, 'y')
 end
 
 function cas.dynObject:getAngle()
-	if not self:exists() then
-		error("Dynamic object of this instance doesn't exist.")
+	if self._killed then
+		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.object(self._id, 'rot')
 end
 
 function cas.dynObject:getTilePosition()
-	if not self:exists() then
-		error("Dynamic object of this instance doesn't exist.")
+	if self._killed then
+		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.")
 	end
 	
 	return
@@ -198,40 +218,40 @@ function cas.dynObject:getTilePosition()
 end
 
 function cas.dynObject:getTileX()
-	if not self:exists() then
-		error("Dynamic object of this instance doesn't exist.")
+	if self._killed then
+		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.object(self._id, 'tilex')
 end
 
 function cas.dynObject:getTileY()
-	if not self:exists() then
-		error("Dynamic object of this instance doesn't exist.")
+	if self._killed then
+		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.object(self._id, 'tiley')
 end
 
 function cas.dynObject:getCountdown()
-	if not self:exists() then
-		error("Dynamic object of this instance doesn't exist.")
+	if self._killed then
+		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.object(self._id, 'countdown')
 end
 
 function cas.dynObject:getOriginalAngle()
-	if not self:exists() then
-		error("Dynamic object of this instance doesn't exist.")
+	if self._killed then
+		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.object(self._id, 'rootrot')
 end
 
 function cas.dynObject:getTarget()
-	if not self:exists() then
-		error("Dynamic object of this instance doesn't exist.")
+	if self._killed then
+		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.")
 	end
 	
 	local target = cas._cs2dCommands.object(self._id, 'target')
@@ -239,24 +259,24 @@ function cas.dynObject:getTarget()
 end
 
 function cas.dynObject:getUpgradeVal()
-	if not self:exists() then
-		error("Dynamic object of this instance doesn't exist.")
+	if self._killed then
+		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.object(self._id, 'upgrade')
 end
 
 function cas.dynObject:isSpawnedByEntity()
-	if not self:exists() then
-		error("Dynamic object of this instance doesn't exist.")
+	if self._killed then
+		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.object(self._id, 'entity')
 end
 
 function cas.dynObject:getSpawnEntityPosition()
-	if not self:exists() then
-		error("Dynamic object of this instance doesn't exist.")
+	if self._killed then
+		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.")
 	end
 	
 	if not cas.dynObject:isSpawnedByEntity() then
@@ -269,8 +289,8 @@ function cas.dynObject:getSpawnEntityPosition()
 end
 
 function cas.dynObject:getSpawnEntityX()
-	if not self:exists() then
-		error("Dynamic object of this instance doesn't exist.")
+	if self._killed then
+		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.")
 	end
 	
 	if not cas.dynObject:isSpawnedByEntity() then
@@ -281,8 +301,8 @@ function cas.dynObject:getSpawnEntityX()
 end
 
 function cas.dynObject:getSpawnEntityY()
-	if not self:exists() then
-		error("Dynamic object of this instance doesn't exist.")
+	if self._killed then
+		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.")
 	end
 	
 	if not cas.dynObject:isSpawnedByEntity() then
@@ -292,9 +312,40 @@ function cas.dynObject:getSpawnEntityY()
 	return cas._cs2dCommands.object(self._id, 'entityy')
 end
 
+--== Setters/control ==--
+
+function cas.dynObject:damage(damage, player)
+	if type(damage) ~= "number" then
+		error("Passed \"damage\" parameter is not valid. Number expected, ".. type(damage) .." passed.")
+	end
+	if player then
+		if getmetatable(player) ~= cas.player then
+			error("Passed \"player\" parameter is not an instance of the \"cas.player\" class.")
+		end
+	end
+	
+	if self._killed then
+		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.")
+	end
+	
+	local player = player or 0
+	
+	cas.console.parse("damageobject", self._id, damage, player)
+end
+
+function cas.dynObject:kill()
+	if self._killed then
+		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.")
+	end
+	
+	cas.console.parse("killobject", self._id)
+end
+
 -------------------
 -- Static fields --
 -------------------
 
 cas.dynObject._allowCreation = false
 cas.dynObject._instances = setmetatable({}, {__mode = "kv"})
+cas.dynObject._debug = cas.debug.new(cas.color.yellow, "CAS Dynamic Object") -- Debug for dynamic objects.
+cas.dynObject._debug:setActive(true)

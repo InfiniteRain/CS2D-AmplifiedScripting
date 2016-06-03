@@ -58,6 +58,7 @@ function cas._image:constructor(path, mode, visibleToPlayer)
 	end
 	
 	-- Assigning necessary fields.
+	self._visibleToPlayer = visibleToPlayer
 	self._path = path
 	self._mode = mode
 	
@@ -139,6 +140,8 @@ function cas._image:constructor(path, mode, visibleToPlayer)
 	
 	-- Adds the image into the "_images" table.
 	table.insert(cas._image._images, self)
+	
+	cas._image._debug:log("Image \"".. tostring(self) .."\" with path \"".. self._path .."\" was initialized.")
 end
 
 -- Destructor.
@@ -146,6 +149,8 @@ function cas._image:destructor()
 	if not self._freed then
 		self:free() -- Freeing the image upon garbage collection.
 	end
+	
+	cas._image._debug:log("Image \"".. tostring(self) .."\" with path \"".. self._path .."\" was garbage collected.")
 end
 
 -- Frees the image and removes it from the "_images" table. "_images" table is necessary to free
@@ -167,12 +172,11 @@ function cas._image:free()
 	self._freed = true
 	
 	-- Finds it in the "_images" table and removes it.
-	local found = false
 	for key, value in pairs(cas._image._images) do
 		if value == self then
 			cas._image._images[key] = nil
-			found = true
-			break
+			cas._image._debug:log("Image \"".. tostring(self) .."\" with path \"".. self._path .."\" was freed.")
+			return
 		end
 	end
 	
@@ -180,9 +184,7 @@ function cas._image:free()
 	-- the code itself has bugs. Make sure you don't try to access the fields starting with 
 	-- underscore ("_") directly and instead use setters/getters for image manipulation as it can
 	-- lead to bugs.
-	if not found then
-		error("Field \"_freed\" of the instance was set to true yet it wasn't found in the \"_images\" table.")
-	end
+	error("Field \"_freed\" of this instance was set to false yet it wasn't found in the \"_images\" table.")
 end
 
 --== Tween functions, starters ==--
@@ -701,28 +703,5 @@ cas._image._blendModes = { -- Holds the image blend modes.
 	["shade"] = 2,
 	["solid"] = 3
 }
-
--- Hook which frees all the image upon start round.
-cas._image._imageStartroundHook = {}
-cas._image._imageStartroundHook.func = function(mode)
-	for key, value in pairs(cas._image._images) do
-		value._freed = true
-	end
-	cas._image._images = setmetatable({}, {__mode = "kv"})
-end
-cas._image._imageStartroundHook.hook = cas.hook.new("startround", cas._image._imageStartroundHook.func, -9999, "_imageStartround")
-
--- Hook which frees all the image associated with a single player (either following them or visible
--- only to them.)
-cas._image._imageLeaveHook = {}
-cas._image._imageLeaveHook.func = function(player, reason)
-	for key, value in pairs(cas._image._images) do
-		if not value:isVisibleToEveryone() then
-			if value:getPlayer() == player then
-				value:free()
-			end
-		end
-		
-		
-	end
-end
+cas._image._debug = cas.debug.new(cas.color.yellow, "CAS Image") -- Debug for image objects.
+cas._image._debug:setActive(true)

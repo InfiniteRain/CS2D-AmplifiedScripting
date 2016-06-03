@@ -25,7 +25,7 @@ function cas.timer:constructor(func)
 	
 	self._func = func
 	
-	self._debug:log("Timer \"".. tostring(self) .."\" initialized.")
+	cas.timer._debug:log("Timer \"".. tostring(self) .."\" initialized.")
 end
 
 -- Destructor.
@@ -37,7 +37,7 @@ function cas.timer:destructor()
 	
 	cas.timer._timerLabels[self._funcLabel] = nil
 	
-	self._debug:log("Timer \"".. tostring(self) .."\" garbage collected.")
+	cas.timer._debug:log("Timer \"".. tostring(self) .."\" was garbage collected.")
 end
 
 -- Starts the timer with provided interval and repetitions.
@@ -71,7 +71,7 @@ function cas.timer:start(milliseconds, repetitions, ...)
 			if cas.timer._timerFuncs[label].repetition <= 0 then
 				cas.timer._timerFuncs[label] = nil
 				
-				self._debug:log("Timer \"".. tostring(self) .."\" has been stopped. (planned)")
+				cas.timer._debug:log("Timer \"".. tostring(self) .."\" has been stopped. (planned)")
 			end
 		end
 	}
@@ -80,7 +80,9 @@ function cas.timer:start(milliseconds, repetitions, ...)
 	cas._cs2dCommands.timer(milliseconds, "cas.timer._timerFuncs.".. self._funcLabel ..".func", self._funcLabel, repetitions)
 	freetimer("cas.timer._timerFuncs.".. self._funcLabel ..".func")
 	
-	self._debug:log("Timer \"".. tostring(self) .."\" started with interval of ".. milliseconds .." and ".. repetitions .." repetitions.")
+	cas.timer._debug:log("Timer \"".. tostring(self) .."\" started with interval of ".. milliseconds .." and ".. repetitions .." repetitions.")
+	
+	return self
 end
 
 -- Starts the timer with provided interval, will be run constantly until stopped.
@@ -107,7 +109,9 @@ function cas.timer:startConstantly(milliseconds, ...)
 	-- Initiating the timer.
 	cas._cs2dCommands.timer(milliseconds, "cas.timer._timerFuncs.".. self._funcLabel ..".func", self._funcLabel, 0)
 	
-	self._debug:log("Timer \"".. tostring(self) .."\" started constantly with interval of ".. time ..".")
+	cas.timer._debug:log("Timer \"".. tostring(self) .."\" started constantly with interval of ".. milliseconds ..".")
+	
+	return self
 end
 
 -- Stops the timer.
@@ -115,7 +119,9 @@ function cas.timer:stop()
 	cas._cs2dCommands.freetimer("cas.timer._timerFuncs.".. self._funcLabel ..".func", self._funcLabel) -- Frees the timer.
 	cas.timer._timerFuncs[self._funcLabel] = nil -- Removes the timer entry.
 	
-	self._debug:log("Timer \"".. tostring(self) .."\" has been stopped. (unplanned)")
+	cas.timer._debug:log("Timer \"".. tostring(self) .."\" has been stopped. (unplanned)")
+	
+	return self
 end
 
 --== Getters ==--
@@ -152,5 +158,5 @@ end
 
 cas.timer._timerLabels = {} -- Table used for timer labels.
 cas.timer._timerFuncs = {} -- Table for timer entries.
-cas.timer._debug = cas.debug.new(cas.color.yellow, "AS Timer") -- Debug for timers.
+cas.timer._debug = cas.debug.new(cas.color.yellow, "CAS Timer") -- Debug for timers.
 cas.timer._debug:setActive(true)

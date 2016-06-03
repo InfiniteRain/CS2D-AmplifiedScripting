@@ -66,33 +66,49 @@ function cas.hook:constructor(event, func, priority, label)
 			local params = {...}
 			if cas._config.cs2dHooks[self._event].player then
 				-- Changing all the image ID's into instances of cas._image.
-				for key, value in pairs(cas._config.cs2dHooks[self._event].player) do
-					local imageID = params[value]
-					params[value] = cas._image.getInstance(imageID)
+				if cas._config.cs2dHooks[self._event].image then
+					for key, value in pairs(cas._config.cs2dHooks[self._event].image) do
+						local imageID = params[value]
+						params[value] = cas._image.getInstance(imageID)
+					end
 				end
 				
 				-- Changing all the player ID's into instances of cas.player.
-				for key, value in pairs(cas._config.cs2dHooks[self._event].player) do
-					local playerID = params[value]
-					if playerID >= 1 and playerID <= 32 then
-						params[value] = cas.player.getInstance(playerID)
-					else
-						params[value] = false
+				if cas._config.cs2dHooks[self._event].player then
+					for key, value in pairs(cas._config.cs2dHooks[self._event].player) do
+						local playerID = params[value]
+						if playerID >= 1 and playerID <= 32 then
+							params[value] = cas.player.getInstance(playerID)
+						else
+							params[value] = false
+						end
 					end
 				end
 				
 				-- Changing all the item type ID's into instances of cas.itemType.
-				for key, value in pairs(cas._config.cs2dHooks[self._event].itemType) do
-					local itemType = params[value]
-					if cas.itemType.typeExists(value) then
-						params[value] = cas.itemType.getInstance(itemType)
+				if cas._config.cs2dHooks[self._event].itemType then
+					for key, value in pairs(cas._config.cs2dHooks[self._event].itemType) do
+						local itemType = params[value]
+						if cas.itemType.typeExists(value) then
+							params[value] = cas.itemType.getInstance(itemType)
+						end
 					end
 				end
 				
 				-- Changing all the item ID's into instances of cas.groundItem.
-				for key, value in pairs(cas._config.cs2dHooks[self._event].groundItem) do
-					local item = params[value]
-					params[value] = cas.groundItem.getInstance(item)
+				if cas._config.cs2dHooks[self._event].groundItem then
+					for key, value in pairs(cas._config.cs2dHooks[self._event].groundItem) do
+						local item = params[value]
+						params[value] = cas.groundItem.getInstance(item)
+					end
+				end
+				
+				-- Changin all the dynamic object ID's into instances of cas.dynObject.
+				if cas._config.cs2dHooks[self._event].dynObject then
+					for key, value in pairs(cas._config.cs2dHooks[self._event].dynObject) do
+						local object = params[value]
+						params[value] = cas.dynObject.getInstance(object)
+					end
 				end
 			end
 			
@@ -155,4 +171,4 @@ end
 -------------------
 
 cas.hook._hooks = {}
-cas.hook._debug = cas.debug.new(cas.color.new(115, 110, 255), "AS Hook")
+cas.hook._debug = cas.debug.new(cas.color.new(115, 110, 255), "CAS Hook")
