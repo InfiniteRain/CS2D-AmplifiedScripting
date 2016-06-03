@@ -128,10 +128,10 @@ cas._hooks = {
 }
 
 -- Instantiating the proposed hooks.
-cas._hooks.startRound.hook 	= 	cas.hook.new("startround",	cas._hooks.startRound.func, -9999, "casStartRound"	)
-cas._hooks.leave.hook		= 	cas.hook.new(	  "leave", 	cas._hooks.leave.func, 		-9999, "casLeave"	  	)
-cas._hooks.collect.hook 	= 	cas.hook.new(	"collect", 	cas._hooks.collect.func,	-9999, "casCollect"		)
-cas._hooks.objectKill.hook 	= 	cas.hook.new("objectkill", 	cas._hooks.objectKill.func, -9999, "casObjectKill"	)
+cas._hooks.startRound.hook = cas.hook.new("startround",	cas._hooks.startRound.func, -9999, "casStartRound")
+cas._hooks.leave.hook = cas.hook.new("leave", cas._hooks.leave.func, -9999, "casLeave")
+cas._hooks.collect.hook = cas.hook.new("collect", cas._hooks.collect.func, -9999, "casCollect")
+cas._hooks.objectKill.hook = cas.hook.new("objectkill", cas._hooks.objectKill.func, -9999, "casObjectKill")
 
 -- CAS initialization complete. Notify in the console.
 local initDebugger = cas.debug.new(cas.color.white, "CAS Init") -- Making a temporary debug object.
