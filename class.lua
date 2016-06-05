@@ -5,7 +5,7 @@ cas.class = function(inheritsFrom)
 	-- Checks if all the arguments are correct.
 	if inheritsFrom then
 		if type(inheritsFrom) ~= "table" then
-			error("Passed \"inheritsFrom\" parameter is not valid. Table expected, ".. type(inheritsFrom) .." passed.")
+			error("Passed \"inheritsFrom\" parameter is not valid. Table expected, ".. type(inheritsFrom) .." passed.", 2)
 		end
 	end
 	

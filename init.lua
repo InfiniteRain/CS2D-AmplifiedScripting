@@ -22,12 +22,13 @@ dofile(cas._pathToSource .. "/class.lua")
 dofile(cas._pathToSource .. "/classes/color.lua")
 dofile(cas._pathToSource .. "/classes/console.lua")
 dofile(cas._pathToSource .. "/classes/debug.lua")
+dofile(cas._pathToSource .. "/classes/item.lua")
 dofile(cas._pathToSource .. "/classes/itemType.lua")
-dofile(cas._pathToSource .. "/classes/groundItem.lua")
 dofile(cas._pathToSource .. "/classes/player.lua")
 dofile(cas._pathToSource .. "/classes/hook.lua")
 dofile(cas._pathToSource .. "/classes/timer.lua")
 dofile(cas._pathToSource .. "/classes/dynObject.lua")
+dofile(cas._pathToSource .. "/classes/dynObjectType.lua")
 dofile(cas._pathToSource .. "/classes/_image.lua")
 dofile(cas._pathToSource .. "/classes/mapImage.lua")
 dofile(cas._pathToSource .. "/classes/hudImage.lua")
@@ -45,8 +46,8 @@ cas._hooks = {
 			cas._image._images = setmetatable({}, {__mode = "kv"})
 			cas._image._debug:log("Images were cleared.")
 			
-			-- Remove all the ground items.
-			for key, value in pairs(cas.groundItem._instances) do
+			-- Remove all the items.
+			for key, value in pairs(cas.item._instances) do
 				if not value._removed then
 					value._removed = true
 					if value._fadeoutTimer then
@@ -54,8 +55,8 @@ cas._hooks = {
 					end
 				end
 			end
-			cas.groundItem._instances = setmetatable({}, {__mode = "kv"})
-			cas.groundItem._debug:log("Ground items were cleared.")
+			cas.item._instances = setmetatable({}, {__mode = "kv"})
+			cas.item._debug:log("Items were cleared.")
 			
 			-- Remove all the dynamic objects.
 			for key, value in pairs(cas.dynObject._instances) do
@@ -92,16 +93,16 @@ cas._hooks = {
 	
 	collect = {
 		func = function(player, iid, itemType, ain, a, mode)
-			-- Remove the ground item instance once it was collected.
-			for key, value in pairs(cas.groundItem._instances) do
+			-- Remove the item instance once it was collected.
+			for key, value in pairs(cas.item._instances) do
 				if value._id == iid then
 					value._removed = true
 					if value._fadeoutTimer then
 						value._fadeoutTimer:stop()
 					end
 					
-					cas.groundItem._debug:log("Ground item \"".. tostring(value) .."\" was removed.")	
-					cas.groundItem._instances[key] = nil
+					cas.item._debug:log("Item \"".. tostring(value) .."\" was removed.")	
+					cas.item._instances[key] = nil
 				end
 			end
 		end
@@ -124,9 +125,9 @@ cas._hooks = {
 			
 			-- This error should usually never happen. It does happen when someone has modified the code or 
 			-- the code itself has bugs. Make sure you don't try to access the fields starting with an
-			-- underscore ("_") directly and instead use setters/getters for ground item manipulation as it 
+			-- underscore ("_") directly and instead use setters/getters for item manipulation as it 
 			-- can lead to bugs.
-			error("Field \"killed\" of this instance was set to false yet it wasn't found in the \"_instances\" table.")
+			error("Field \"killed\" of this instance was set to false yet it wasn't found in the \"_instances\" table.", 2)
 		end
 	}
 }

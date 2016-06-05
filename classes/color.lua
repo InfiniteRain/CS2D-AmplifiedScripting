@@ -29,7 +29,7 @@ end
 -- parameters to define the color the instance is supposed to represent.
 function cas.color:constructor(red, green, blue)
 	if not cas.color.isCorrectFormat(red, green, blue) then
-		error("Passed parameters contained unsuitable values for color instance.")
+		error("Passed parameters contained unsuitable values for color instance.", 2)
 	end
 	
 	self._red = red
@@ -49,7 +49,7 @@ end
 -- Sets the color fields of the instance.
 function cas.color:setRGB(red, green, blue)
 	if not cas.color.isCorrectFormat(red, green, blue) then
-		error("Passed parameters contained unsuitable values for color instance.")
+		error("Passed parameters contained unsuitable values for color instance.", 2)
 	end
 	
 	self._red = red
@@ -60,7 +60,7 @@ end
 -- Sets the red color field of the instance.
 function cas.color:setRed(red)
 	if not cas.color.isCorrectFormat(red) then
-		error("Passed parameter contained unsuitable value for color instance.")
+		error("Passed parameter contained unsuitable value for color instance.", 2)
 	end
 	
 	self._red = red
@@ -69,7 +69,7 @@ end
 -- Sets the green color field of the instance.
 function cas.color:setGreen(green)
 	if not cas.color.isCorrectFormat(red) then
-		error("Passed parameter contained unsuitable value for color instance.")
+		error("Passed parameter contained unsuitable value for color instance.", 2)
 	end
 	
 	self._green = green
@@ -78,7 +78,7 @@ end
 -- Sets the blue color field of the instance.
 function cas.color:setBlue(blue)
 	if not cas.color.isCorrectFormat(red) then
-		error("Passed parameter contained unsuitable value for color instance.")
+		error("Passed parameter contained unsuitable value for color instance.", 2)
 	end
 	
 	self._blue = blue
