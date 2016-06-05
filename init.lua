@@ -83,6 +83,14 @@ cas._hooks = {
 					value:free()
 				end
 			end
+			
+			for key, value in pairs(cas.player._instances) do
+				-- Removes the player from cas._player._instances table.
+				if value == player then
+					cas.player._debug:log("Player \"".. tostring(value) .."\" has left.")
+					cas.player._instances[key] = nil
+				end
+			end
 		end
 	},
 	
@@ -111,8 +119,8 @@ cas._hooks = {
 			for key, value in pairs(cas.dynObject._instances) do
 				if value._id == object._id then
 					-- Removes the dynamic object from the cas.dynObject._instances table.
-					cas.dynObject._instances[key] = nil
 					cas.dynObject._debug:log("Dynamic object \"".. tostring(value) .."\" was killed.")
+					cas.dynObject._instances[key] = nil
 					
 					return
 				end

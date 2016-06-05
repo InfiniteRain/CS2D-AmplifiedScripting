@@ -107,7 +107,7 @@ function cas.hook:constructor(event, func, priority, label)
 				if cas._config.cs2dHooks[self._event].dynObject then
 					for key, value in pairs(cas._config.cs2dHooks[self._event].dynObject) do
 						local object = params[value]
-						params[value] = cas.dynObject.getInstance(object)
+						params[value] = object ~= 0 and cas.dynObject.getInstance(object) or false
 					end
 				end
 			end
@@ -133,6 +133,7 @@ function cas.hook:free()
 		error("This hook was already freed. It's better if you dispose of this instance.")
 	end
 	
+	print(tostring(cas))
 	cas._cs2dCommands.freehook(self._event, "cas.hook._hooks." .. self._label)
 	cas.hook._hooks[self._label] = nil
 	

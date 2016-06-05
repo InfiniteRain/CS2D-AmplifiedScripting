@@ -50,6 +50,7 @@ end
 -- Instance methods --
 ----------------------
 
+-- Constructor. Creates a dynamic object instance with corresponding ID.
 function cas.dynObject:constructor(dynObjectID)
 	if type(dynObjectID) ~= "number" then
 		error("Passed \"dynObjectID\" parameter is not valid. Number expected, ".. type(dynObjectID) .." passed.")
@@ -75,6 +76,7 @@ function cas.dynObject:constructor(dynObjectID)
 	cas.dynObject._debug:log("Dynamic object \"".. tostring(self) .."\" was instantiated.")
 end
 
+-- Destructor
 function cas.dynObject:destructor()
 	if not self._killed then
 		self._killed = true
@@ -104,10 +106,6 @@ end
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 -- The following is self explanatory, I based it on "object" function of cs2d --
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-
-function cas.dynObject:exists()
-	return cas._cs2dCommands.object(self._id, 'exists')
-end
 
 function cas.dynObject:getTypeName()
 	if self._killed then
@@ -345,7 +343,7 @@ end
 -- Static fields --
 -------------------
 
-cas.dynObject._allowCreation = false
-cas.dynObject._instances = setmetatable({}, {__mode = "kv"})
+cas.dynObject._allowCreation = false -- Defines if instantiation of this class is allowed.
+cas.dynObject._instances = setmetatable({}, {__mode = "kv"}) -- A table of instances of this class.
 cas.dynObject._debug = cas.debug.new(cas.color.yellow, "CAS Dynamic Object") -- Debug for dynamic objects.
 cas.dynObject._debug:setActive(true)

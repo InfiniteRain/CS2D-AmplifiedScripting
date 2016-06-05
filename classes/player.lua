@@ -15,6 +15,7 @@ function cas.player.getInstance(playerID)
 	
 	for key, value in pairs(cas.player._instances) do
 		if value._id == playerID then
+			cas.player._debug:log("Player \"".. tostring(value) .."\" was found in the \"_instances\" table and returned.")
 			return value
 		end
 	end
@@ -109,25 +110,35 @@ function cas.player:constructor(playerID)
 	end
 	
 	self._id = playerID
+	self._left = false
+	
 	table.insert(cas.player._instances, self)
+	
+	cas.player._debug:log("Player \"".. tostring(self) .."\" was instantiated.")
 end
 
 -- Destructor.
 function cas.player:destructor()
+	if not self._left then
+		self._left = true
+	end
+
 	for key, value in pairs(cas.player._instances) do
-		if value._id == self._id then
+		if value == self then
 			-- Removes the player from the cas.player._instances table.
 			cas.player._instances[key] = nil
 		end
 	end
+	
+	cas.player._debug:log("Player \"".. tostring(self) .."\" was garbage collected.")
 end
 
 --== Getters ==--
 
 -- Gets the slot ID of the player.
 function cas.player:getSlotID()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return self._id
@@ -137,37 +148,33 @@ end
 -- The following is self explanatory, I based it on "player" function of cs2d --
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
-function cas.player:exists()
-	return cas._cs2dCommands.player(self._id, 'exists')
-end
-
 function cas.player:getName()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'name')
 end
 
 function cas.player:getIP()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'ip')
 end
 
 function cas.player:getPort()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'port')
 end
 
 function cas.player:getUSGN()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	local usgn = cas._cs2dCommands.player(self._id, 'usgn')
@@ -175,48 +182,48 @@ function cas.player:getUSGN()
 end
 
 function cas.player:getPing()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'ping')
 end
 
 function cas.player:getIdleTime()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'idle')
 end
 
 function cas.player:isBot()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'bot')
 end
 
 function cas.player:getTeam()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'team')
 end
 
 function cas.player:getSkin()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'look')
 end
 
 function cas.player:getPosition()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return 
@@ -225,32 +232,32 @@ function cas.player:getPosition()
 end
 
 function cas.player:getX()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'x')
 end
 
 function cas.player:getY()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'y')
 end
 
 function cas.player:getAngle()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'rot')
 end
 
 function cas.player:getTilePosition()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return 
@@ -259,168 +266,168 @@ function cas.player:getTilePosition()
 end
 
 function cas.player:getTileX()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'tilex')
 end
 
 function cas.player:getTileY()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'tiley')
 end
 
 function cas.player:getHealth()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'health')
 end
 
 function cas.player:getArmor()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'armor')
 end
 
 function cas.player:getMoney()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'money')
 end
 
 function cas.player:getScore()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'score')
 end
 
 function cas.player:getDeaths()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'deaths')
 end
 
 function cas.player:getTeamKills()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'teamkills')
 end
 
 function cas.player:getHostageKills()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'hostagekills')
 end
 
 function cas.player:getTeamBuildingKills()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'teambuildingkills')
 end
 
 function cas.player:getWeaponType()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'weapontype')
 end
 
 function cas.player:hasNightvision()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'nightvision')
 end
 
 function cas.player:hasDefuseKit()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'defusekit')
 end
 
 function cas.player:hasGasmask()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'gasmask')
 end
 
 function cas.player:hasBomb()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'bomb')
 end
 
 function cas.player:hasFlag()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'flag')
 end
 
 function cas.player:isReloading()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'reloading')
 end
 
 function cas.player:getCurrentProcess()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'process')
 end
 
 function cas.player:getSprayName()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'sprayname')
 end
 
 function cas.player:getSprayColor()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'spraycolor')
 end
 
 function cas.player:getKickVote()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	local player = cas._cs2dCommands.player(self._id, 'votekick')
@@ -428,8 +435,8 @@ function cas.player:getKickVote()
 end
 
 function cas.player:getMapVote()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	local map = cas._cs2dCommands.player(self._id, 'votemap')
@@ -437,40 +444,40 @@ function cas.player:getMapVote()
 end
 
 function cas.player:getFavoriteTeam()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'favteam')
 end
 
 function cas.player:getSpeed()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'speedmod')
 end
 
 function cas.player:getMaxHealth()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'maxhealth')
 end
 
 function cas.player:isRcon()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'rcon')
 end
 
 function cas.player:getFlashedTime()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	return cas._cs2dCommands.player(self._id, 'ai_flash')
@@ -494,8 +501,8 @@ function cas.player:IPBan(duration, reason)
 		end
 	end
 	
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	if duration == "permanent" then
@@ -523,8 +530,8 @@ function cas.player:nameBan(duration, reason)
 		end
 	end
 	
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	if duration == "permanent" then
@@ -552,8 +559,8 @@ function cas.player:usgnBan(duration, reason)
 		end
 	end
 	
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	if not self:getUSGN() then
@@ -579,8 +586,8 @@ function cas.player:consoleMessage(message, color)
 		end
 	end
 	
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	cas.console.parse("cmsg", (color and tostring(color) or "") .. message, self._id)
@@ -598,8 +605,8 @@ function cas.player:customKill(killer, weapon, weaponImage)
 		end
 	end
 	
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	if self:getHealth() <= 0 then
@@ -624,8 +631,8 @@ function cas.player:equip(itemType)
 		error("Passed \"itemType\" parameter is not an instance of the \"cas.itemType\" class.")
 	end
 	
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	if self:getHealth() <= 0 then
@@ -640,8 +647,8 @@ function cas.player:flash(intentsity)
 		error("Passed \"intentsity\" parameter is not valid. Number expected, ".. type(intentsity) .." passed.")
 	end
 	
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	if self:getHealth() <= 0 then
@@ -658,16 +665,16 @@ function cas.player:kick(reason)
 		end
 	end
 	
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	cas.console.parse("kick", self._id, reason)
 end
 
 function cas.player:kill()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	if self:getHealth() <= 0 then
@@ -678,8 +685,8 @@ function cas.player:kill()
 end 
 
 function cas.player:makeTerrorist()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	if self:getTeam() == 1 then
@@ -690,8 +697,8 @@ function cas.player:makeTerrorist()
 end
 
 function cas.player:makeCounterTerrorist()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	if self:getTeam() == 2 or self:getTeam() == 3 then
@@ -702,8 +709,8 @@ function cas.player:makeCounterTerrorist()
 end
 
 function cas.player:makeSpectator()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	if self:getTeam() == 0 then
@@ -714,8 +721,8 @@ function cas.player:makeSpectator()
 end
 
 function cas.player:reroute(address)
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 
 	if type(address) ~= "string" then
@@ -744,8 +751,8 @@ function cas.player:setAmmo(itemType, ammoin, ammo)
 		end
 	end
 	
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	cas.console.parse("setammo", self._id, itemType._typeId, ammoin and ammoin or 1000, ammo and ammo or 1000)
@@ -759,8 +766,8 @@ function cas.player:setArmor(armor)
 		error("Passed \"armor\" value has to be a number in the range of 0 and 255.")
 	end
 	
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	if self:getHealth() <= 0 then
@@ -778,8 +785,8 @@ function cas.player:setDeaths(deaths)
 		error("Passed \"deaths\" value has to be a number larger than 0.")
 	end
 	
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	cas.console.parse("setdeaths", self._id, deaths)
@@ -793,8 +800,8 @@ function cas.player:setHealth(health)
 		error("Passed \"health\" value has to be a number in the range of 0 and 250.")
 	end
 	
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	if self:getHealth() <= 0 then
@@ -812,8 +819,8 @@ function cas.player:setMaxHealth(health)
 		error("Passed \"health\" value has to be a number in the range of 0 and 250.")
 	end
 	
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	if self:getHealth() <= 0 then
@@ -831,8 +838,8 @@ function cas.player:setMoney(money)
 		error("Passed \"money\" value has to be a number in the range of 0 and 16000.")
 	end
 	
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 
 	cas.console.parse("setmoney", self._id, money)
@@ -848,8 +855,8 @@ function cas.player:setName(name, hide)
 		end
 	end
 	
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	cas.console.parse("setname", self._id, name, hide and 1 or 0)
@@ -862,8 +869,8 @@ function cas.player:setPosition(x, y)
 		error("Passed \"y\" parameter is not valid. Number expected, ".. type(y) .." passed.")
 	end
 	
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	if self:getHealth() <= 0 then
@@ -881,8 +888,8 @@ function cas.player:setScore(score)
 		error("Passed \"score\" value has to be a number larger than 0.")
 	end
 	
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	cas.console.parse("setscore", self._id, score)
@@ -893,8 +900,8 @@ function cas.player:setWeapon(weapon)
 		error("Passed \"weapon\" parameter is not an instance of the \"cas.itemType\" class.")
 	end
 	
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	if self:getHealth() <= 0 then
@@ -912,16 +919,16 @@ function cas.player:shake(power)
 		error("Passed \"power\" value has to be a number larger than 0.")
 	end
 	
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	cas.console.parse("shake", self._id, power)
 end
 
 function cas.player:slap()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	if self:getHealth() <= 0 then
@@ -932,8 +939,8 @@ function cas.player:slap()
 end
 
 function cas.player:deathSlap()
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	if self:getHealth() <= 0 then
@@ -950,8 +957,8 @@ function cas.player:spawn(x, y)
 		error("Passed \"y\" parameter is not valid. Number expected, ".. type(y) .." passed.")
 	end
 
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	if self:getHealth() > 0 then
@@ -973,8 +980,8 @@ function cas.player:setSpeed(speed)
 		error("Passed \"speed\" value has to be a number in the range of -100 and 100.")
 	end
 	
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	cas.console.parse("speedmod", self._id, speed)
@@ -985,8 +992,8 @@ function cas.player:strip(itemType)
 		error("Passed \"itemType\" parameter is not an instance of the \"cas.itemType\" class.")
 	end
 	
-	if not self:exists() then
-		error("Player of this instance doesn't exist.")
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.")
 	end
 	
 	if self:getHealth() <= 0 then
@@ -1002,3 +1009,5 @@ end
 
 cas.player._allowCreation = false -- Defines if instantiation of this class is allowed.
 cas.player._instances = setmetatable({}, {__mode = "kv"}) -- A table of instances of this class.
+cas.player._debug = cas.debug.new(cas.color.yellow, "CAS Player")
+cas.player._debug:setActive(true)

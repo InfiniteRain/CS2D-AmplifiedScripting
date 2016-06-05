@@ -212,5 +212,29 @@ return
 		["medicarmor"] = {82, true, "none", false},
 		["superarmor"] = {83, true, "none", false},
 		["stealthsuit"] = {84, true, "none", false}
+	},
+	
+	cs2dDynamicObjectTypes = {
+		["barricade"] = 1,
+		["barbedwire"] = 2,
+		["walli"] = 3,
+		["wallii"] = 4,
+		["walliii"] = 5,
+		["gatefield"] = 6,
+		["dispenser"] = 7,
+		["turret"] = 8,
+		["supply"] = 9,
+		["buildplace"] = 10,
+		["dualturret"] = 11,
+		["tripleturret"] = 12,
+		["teleportentrance"] = 13,
+		["teleportexit"] = 14,
+		["supersupply"] = 15,
+		["mine"] = 20,
+		["lasermine"] = 21,
+		["orangeportal"] = 22,
+		["blueportal"] = 23,
+		["npc"] = 30,
+		["image"] = 40
 	}
 }

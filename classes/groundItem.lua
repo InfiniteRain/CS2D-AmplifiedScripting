@@ -125,10 +125,6 @@ end
 -- Everything else is self explanatory, I based it on "item" function of cs2d --
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
-function cas.groundItem:exists()
-	return cas._cs2dCommands.item(self._id, "exists")
-end
-
 function cas.groundItem:getName()
 	if self._removed then
 		error("The item of this instance was already removed. It's better if you dispose of this instance.")
