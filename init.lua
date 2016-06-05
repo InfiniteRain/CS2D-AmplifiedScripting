@@ -15,10 +15,6 @@ end
 funcStr = funcStr .. "}"
 assert(loadstring(funcStr))()
 
--- debug --
-cas._DEBUG = require(cas._pathToSource .. "/luatraverse")
--- debug --
-
 -- Loading classes functionality.
 dofile(cas._pathToSource .. "/class.lua")
 
