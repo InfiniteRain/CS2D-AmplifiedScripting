@@ -72,6 +72,8 @@ function cas._image:constructor(path, mode, visibleToPlayer)
 	self._blend = 0
 	self._color = cas.color.white
 	
+	self._hasHitzone = false
+	
 	-- Fields, which are necessary for tween functionality.
 	self._tMove = {
 		active = false, -- Whether or not this tween function is active.
@@ -442,6 +444,64 @@ end
 
 --== Setters ==--
 
+-- Sets hitzone.
+function cas._image:setHitzone(stopShot, effect, xOffset, yOffset, width, height)
+	if type(stopShot) ~= "boolean" then
+		error("Passed \"stopShot\" parameter is not valid. Boolean expected, ".. type(stopShot) .." passed.", 2)
+	elseif type(effect) ~= "string" then
+		error("Passed \"effect\" parameter is not valid. String expected, ".. type(effect) .." passed.", 2)
+	elseif type(xOffset) ~= "number" then
+		error("Passed \"xOffset\" parameter is not valid. Number expected, ".. type(xOffset) .." passed.", 2)
+	elseif type(yOffset) ~= "number" then
+		error("Passed \"yOffset\" parameter is not valid. Number expected, ".. type(yOffset) .." passed.", 2)
+	elseif type(width) ~= "number" then
+		error("Passed \"width\" parameter is not valid. Number expected, ".. type(width) .." passed.", 2)
+	elseif type(height) ~= "number" then
+		error("Passed \"height\" parameter is not valid. Number expected, ".. type(height) .." passed.", 2)
+	end
+	
+	if not cas._image._hitzoneEffects[effect] then
+		error("Passed \"effect\" value does not represent a valid effect.", 2)
+	end
+	
+	if self._freed then
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
+	end
+	
+	if self._hasHitzone then
+		error("This image already has a hitzone, remove the hitzone before setting it again.")
+	end
+	
+	self._hasHitzone = true
+	
+	cas._cs2dCommands.imagehitzone(
+		self._id, 
+		cas._image._hitzoneEffects[effect] + (stopShot and 100 or 0),
+		xOffset,
+		yOffset,
+		width,
+		height)
+		
+	return self
+end
+
+-- Removes hitzone.
+function cas._image:removeHitzone()
+	if self._freed then
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
+	end
+	
+	if not self._hasHitzone then
+		error("This image does not have a hitzone.")
+	end
+	
+	self._hasHitzone = false
+	
+	cas._cs2dCommands.imagehitzone(self._id, 0)
+	
+	return self
+end
+
 -- Sets the position of the image.
 function cas._image:setPosition(x, y)
 	if type(x) ~= "number" then
@@ -576,6 +636,15 @@ end
 
 --== Getters ==--
 
+-- Gets if the image has a hitzone.
+function cas._image:hasHitzone()
+	if self._freed then
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
+	end
+	
+	return self._hasHitzone
+end
+
 -- Gets the position of the image.
 function cas._image:getPosition()
 	if self._freed then
@@ -703,5 +772,12 @@ cas._image._blendModes = { -- Holds the image blend modes.
 	["shade"] = 2,
 	["solid"] = 3
 }
+cas._image._hitzoneEffects = {
+	["none"] = 1,
+	["wall"] = 2,
+	["blood"] = 3,
+	["greenblood"] = 4
+}
+
 cas._image._debug = cas.debug.new(cas.color.yellow, "CAS Image") -- Debug for image objects.
 cas._image._debug:setActive(true)
