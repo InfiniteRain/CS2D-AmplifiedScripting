@@ -9,7 +9,7 @@ cas.timer = cas.class()
 function cas.timer:constructor(func)
 	-- Checks if all the passed parameters were correct.
 	if type(func) ~= "function" then
-		error("Passed \"func\" parameter is not valid. Function expected, ".. type(func) .." passed.")
+		error("Passed \"func\" parameter is not valid. Function expected, ".. type(func) .." passed.", 2)
 	end
 	
 	-- Assigning necessary fields.
@@ -44,11 +44,11 @@ end
 function cas.timer:start(milliseconds, repetitions, ...)
 	-- Checks if all the passed parameters were correct.
 	if type(milliseconds) ~= "number" then
-		error("Passed \"milliseconds\" parameter is not valid. Number expected, ".. type(milliseconds) .." passed.")
+		error("Passed \"milliseconds\" parameter is not valid. Number expected, ".. type(milliseconds) .." passed.", 2)
 	end
 	if repetitions then
 		if type(repetitions) ~= "number" then
-			error("Passed \"repetitions\" parameter is not valid. Number expected, ".. type(repetitions) .." passed.")
+			error("Passed \"repetitions\" parameter is not valid. Number expected, ".. type(repetitions) .." passed.", 2)
 		end
 	end
 	
@@ -56,7 +56,7 @@ function cas.timer:start(milliseconds, repetitions, ...)
 	
 	-- Makes sure the timer isn't already running.
 	if cas.timer._timerFuncs[self._funcLabel] then
-		error("Timer has already started. Stop it before trying to start it again.")
+		error("Timer has already started. Stop it before trying to start it again.", 2)
 	end
 	
 	-- Makes the timer entry.
@@ -89,12 +89,12 @@ end
 function cas.timer:startConstantly(milliseconds, ...)
 	-- Checks if all the passed parameters were correct.
 	if type(milliseconds) ~= "number" then
-		error("Passed \"milliseconds\" parameter is not valid. Number expected, ".. type(milliseconds) .." passed.")
+		error("Passed \"milliseconds\" parameter is not valid. Number expected, ".. type(milliseconds) .." passed.", 2)
 	end
 	
 	-- Makes sure the timer isn't already running.
 	if cas.timer._timerFuncs[self._funcLabel] then
-		error("Timer has already started. Stop it before trying to start it again.")
+		error("Timer has already started. Stop it before trying to start it again.", 2)
 	end
 	
 	-- Makes the timer entry.
@@ -143,9 +143,9 @@ end
 -- Gets the current repetition.
 function cas.timer:getRepetition()
 	if not cas.timer._timerFuncs[self._funcLabel] then
-		error("The timer is not running.")
+		error("The timer is not running.", 2)
 	elseif cas.timer._timerFuncs[self._funcLabel].repetition == nil then
-		error("The timer is being run constantly.")
+		error("The timer is being run constantly.", 2)
 	end
 
 	return cas.timer._timerFuncs[self._funcLabel].repetition

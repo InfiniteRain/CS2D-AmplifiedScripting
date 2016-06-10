@@ -9,9 +9,9 @@ cas.debug = cas.class()
 -- as parameters.
 function cas.debug:constructor(color, tag)
 	if getmetatable(color) ~= cas.color then
-		error("Passed \"color\" parameter is not an instance of the \"cas.color\" class.")
+		error("Passed \"color\" parameter is not an instance of the \"cas.color\" class.", 2)
 	elseif type(tag) ~= "string" then
-		error("Passed \"tag\" parameter is not valid. String expected, ".. type(tag) .." passed.")
+		error("Passed \"tag\" parameter is not valid. String expected, ".. type(tag) .." passed.", 2)
 	end
 	
 	self._color = color
@@ -22,7 +22,7 @@ end
 -- Will create an entry in the debug log.
 function cas.debug:log(message)
 	if type(message) ~= "string" then
-		error("Passed \"message\" parameter is not valid. String expected, ".. type(tag) .." passed.")
+		error("Passed \"message\" parameter is not valid. String expected, ".. type(tag) .." passed.", 2)
 	end
 	
 	if self._active then
@@ -33,7 +33,7 @@ end
 -- Will show an informational message
 function cas.debug:infoMessage(message)
 	if type(message) ~= "string" then
-		error("Passed \"message\" parameter is not valid. String expected, ".. type(tag) .." passed.")
+		error("Passed \"message\" parameter is not valid. String expected, ".. type(tag) .." passed.", 2)
 	end
 	
 	print(tostring(self._color) .. "Info - ".. self._tag ..": ".. message)
@@ -44,7 +44,7 @@ end
 -- Sets the active state of the debug logger.
 function cas.debug:setActive(active)
 	if type(active) ~= "boolean" then
-		error("Passed \"active\" parameter is not valid. Boolean expected, ".. type(active) .." passed.")
+		error("Passed \"active\" parameter is not valid. Boolean expected, ".. type(active) .." passed.", 2)
 	end
 	
 	self._active = active

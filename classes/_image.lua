@@ -8,7 +8,7 @@ cas._image = cas.class()
 -- Returns the image instance from the passed image ID.
 function cas._image.getInstance(imageID) 
 	if type(imageID) ~= "number" then
-		error("Passed \"imageID\" parameter is not valid. Number expected, ".. type(imageID) .." passed.")
+		error("Passed \"imageID\" parameter is not valid. Number expected, ".. type(imageID) .." passed.", 2)
 	end
 
 	for key, value in pairs(cas._image._images) do
@@ -17,7 +17,7 @@ function cas._image.getInstance(imageID)
 		end
 	end
 	
-	error("Passed \"imageID\" parameter represents a non-existent image.")
+	error("Passed \"imageID\" parameter represents a non-existent image.", 2)
 end
 
 ----------------------
@@ -30,31 +30,31 @@ function cas._image:constructor(path, mode, visibleToPlayer)
 	-- Checks if all the passed parameters were correct.
 	local visibleToPlayer = visibleToPlayer or 0
 	if type(path) ~= "string" then
-		error("Passed \"path\" parameter is not valid. String expected, ".. type(path) .." passed.")
+		error("Passed \"path\" parameter is not valid. String expected, ".. type(path) .." passed.", 2)
 	elseif type(mode) ~= "number" then
-		error("Passed \"mode\" parameter is not valid. Number expected, ".. type(mode) .." passed.")
+		error("Passed \"mode\" parameter is not valid. Number expected, ".. type(mode) .." passed.", 2)
 	end
 	if visibleToPlayer ~= 0 then
 		if getmetatable(visibleToPlayer) ~= cas.player then
-			error("Passed \"visibleToPlayer\" parameter is not an instance of the \"cas.player\" class.")
+			error("Passed \"visibleToPlayer\" parameter is not an instance of the \"cas.player\" class.", 2)
 		end
 		
-		if not visibleToPlayer:exists() then
-			error("Player of \"visibleToPlayer\" instance doesn't exist.")
+		if visibleToPlayer._left then
+			error("The player of this instance has already left the server. It's better if you dispose of this instance.", 2)
 		end
  	end
 	
 	-- Checks if the image exists.
 	local file = io.open(path, 'r')
 	if file == nil then
-		error("Could not load image at \"".. path .."\".")
+		error("Could not load image at \"".. path .."\".", 2)
 	else
 		file:close()
 	end
 	
 	-- Checks if the passed mode exists.
 	if not ((mode >= 0 and mode <= 3) or (mode >= 101 and mode <= 164) or (mode >= 201 and mode <= 232)) then
-		error("Passed \"mode\" value does not represent a valid mode.")
+		error("Passed \"mode\" value does not represent a valid mode.", 2)
 	end
 	
 	-- Assigning necessary fields.
@@ -71,6 +71,8 @@ function cas._image:constructor(path, mode, visibleToPlayer)
 	self._alpha = 1
 	self._blend = 0
 	self._color = cas.color.white
+	
+	self._hasHitzone = false
 	
 	-- Fields, which are necessary for tween functionality.
 	self._tMove = {
@@ -157,7 +159,7 @@ end
 -- every image on startround.
 function cas._image:free()
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	-- Frees all the associated tween timers.
@@ -184,7 +186,7 @@ function cas._image:free()
 	-- the code itself has bugs. Make sure you don't try to access the fields starting with 
 	-- underscore ("_") directly and instead use setters/getters for image manipulation as it can
 	-- lead to bugs.
-	error("Field \"_freed\" of this instance was set to false yet it wasn't found in the \"_images\" table.")
+	error("Field \"_freed\" of this instance was set to false yet it wasn't found in the \"_images\" table.", 2)
 end
 
 --== Tween functions, starters ==--
@@ -192,19 +194,19 @@ end
 -- Tween move
 function cas._image:tweenMove(time, x, y)
 	if type(time) ~= "number" then
-		error("Passed \"time\" parameter is not valid. Number expected, ".. type(time) .." passed.")
+		error("Passed \"time\" parameter is not valid. Number expected, ".. type(time) .." passed.", 2)
 	elseif type(x) ~= "number" then
-		error("Passed \"x\" parameter is not valid. Number expected, ".. type(x) .." passed.")
+		error("Passed \"x\" parameter is not valid. Number expected, ".. type(x) .." passed.", 2)
 	elseif type(y) ~= "number" then
-		error("Passed \"y\" parameter is not valid. Number expected, ".. type(y) .." passed.")
+		error("Passed \"y\" parameter is not valid. Number expected, ".. type(y) .." passed.", 2)
 	end
 	
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	if self._tMove.active then
-		error("This image is already being moved.")
+		error("This image is already being moved.", 2)
 	end
 	
 	self._tMove.active = true
@@ -216,19 +218,19 @@ end
 -- Tween rotate.
 function cas._image:tweenRotate(time, angle)
 	if type(time) ~= "number" then
-		error("Passed \"time\" parameter is not valid. Number expected, ".. type(time) .." passed.")
+		error("Passed \"time\" parameter is not valid. Number expected, ".. type(time) .." passed.", 2)
 	elseif type(angle) ~= "number" then
-		error("Passed \"angle\" parameter is not valid. Number expected, ".. type(angle) .." passed.")
+		error("Passed \"angle\" parameter is not valid. Number expected, ".. type(angle) .." passed.", 2)
 	end
 	
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	if self._tRotate.active then
-		error("This image is already being rotated.")
+		error("This image is already being rotated.", 2)
 	elseif self._tRotateConstantly.active then
-		error("This image is already being rotated, but constantly.")
+		error("This image is already being rotated, but constantly.", 2)
 	end
 	
 	self._tRotate.active = true
@@ -240,17 +242,17 @@ end
 -- Tween rotate constantly.
 function cas._image:tweenRotateConstantly(speed)
 	if type(speed) ~= "number" then
-		error("Passed \"speed\" parameter is not valid. Number expected, ".. type(speed) .." passed.")
+		error("Passed \"speed\" parameter is not valid. Number expected, ".. type(speed) .." passed.", 2)
 	end
 	
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	if self._tRotateConstantly.active then
-		error("This image is already being rotated constantly.")
+		error("This image is already being rotated constantly.", 2)
 	elseif self._tRotate.active then
-		error("This image is already being rotated, but not constantly.")
+		error("This image is already being rotated, but not constantly.", 2)
 	end
 	
 	self._tRotateConstantly.active = true
@@ -260,19 +262,19 @@ end
 -- Tween scale.
 function cas._image:tweenScale(time, scaleX, scaleY)
 	if type(time) ~= "number" then
-		error("Passed \"time\" parameter is not valid. Number expected, ".. type(time) .." passed.")
+		error("Passed \"time\" parameter is not valid. Number expected, ".. type(time) .." passed.", 2)
 	elseif type(scaleX) ~= "number" then
-		error("Passed \"scaleX\" parameter is not valid. Number expected, ".. type(scaleX) .." passed.")
+		error("Passed \"scaleX\" parameter is not valid. Number expected, ".. type(scaleX) .." passed.", 2)
 	elseif type(scaleY) ~= "number" then
-		error("Passed \"scaleY\" parameter is not valid. Number expected, ".. type(scaleY) .." passed.")
+		error("Passed \"scaleY\" parameter is not valid. Number expected, ".. type(scaleY) .." passed.", 2)
 	end
 	
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	if self._tScale.active then
-		error("Scale of this image is already being changed.")
+		error("Scale of this image is already being changed.", 2)
 	end
 	
 	self._tScale.active = true
@@ -287,17 +289,17 @@ end
 -- Tween color.
 function cas._image:tweenColor(time, color)
 	if type(time) ~= "number" then
-		error("Passed \"time\" parameter is not valid. Number expected, ".. type(time) .." passed.")
+		error("Passed \"time\" parameter is not valid. Number expected, ".. type(time) .." passed.", 2)
 	elseif getmetatable(color) ~= cas.color then
-		error("Passed \"color\" parameter is not an instance of the \"cas.color\" class.")
+		error("Passed \"color\" parameter is not an instance of the \"cas.color\" class.", 2)
 	end
 	
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	if self._tColor.active then
-		error("Color of this image is already being changed.")
+		error("Color of this image is already being changed.", 2)
 	end
 	
 	self._tColor.active = true
@@ -312,17 +314,17 @@ end
 -- Tween alpha.
 function cas._image:tweenAlpha(time, alpha)
 	if type(time) ~= "number" then
-		error("Passed \"time\" parameter is not valid. Number expected, ".. type(time) .." passed.")
+		error("Passed \"time\" parameter is not valid. Number expected, ".. type(time) .." passed.", 2)
 	elseif type(alpha) ~= "number" then
-		error("Passed \"alpha\" parameter is not valid. Number expected, ".. type(alpha) .." passed.")
+		error("Passed \"alpha\" parameter is not valid. Number expected, ".. type(alpha) .." passed.", 2)
 	end
 	
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	if self._tAlpha.active then
-		error("Alpha of this image is already being changed.")
+		error("Alpha of this image is already being changed.", 2)
 	end
 	
 	self._tAlpha.active = true
@@ -339,11 +341,11 @@ end
 -- Stop tween move.
 function cas._image:stopTweenMove()
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	if not self._tMove.active then
-		error("This image is not being moved.")
+		error("This image is not being moved.", 2)
 	end
 	
 	local nx, ny = self:getPosition()
@@ -357,14 +359,14 @@ end
 -- Stop tween rotate.
 function cas._image:stopTweenRotate()
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	if not self._tRotate.active then
 		if self._tRotateConstantly.active then
-			error("This image is not being rotated constantly.")
+			error("This image is not being rotated constantly.", 2)
 		else
-			error("This image is not being rotated.")
+			error("This image is not being rotated.", 2)
 		end
 	end
 	
@@ -377,11 +379,11 @@ end
 -- Stop tween rotate constantly.
 function cas._image:stopTweenRotateConstantly()
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	if not self._tRotateConstantly.active then
-		error("This image is not being rotated constantly.")
+		error("This image is not being rotated constantly.", 2)
 	end
 	
 	cas._cs2dCommands.tween_rotateconstantly(self._id, 0)
@@ -392,11 +394,11 @@ end
 -- Stop tween scale.
 function cas._image:stopTweenScale()
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	if not self._tScale.active then
-		error("Scale of this image is not being changed.")
+		error("Scale of this image is not being changed.", 2)
 	end
 	
 	local scaleX, scaleY = self:getScale()
@@ -410,11 +412,11 @@ end
 -- Stop tween color.
 function cas._image:stopTweenColor()
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	if not self._tColor.active then
-		error("Color of this image is not being changed.")
+		error("Color of this image is not being changed.", 2)
 	end
 	
 	local color = self:getColor()
@@ -427,11 +429,11 @@ end
 -- Stop tween alpha.
 function cas._image:stopTweenAlpha()
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	if not self._tAlpha.active then
-		error("Alpha of this image is not being changed.")
+		error("Alpha of this image is not being changed.", 2)
 	end
 	
 	cas._cs2dCommands.tween_alpha(self._id, 0, self:getAlpha())
@@ -442,20 +444,78 @@ end
 
 --== Setters ==--
 
--- Sets the position of the image.
-function cas._image:setPosition(x, y)
-	if type(x) ~= "number" then
-		error("Passed \"x\" parameter is not valid. Number expected, ".. type(x) .." passed.")
-	elseif type(y) ~= "number" then
-		error("Passed \"y\" parameter is not valid. Number expected, ".. type(y) .." passed.")
+-- Sets hitzone.
+function cas._image:setHitzone(stopShot, effect, xOffset, yOffset, width, height)
+	if type(stopShot) ~= "boolean" then
+		error("Passed \"stopShot\" parameter is not valid. Boolean expected, ".. type(stopShot) .." passed.", 2)
+	elseif type(effect) ~= "string" then
+		error("Passed \"effect\" parameter is not valid. String expected, ".. type(effect) .." passed.", 2)
+	elseif type(xOffset) ~= "number" then
+		error("Passed \"xOffset\" parameter is not valid. Number expected, ".. type(xOffset) .." passed.", 2)
+	elseif type(yOffset) ~= "number" then
+		error("Passed \"yOffset\" parameter is not valid. Number expected, ".. type(yOffset) .." passed.", 2)
+	elseif type(width) ~= "number" then
+		error("Passed \"width\" parameter is not valid. Number expected, ".. type(width) .." passed.", 2)
+	elseif type(height) ~= "number" then
+		error("Passed \"height\" parameter is not valid. Number expected, ".. type(height) .." passed.", 2)
+	end
+	
+	if not cas._image._hitzoneEffects[effect] then
+		error("Passed \"effect\" value does not represent a valid effect.", 2)
 	end
 	
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
+	end
+	
+	if self._hasHitzone then
+		error("This image already has a hitzone, remove the hitzone before setting it again.")
+	end
+	
+	self._hasHitzone = true
+	
+	cas._cs2dCommands.imagehitzone(
+		self._id, 
+		cas._image._hitzoneEffects[effect] + (stopShot and 100 or 0),
+		xOffset,
+		yOffset,
+		width,
+		height)
+		
+	return self
+end
+
+-- Removes hitzone.
+function cas._image:removeHitzone()
+	if self._freed then
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
+	end
+	
+	if not self._hasHitzone then
+		error("This image does not have a hitzone.")
+	end
+	
+	self._hasHitzone = false
+	
+	cas._cs2dCommands.imagehitzone(self._id, 0)
+	
+	return self
+end
+
+-- Sets the position of the image.
+function cas._image:setPosition(x, y)
+	if type(x) ~= "number" then
+		error("Passed \"x\" parameter is not valid. Number expected, ".. type(x) .." passed.", 2)
+	elseif type(y) ~= "number" then
+		error("Passed \"y\" parameter is not valid. Number expected, ".. type(y) .." passed.", 2)
+	end
+	
+	if self._freed then
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	if self._tMove.active then
-		error("This image is being moved, stop the tween function before settings its position.")
+		error("This image is being moved, stop the tween function before settings its position.", 2)
 	end
 	
 	self._x = x
@@ -469,17 +529,17 @@ end
 -- Sets the angle of the image.
 function cas._image:setAngle(angle)
 	if type(angle) ~= "number" then
-		error("Passed \"angle\" parameter is not valid. Number expected, ".. type(angle) .." passed.")
+		error("Passed \"angle\" parameter is not valid. Number expected, ".. type(angle) .." passed.", 2)
 	end
 	
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	if self._tRotate.active then
-		error("This image is being rotated, stop the tween function before setting its angle.")
+		error("This image is being rotated, stop the tween function before setting its angle.", 2)
 	elseif self._tRotateConstantly.active then
-		error("This image is being rotated constantly, stop the tween function before setting its angle.")
+		error("This image is being rotated constantly, stop the tween function before setting its angle.", 2)
 	end
 	
 	self._angle = angle
@@ -492,17 +552,17 @@ end
 -- Sets the scale of the image.
 function cas._image:setScale(scaleX, scaleY)
 	if type(scaleX) ~= "number" then
-		error("Passed \"scaleX\" parameter is not valid. Number expected, ".. type(scaleX) .." passed.")
+		error("Passed \"scaleX\" parameter is not valid. Number expected, ".. type(scaleX) .." passed.", 2)
 	elseif type(scaleY) ~= "number" then
-		error("Passed \"scaleY\" parameter is not valid. Number expected, ".. type(scaleY) .." passed.")
+		error("Passed \"scaleY\" parameter is not valid. Number expected, ".. type(scaleY) .." passed.", 2)
 	end
 	
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	if self._tScale.active then
-		error("Scale of this image is being changed, stop the tween function before setting its scale.")
+		error("Scale of this image is being changed, stop the tween function before setting its scale.", 2)
 	end
 	
 	self._scaleX = scaleX
@@ -516,15 +576,15 @@ end
 -- Sets the color of the image.
 function cas._image:setColor(color)
 	if getmetatable(color) ~= cas.color then
-		error("Passed \"color\" parameter is not an instance of the \"cas.color\" class.")
+		error("Passed \"color\" parameter is not an instance of the \"cas.color\" class.", 2)
 	end
 	
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	if self._tColor.active then
-		error("Color of this image is being changed, stop the tween function before setting its color.")
+		error("Color of this image is being changed, stop the tween function before setting its color.", 2)
 	end
 	
 	self._color = color
@@ -537,17 +597,17 @@ end
 -- Sets the alpha of the image.
 function cas._image:setAlpha(alpha)
 	if type(alpha) ~= "number" then
-		error("Passed \"alpha\" parameter is not valid. Number expected, ".. type(alpha) .." passed.")
+		error("Passed \"alpha\" parameter is not valid. Number expected, ".. type(alpha) .." passed.", 2)
 	elseif not (alpha >= 0 and alpha <= 1) then
-		error("Passed \"alpha\" value has to be in the range of 0 - 1.")
+		error("Passed \"alpha\" value has to be in the range of 0 - 1.", 2)
 	end
 	
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	if self._tAlpha.active then
-		error("Alpha of this image is being changed, stop the tween function before setting its alpha.")
+		error("Alpha of this image is being changed, stop the tween function before setting its alpha.", 2)
 	end
 	
 	self._alpha = alpha
@@ -560,11 +620,11 @@ end
 -- Sets the blend of the image.
 function cas._image:setBlend(blend)
 	if type(blend) ~= "string" then
-		error("Passed \"blend\" parameter is not valid. String expected, ".. type(blend) .." passed.")
+		error("Passed \"blend\" parameter is not valid. String expected, ".. type(blend) .." passed.", 2)
 	end
 	
 	if not cas._image._blendModes[blend] then
-		error("Passed \"blend\" value does not represent a valid blend mode.")
+		error("Passed \"blend\" value does not represent a valid blend mode.", 2)
 	end
 	
 	self._blend = cas._image._blendModes[blend]
@@ -576,10 +636,19 @@ end
 
 --== Getters ==--
 
+-- Gets if the image has a hitzone.
+function cas._image:hasHitzone()
+	if self._freed then
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
+	end
+	
+	return self._hasHitzone
+end
+
 -- Gets the position of the image.
 function cas._image:getPosition()
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	if self._tMove.active then
@@ -592,7 +661,7 @@ end
 -- Gets the angle of the image.
 function cas._image:getAngle()
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	if self._tRotate.active or self._tRotateConstantly.active then
@@ -606,7 +675,7 @@ end
 -- Gets the scale of the image.
 function cas._image:getScale()
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	if self._tScale.active then
@@ -624,7 +693,7 @@ end
 -- Gets the color of the image.
 function cas._image:getColor()
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	if self._tColor.active then
@@ -643,7 +712,7 @@ end
 -- Gets the alpha of the image.
 function cas._image:getAlpha()
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	if self._tAlpha.active then
@@ -659,7 +728,7 @@ end
 -- Gets the blend of the image.
 function cas._image:getBlend()
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	for key, value in pairs(cas._image._blendModes) do
@@ -672,7 +741,7 @@ end
 -- Gets whether or not this image is visible to everyone or only a single player.
 function cas._image:isVisibleToEveryone()
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	return self._visibleToPlayer == 0
@@ -681,11 +750,11 @@ end
 -- Gets the player this image is visible to.
 function cas._image:getPlayer()
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 
 	if self._visibleToPlayer == 0 then
-		error("This image is visible to everyone.")
+		error("This image is visible to everyone.", 2)
 	end
 	
 	return self._visibleToPlayer
@@ -703,5 +772,12 @@ cas._image._blendModes = { -- Holds the image blend modes.
 	["shade"] = 2,
 	["solid"] = 3
 }
+cas._image._hitzoneEffects = {
+	["none"] = 1,
+	["wall"] = 2,
+	["blood"] = 3,
+	["greenblood"] = 4
+}
+
 cas._image._debug = cas.debug.new(cas.color.yellow, "CAS Image") -- Debug for image objects.
 cas._image._debug:setActive(true)

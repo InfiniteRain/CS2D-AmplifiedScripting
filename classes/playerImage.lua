@@ -9,29 +9,33 @@ function cas.playerImage:constructor(path, mode, followedPlayer, visibleToPlayer
 	-- Checks if all the passed parameters were correct.
 	local visibleToPlayer = visibleToPlayer or 0
 	if type(path) ~= "string" then
-		error("Passed \"path\" parameter is not valid. String expected, ".. type(path) .." passed.")
+		error("Passed \"path\" parameter is not valid. String expected, ".. type(path) .." passed.", 2)
 	elseif type(mode) ~= "string" then
-		error("Passed \"mode\" parameter is not valid. String expected, ".. type(mode) .." passed.")
+		error("Passed \"mode\" parameter is not valid. String expected, ".. type(mode) .." passed.", 2)
 	elseif getmetatable(followedPlayer) ~= cas.player then
-		error("Passed \"followedPlayer\" parameter is not an instance of the \"cas.player\" class.")
+		error("Passed \"followedPlayer\" parameter is not an instance of the \"cas.player\" class.", 2)
 	end
 	if visibleToPlayer ~= 0 then
 		if getmetatable(visibleToPlayer) ~= cas.player then
-			error("Passed \"visibleToPlayer\" parameter is not an instance of the \"cas.player\" class.")
+			error("Passed \"visibleToPlayer\" parameter is not an instance of the \"cas.player\" class.", 2)
+		end
+		
+		if visibleToPlayer._left then
+			error("The player of this instance has already left the server. It's better if you dispose of this instance.", 2)
 		end
  	end
 	
 	-- Checks if the passed mode exists.
 	if not cas.playerImage._modes[mode] then
-		error("Passed \"mode\" value does not represent a valid mode.")
+		error("Passed \"mode\" value does not represent a valid mode.", 2)
 	end
 	
 	-- Checks if the followed player exists.
-	if not followedPlayer:exists() then
-		error("The player of \"followedPlayer\" instance doesn't exist.")
+	if followedPlayer._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.", 2)
 	end
 	
-	
+	-- Calling parent's constructor.
 	self:super(path, cas.playerImage._modes[mode] + followedPlayer._id, visibleToPlayer)
 	
 	self._followedPlayer = followedPlayer
@@ -44,15 +48,15 @@ end
 -- Disabling methods that is relevant to the position of the image.
 function cas.playerImage:setPosition()
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
-	error("Cannot set position. This image is following a player.")
+	error("Cannot set position. This image is following a player.", 2)
 end
 
 function cas.playerImage:getPosition()
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	return self._followedPlayer:getPosition()
@@ -60,21 +64,21 @@ end
 
 function cas.playerImage:tweenMove()
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
-	error("Cannot perform \"tweenMove\" function. This image is following a player.")
+	error("Cannot perform \"tweenMove\" function. This image is following a player.", 2)
 end
 
 -- Overriding tween rotate method so that it won't be possible to do if the image is being 
 -- rotated with the player.
 function cas.playerImage:tweenRotate(time, angle)
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	if self:isRotatingWithPlayer() then
-		error("This image is being rotated with player, thus it's impossible to use \"tweenRotate\" function.")
+		error("This image is being rotated with player, thus it's impossible to use \"tweenRotate\" function.", 2)
 	end
 	
 	self.super.tweenRotate(self, time, angle)
@@ -85,7 +89,7 @@ end
 -- Gets whether or not the image is covered by FOW.
 function cas.playerImage:isCoveredByFOW()
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	return cas._cs2dCommands.object(self._id, 'y') <= 0
@@ -94,7 +98,7 @@ end
 -- Gets whether or not the image is rotating with player.
 function cas.playerImage:isRotatingWithPlayer()
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	return cas._cs2dCommands.object(self._id, 'x') > 0
@@ -103,11 +107,11 @@ end
 -- Gets whether or not the image is wiggling with player.
 function cas.playerImage:isWiggling()
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	if not self:isRotatingWithPlayer() then
-		error("This image is not rotating with player, thus not wiggling.")
+		error("This image is not rotating with player, thus not wiggling.", 2)
 	end
 	
 	return cas._cs2dCommands.object(self._id, 'x') >= 2
@@ -116,7 +120,7 @@ end
 -- Gets the angle of the player image.
 function cas.playerImage:getAngle()
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	if self:isRotatingWithPlayer() then
@@ -131,11 +135,11 @@ end
 -- Sets whether or not the image is covered by FOW.
 function cas.playerImage:setCoveredByFOW(covered)
 	if type(covered) ~= "boolean" then
-		error("Passed \"covered\" parameter is not valid. Boolean expected, ".. type(covered) .." passed.")
+		error("Passed \"covered\" parameter is not valid. Boolean expected, ".. type(covered) .." passed.", 2)
 	end
 	
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	cas._cs2dCommands.imagepos(
@@ -148,17 +152,17 @@ end
 -- Sets whether or not the image is rotating with player.
 function cas.playerImage:setRotatingWithPlayer(rotating)
 	if type(rotating) ~= "boolean" then
-		error("Passed \"rotating\" parameter is not valid. Boolean expected, ".. type(rotating) .." passed.")
+		error("Passed \"rotating\" parameter is not valid. Boolean expected, ".. type(rotating) .." passed.", 2)
 	end
 	
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	if self._tRotate.active then
-		error("This image is being rotated.")
+		error("This image is being rotated.", 2)
 	elseif self._tRotateConstantly.active then
-		error("This image is being rotated constantly.")
+		error("This image is being rotated constantly.", 2)
 	end
 	
 	cas._cs2dCommands.imagepos(
@@ -171,15 +175,15 @@ end
 -- Sets whether or not the image is wiggling with player.
 function cas.playerImage:setWiggling(wiggling)
 	if type(wiggling) ~= "boolean" then
-		error("Passed \"wiggling\" parameter is not valid. Boolean expected, ".. type(wiggling) .." passed.")
+		error("Passed \"wiggling\" parameter is not valid. Boolean expected, ".. type(wiggling) .." passed.", 2)
 	end
 	
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	if not self:isRotatingWithPlayer() then
-		error("This image is not rotating with player, thus cannot wiggle.")
+		error("This image is not rotating with player, thus cannot wiggle.", 2)
 	end
 	
 	cas._cs2dCommands.imagepos(
@@ -193,11 +197,11 @@ end
 -- with player.
 function cas.playerImage:setAngle(angle)
 	if self._freed then
-		error("This image was already freed. It's better if you dispose of this instance.")
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
 	end
 	
 	if self:isRotatingWithPlayer() then
-		error("This image is being rotated with player, thus it's impossible to set its angle.")
+		error("This image is being rotated with player, thus it's impossible to set its angle.", 2)
 	end
 	
 	self.super.setAngle(self, angle)

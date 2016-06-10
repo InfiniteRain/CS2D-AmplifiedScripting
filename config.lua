@@ -84,13 +84,13 @@ return
 		["buildattempt"] = {player = {1}},
 		["buy"] = {player = {1}, itemType = {2}},
 		["clientdata"] = {player = {1}},
-		["collect"] = {player = {1}, --[[groundItem = {2},]] itemType = {3}},
+		["collect"] = {player = {1}, --[[item = {2},]] itemType = {3}},
 		-- During the collect hook, the passed "iid" parameted always represents an item which no
 		-- longer exists (because it was collected by a player). So I made this hook return the
-		-- ID of the collected item rather than the instance of groundItem (which won't work anyway).
+		-- ID of the collected item rather than the instance of item (which won't work anyway).
 		["die"] = {player = {1, 2}, itemType = {3}, dynObject = {6}},
 		["dominate"] = {player = {1}},
-		["drop"] = {player = {1}, groundItem = {2}, itemType = {3}},
+		["drop"] = {player = {1}, item = {2}, itemType = {3}},
 		["endround"] = {},
 		["flagcapture"] = {player = {1}},
 		["flagtake"] = {player = {1}},
@@ -135,7 +135,7 @@ return
 		["usebutton"] = {player = {1}},
 		["vipescape"] = {player = {1}},
 		["vote"] = {player = {1}},
-		["walkover"] = {player = {1}, groundItem = {2}, itemType = {3}}
+		["walkover"] = {player = {1}, item = {2}, itemType = {3}}
 	},
 	
 	cs2dItemTypes = {
