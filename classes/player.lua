@@ -87,6 +87,11 @@ function cas.player.getLivingCounterTerrorists()
 	return players
 end
 
+-- Gets stats for provided USGN ID.
+function cas.player.getStats(USGNID, stat)
+	return cas._cs2dCommands.stats(USGNID, stat)
+end
+
 ----------------------
 -- Instance methods --
 ----------------------
@@ -133,6 +138,28 @@ function cas.player:destructor()
 	cas.player._debug:log("Player \"".. tostring(self) .."\" was garbage collected.")
 end
 
+-- Requests client data from a player.
+function cas.player:requestClientData(mode, parameter)
+	if type(mode) ~= "string" then
+		error("Passed \"mode\" parameter is not valid. String expected, ".. type(mode) .." passed.", 2)
+	end
+	if parameter then
+		if type(parameter) ~= "string" then
+			error("Passed \"parameter\" parameter is not valid. String expected, ".. type(parameter) .." passed.", 2)
+		end
+	end
+	
+	if not cas.player._clientDataModes[mode] then
+		error("Passed \"mode\" value does not represent a valid mode.", 2)
+	end
+	
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.", 2)
+	end
+	
+	cas._cs2dCommands.reqcld(self._id, cas.player._clientDataModes[mode], parameter)
+end
+
 --== Getters ==--
 
 -- Gets the slot ID of the player.
@@ -142,6 +169,20 @@ function cas.player:getSlotID()
 	end
 	
 	return self._id
+end
+
+-- Gets the table of all the weapons this player holds.
+function cas.player:getWeapons()
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.", 2)
+	end
+	
+	local weapons = {}
+	for key, value in pairs(cas._cs2dCommands.playerweapons(self._id)) do
+		table.insert(weapons, cas.item.type.getInstance(value))
+	end
+	
+	return weapons
 end
 
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
@@ -1009,5 +1050,14 @@ end
 
 cas.player._allowCreation = false -- Defines if instantiation of this class is allowed.
 cas.player._instances = setmetatable({}, {__mode = "kv"}) -- A table of instances of this class.
+
+cas.player._clientDataModes = {
+	["cursoronscreen"] = 0,
+	["mapscroll"] = 1,
+	["cursoronmap"] = 2,
+	["lightengine"] = 3,
+	["fileloaded"] = 4
+}
+
 cas.player._debug = cas.debug.new(cas.color.yellow, "CAS Player")
 cas.player._debug:setActive(true)

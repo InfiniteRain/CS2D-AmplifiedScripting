@@ -46,6 +46,24 @@ function cas.dynObject.dynamicObjects()
 	return dynObject
 end
 
+-- Returns a dynamic object on the position.
+function cas.dynObject.getDynamicObjectAt(x, y, dynObjectType)
+	if type(x) ~= "number" then
+		error("Passed \"x\" parameter is not valid. Number expected, ".. type(x) .." passed.", 2)
+	elseif type(y) ~= "number" then
+		error("Passed \"y\" parameter is not valid. Number expected, ".. type(y) .." passed.", 2)
+	end
+	
+	if dynObjectType then
+		if getmetatable(dynObjectType) ~= cas.dynObject.type then
+			error("Passed \"dynObjectType\" parameter is not an instance of the \"cas.dynObject.type\" class.", 2)
+		end
+	end
+	
+	local dynObject = cas._cs2dCommands.objectat(x, y, dynObjectType and dynObjectType._objectTypeID or nil)
+	return dynObject ~= 0 and cas.dynObject.getInstance(dynObject) or false
+end
+
 ----------------------
 -- Instance methods --
 ----------------------
@@ -120,7 +138,6 @@ function cas.dynObject:getType()
 		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.", 2)
 	end
 	
-	print()
 	return cas.dynObject.type.getInstance(cas._cs2dCommands.object(self._id, 'type'))
 end
 
@@ -341,7 +358,6 @@ function cas.dynObject:kill()
 		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.", 2)
 	end
 	
-	print(tostring(self:getType()) ..'|'.. tostring(cas.dynObject.type.image))
 	if self:getType() == cas.dynObject.type.image then
 		cas._image.getInstance(self._id):free()
 	else

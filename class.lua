@@ -37,14 +37,20 @@ cas.class = function(inheritsFrom)
 		local proxyMeta = getmetatable(proxy)
 		proxyMeta.__gc = function() 
 			if instance.destructor then 
-				instance:destructor() 
-			end	
+				local success, errorString = pcall(instance.destructor, instance) 
+				if not success then
+					error(errorString, 2)
+				end
+			end
 		end
 		rawset(instance, '__proxy', proxy)
 		
 		-- If the instance has the constructor declared, then call it.
 		if instance.constructor then
-			instance:constructor(...)
+			local success, errorString = pcall(instance.constructor, instance, ...)
+			if not success then
+				error(errorString, 2)
+			end
 		end
 		
 		-- Returns the instance.

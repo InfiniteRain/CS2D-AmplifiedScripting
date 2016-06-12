@@ -1,10 +1,8 @@
--- Initializing the AS. 
-cas = { -- The global table which holds everything this mod uses.
-	_pathToSource = "sys/lua/CS2D-AmplifiedScripting", -- Path to CAS source folder.
-};
+-- Initializing the CAS. 
+cas = {} -- The global table which holds everything this mod uses.
 
 -- Loading the configuration file.
-cas._config = assert(loadfile(cas._pathToSource .. "/config.lua"))()
+cas._config = assert(loadfile(... .. "/config.lua"))()
 
 -- Taking existing CS2D commands (from the config) and copying them into the global table 
 -- just in case if initial CS2D commands are removed.
@@ -15,24 +13,28 @@ end
 funcStr = funcStr .. "}"
 assert(loadstring(funcStr))()
 
--- Loading classes functionality.
-dofile(cas._pathToSource .. "/class.lua")
+-- Loading classes and error handling functionality.
+dofile(... .. "/class.lua")
 
 -- Loading CAS classes.
-dofile(cas._pathToSource .. "/classes/color.lua")
-dofile(cas._pathToSource .. "/classes/console.lua")
-dofile(cas._pathToSource .. "/classes/debug.lua")
-dofile(cas._pathToSource .. "/classes/item.lua")
-dofile(cas._pathToSource .. "/classes/itemType.lua")
-dofile(cas._pathToSource .. "/classes/player.lua")
-dofile(cas._pathToSource .. "/classes/hook.lua")
-dofile(cas._pathToSource .. "/classes/timer.lua")
-dofile(cas._pathToSource .. "/classes/dynObject.lua")
-dofile(cas._pathToSource .. "/classes/dynObjectType.lua")
-dofile(cas._pathToSource .. "/classes/_image.lua")
-dofile(cas._pathToSource .. "/classes/mapImage.lua")
-dofile(cas._pathToSource .. "/classes/hudImage.lua")
-dofile(cas._pathToSource .. "/classes/playerImage.lua")
+dofile(... .. "/classes/color.lua")
+dofile(... .. "/classes/console.lua")
+dofile(... .. "/classes/debug.lua")
+dofile(... .. "/classes/item.lua")
+dofile(... .. "/classes/itemType.lua")
+dofile(... .. "/classes/player.lua")
+dofile(... .. "/classes/hook.lua")
+dofile(... .. "/classes/timer.lua")
+dofile(... .. "/classes/dynObject.lua")
+dofile(... .. "/classes/dynObjectType.lua")
+dofile(... .. "/classes/_image.lua")
+dofile(... .. "/classes/mapImage.lua")
+dofile(... .. "/classes/hudImage.lua")
+dofile(... .. "/classes/playerImage.lua")
+dofile(... .. "/classes/entity.lua")
+dofile(... .. "/classes/game.lua")
+dofile(... .. "/classes/map.lua")
+dofile(... .. "/classes/tile.lua")
 
 --== Hooks which clean up data of certain classes. ==--
 

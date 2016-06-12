@@ -20,20 +20,6 @@ function cas.console.parse(command, ...)
 	cas._cs2dCommands.parse(commandString)
 end
 
--- Sends a message to every client's console.
-function cas.console.writeToEveryone(message, color)
-	if type(message) ~= "string" then
-		error("Passed \"message\" parameter is not valid. String expected, ".. type(message) .." passed.", 2)
-	end
-	if color then
-		if getmetatable(color) ~= cas.color then
-			error("Passed \"color\" parameter is not valid. String expected, ".. type(color) .." passed.", 2)
-		end
-	end
-	
-	cas.console.parse("cmsg", (color and tostring(color) or "") .. message)
-end
-
 ----------------------
 -- Instance methods --
 ----------------------

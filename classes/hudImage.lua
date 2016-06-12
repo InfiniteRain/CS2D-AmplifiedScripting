@@ -7,7 +7,9 @@ cas.hudImage = cas.class(cas._image) -- Inherits from cas._image.
 
 function cas.hudImage:constructor(path, visibleToPlayer)
 	-- Checks if all the passed parameters were correct.
+	print(visibleToPlayer)
 	local visibleToPlayer = visibleToPlayer or 0
+	print(visibleToPlayer)
 	if type(path) ~= "string" then
 		error("Passed \"path\" parameter is not valid. String expected, ".. type(path) .." passed.", 2)
 	end
