@@ -152,6 +152,24 @@ function cas.item.type:spawn(x, y)
 	cas.console.parse("spawnitem", self._typeId, x, y)
 end
 
+function cas.item.type:spawnProjectile(player, x, y, flyDistance, angle)
+	if getmetatable(player) ~= cas.player then
+		error("Passed \"player\" parameter is not an instance of the \"cas.player\" class.", 2)
+	elseif type(x) ~= "number" then
+		error("Passed \"x\" parameter is not valid. Number expected, ".. type(x) .." passed.", 2)
+	elseif type(y) ~= "number" then
+		error("Passed \"y\" parameter is not valid. Number expected, ".. type(y) .." passed.", 2)
+	elseif type(flyDistance) ~= "number" then
+		error("Passed \"flyDistance\" parameter is not valid. Number expected, ".. type(flyDistance) .." passed.", 2)
+	elseif type(angle) ~= "number" then
+		error("Passed \"angle\" parameter is not valid. Number expected, ".. type(angle) .." passed.", 2)
+	end
+	
+	cas.console.parse("spawnprojectile", player._id, self._typeId, x, y, flyDistance, angle)
+end
+
+
+
 -------------------
 -- Static fields --
 -------------------

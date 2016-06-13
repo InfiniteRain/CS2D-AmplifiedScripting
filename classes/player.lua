@@ -185,6 +185,116 @@ function cas.player:getWeapons()
 	return weapons
 end
 
+-- Opens up a menu for this player. Takes a table as an argument which should represent a menu,
+-- in which fields will affect the way menu looks. This is how it should look like:
+--[[
+{
+	title = <string>, -- The title of the menu.
+	look = <string>, -- How it will look like. Accepts three strings:
+							- "standard" -- Standard menu look.
+							- "invisible" -- Invisible menu look.
+							- "big" -- Big menu look.
+						It is optional. Defaults to "standard".
+	buttons = { -- Table which holds information about the buttons of the menu. Each button is 
+				-- represented as a table. Can hold up to 9 buttons.
+		[1] = {
+			caption = <string>, -- Caption of the button.
+			subcaption = <string>, -- Subcaption of the button. Optional.
+			disabled = <boolean> -- Whether or not this button is disabled (grayed-out). Optional.
+								 -- Defaults to false.
+		},
+		
+		[2] = {
+			...
+		},
+		
+		...
+		
+		[9] = {
+			...
+		}
+	}
+}
+]]
+function cas.player:openMenu(menuTable)
+	if type(menuTable) ~= "table" then
+		error("Passed \"menuTable\" parameter is not valid. Table expected, ".. type(menuTable) .." passed.", 2)
+	end
+	
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.", 2)
+	end
+	
+	-- Parsing the title of the menu.
+	local menuString -- Will hold the menu string.
+	
+	if type(menuTable.title) ~= "string" then -- Checking if title field is valid.
+		error("\"title\" field of menu table is not valid. String expected, got ".. type(menuTable.title) ..".", 2)
+	end
+	
+	menuString = menuTable.title
+	
+	-- Parsing the look of the menu.
+	if menuTable.look then -- If look field was provided.
+		if type(menuTable.look) ~= "string" then -- Checks if its valid.
+			error("\"look\" field of menu table is not valid. String expected, got ".. type(menuTable.look) ..".", 2)
+		end
+		
+		-- Enforces look on the menu.
+		if menuTable.look == "invisible" then
+			menuString = menuString .. "@i"
+		elseif menuTable.look == "big" then
+			menuString = menuString .. "@b"
+		elseif menuTable.look ~= "standard" then
+			error("\"look\" field of menu table represents an invalid look.")
+		end
+	end
+	
+	-- Parsing the buttons of the menu.
+	if type(menuTable.buttons) ~= "table" then
+		error("\"buttons\" field of menu table is not valid. Table expected, got ".. type(menuTable.buttons) ..".", 2)
+	end
+	
+	for key = 1, 9 do 
+		if menuTable.buttons[key] then
+			if type(menuTable.buttons[key].caption) ~= "string" then
+				error("\"caption\" field of button #".. key .." table is not valid. String expected, got " 
+					  .. type(menuTable.buttons[key].caption) ..".", 2)
+			end
+			
+			if menuTable.buttons[key].subcaption then
+				if type(menuTable.buttons[key].subcaption) ~= "string" then
+					error("\"subcaption\" field of button #".. key .." table is not valid. String expected, got " 
+						  .. type(menuTable.buttons[key].subcaption) ..".", 2)
+				end
+			end
+			
+			if menuTable.buttons[key].disabled ~= nil then
+				if type(menuTable.buttons[key].disabled) ~= "boolean" then
+					error("\"disabled\" field of button #".. key .." table is not valid. Boolean expected, got " 
+						  .. type(menuTable.buttons[key].disabled) ..".", 2)
+				end
+			end
+			
+			if menuTable.buttons[key].disabled then
+				menuString = menuString .. ",(" .. menuTable.buttons[key].caption
+				if menuTable.buttons[key].subcaption then
+					menuString = menuString .. "|" .. menuTable.buttons[key].subcaption ..")"
+				else
+					menuString = menuString .. ")"
+				end
+			else
+				menuString = menuString .. "," .. menuTable.buttons[key].caption
+				if menuTable.buttons[key].subcaption then
+					menuString = menuString .. "|" .. menuTable.buttons[key].subcaption
+				end
+			end
+		end
+	end
+	
+	cas._cs2dCommands.menu(self._id, menuString)
+end
+
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 -- The following is self explanatory, I based it on "player" function of cs2d --
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
