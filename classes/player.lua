@@ -636,6 +636,10 @@ end
 
 --== Setters/control ==--
 
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+--  The following is based on console commands  --
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
 function cas.player:IPBan(duration, reason)
 	if duration then
 		if type(duration) == "number" and not (duration >= 1 and duration <= 1440) then

@@ -102,11 +102,20 @@ function cas.hook:constructor(event, func, priority, label)
 				end
 			end
 			
-			-- Changin all the dynamic object ID's into instances of cas.dynObject.
+			-- Changing all the dynamic object ID's into instances of cas.dynObject.
 			if cas._config.cs2dHooks[self._event].dynObject then
 				for key, value in pairs(cas._config.cs2dHooks[self._event].dynObject) do
 					local object = params[value]
 					params[value] = object ~= 0 and cas.dynObject.getInstance(object) or false
+				end
+			end
+			
+			-- Changing all the entity positions into instances of cas.entity.
+			if cas._config.cs2dHooks[self._event].entity then
+				for key, value in pairs(cas._config.cs2dHooks[self._event].entity) do
+					local position = {params[value[1]], params[value[2]]}
+					params[value[1]] = cas.entity.getInstance(position[1], position[2])
+					params[value[2]] = nil
 				end
 			end
 			
