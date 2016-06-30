@@ -27,6 +27,11 @@ function cas.player.getInstance(playerID)
 	return player
 end
 
+-- Gets whether or not a player under a certain ID exists.
+function cas.player.idExists(id)
+	return cas._cs2dCommands.player(id, "exists")
+end
+
 -- Returns a table of all the players on the server.
 function cas.player.getPlayers()
 	local players = {}
@@ -293,6 +298,49 @@ function cas.player:openMenu(menuTable)
 	end
 	
 	cas._cs2dCommands.menu(self._id, menuString)
+end
+
+-- Plays sound to this player.
+function cas.player:playSound(path)
+	if type(path) ~= "string" then
+		error("Passed \"path\" parameter is not valid. String expected, ".. type(path) .." passed.", 2)
+	end
+	
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.", 2)
+	end
+	
+	cas.console.parse("sv_sound2", self._id, path)
+end
+
+-- Plays a sound at a certain position (for 3D sound effect) for this player.
+function cas.player:playPositionalSound(path, x, y)
+	if type(path) ~= "string" then
+		error("Passed \"path\" parameter is not valid. String expected, ".. type(path) .." passed.", 2)
+	elseif type(x) ~= "number" then
+		error("Passed \"x\" parameter is not valid. Number expected, ".. type(x) .." passed.", 2)
+	elseif type(y) ~= "number" then
+		error("Passed \"y\" parameter is not valid. Number expected, ".. type(y) .." passed.", 2)
+	end
+	
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.", 2)
+	end
+	
+	cas.console.parse("sv_soundpos", path, x, y, self._id)
+end
+
+-- Stops sound defined by path for this player.
+function cas.player:stopSound(path)
+	if type(path) ~= "string" then
+		error("Passed \"path\" parameter is not valid. String expected, ".. type(path) .." passed.", 2)
+	end
+	
+	if self._left then
+		error("The player of this instance has already left the server. It's better if you dispose of this instance.", 2)
+	end
+	
+	cas.console.parse("sv_stopsound", self._id, path)
 end
 
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
@@ -731,7 +779,7 @@ function cas.player:usgnBan(duration, reason)
 	end
 end
 
-function cas.player:consoleMessage(message, color)
+function cas.player:messageToConsole(message, color)
 	if type(message) ~= "string" then
 		error("Passed \"message\" parameter is not valid. String expected, ".. type(message) .." passed.", 2)
 	end
@@ -746,6 +794,23 @@ function cas.player:consoleMessage(message, color)
 	end
 	
 	cas.console.parse("cmsg", (color and tostring(color) or "") .. message, self._id)
+end
+
+function cas.player:messageToChat(...)
+	local arguments = {...}
+	local messageString = ""
+	
+	for key, value in pairs(arguments) do
+		if getmetatable(value) == cas.color then
+			messageString = messageString .. tostring(value)
+		elseif type(value) == "string" then
+			messageString = messageString .. value
+		else
+			error("Argument #".. key .." should either be an instance of the cas.color class or a string.", 2)
+		end
+	end
+	
+	cas._cs2dCommands.msg2(self._id, messageString)
 end
 
 function cas.player:customKill(killer, weapon, weaponImage)
@@ -1174,4 +1239,4 @@ cas.player._clientDataModes = {
 }
 
 cas.player._debug = cas.debug.new(cas.color.yellow, "CAS Player")
-cas.player._debug:setActive(true)
+--cas.player._debug:setActive(true)

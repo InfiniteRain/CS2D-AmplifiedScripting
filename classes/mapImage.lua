@@ -42,5 +42,5 @@ end
 cas.mapImage._modes = {
 	["floor"] = 0,
 	["top"] = 1,
-	["superTop"] = 3
+	["supertop"] = 3
 }

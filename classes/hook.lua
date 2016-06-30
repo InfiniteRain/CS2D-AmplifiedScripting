@@ -88,9 +88,9 @@ function cas.hook:constructor(event, func, priority, label)
 			if cas._config.cs2dHooks[self._event].itemType then
 				for key, value in pairs(cas._config.cs2dHooks[self._event].itemType) do
 					local itemType = params[value]
-					if cas.item.type.typeExists(value) then
+					if cas.item.type.typeExists(itemType) then
 						params[value] = cas.item.type.getInstance(itemType)
-					end
+					end			
 				end
 			end
 			
@@ -98,6 +98,7 @@ function cas.hook:constructor(event, func, priority, label)
 			if cas._config.cs2dHooks[self._event].item then
 				for key, value in pairs(cas._config.cs2dHooks[self._event].item) do
 					local item = params[value]
+					print(item)
 					params[value] = cas.item.getInstance(item)
 				end
 			end
@@ -119,7 +120,38 @@ function cas.hook:constructor(event, func, priority, label)
 				end
 			end
 			
-			return cas.hook._hooks[self._label].originalFunc(unpack(params))
+			-- Changing all the reqcldModes into its string counterpart.
+			if cas._config.cs2dHooks[self._event].reqcldMode then
+				for key, value in pairs(cas._config.cs2dHooks[self._event].reqcldMode) do
+					local mode = params[value]
+					for k, v in pairs(cas.player._clientDataModes) do
+						if v == value then
+							params[value] = k
+							break
+						end
+					end
+				end
+			end
+			
+			local returnValue = cas.hook._hooks[self._label].originalFunc(unpack(params))
+			local returnString = ""
+			if self._event == "spawn" then
+				if getmetatable(returnValue) == cas.item.type then
+					returnString = tostring(returnValue:getType())
+				elseif type(returnValue) == "table" then
+					for key, value in pairs(returnValue) do
+						if getmetatable(value) == cas.item.type then
+							returnString = returnString .. "," .. value:getType()
+						end
+					end
+				elseif type(returnValue) == "string" and returnValue == "x" then
+					returnString = "x"
+				end
+				
+				return returnString
+			else
+				return returnValue
+			end
 		end
 	}
 	

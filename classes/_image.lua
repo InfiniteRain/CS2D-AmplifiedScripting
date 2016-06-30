@@ -213,6 +213,8 @@ function cas._image:tweenMove(time, x, y)
 	self._tMove.finalPosition = {x, y}
 	cas._cs2dCommands.tween_move(self._id, time, x, y)
 	self._tMove.timer:start(time, 1, self)
+	
+	return self
 end
 
 -- Tween rotate.
@@ -237,6 +239,8 @@ function cas._image:tweenRotate(time, angle)
 	self._tRotate.finalAngle = angle
 	cas._cs2dCommands.tween_rotate(self._id, time, angle)
 	self._tRotate.timer:start(time, 1, self)
+	
+	return self
 end
 
 -- Tween rotate constantly.
@@ -257,6 +261,8 @@ function cas._image:tweenRotateConstantly(speed)
 	
 	self._tRotateConstantly.active = true
 	cas._cs2dCommands.tween_rotateconstantly(self._id, speed)
+	
+	return self
 end
 
 -- Tween scale.
@@ -284,6 +290,8 @@ function cas._image:tweenScale(time, scaleX, scaleY)
 	self._tScale.timerLifetime = time
 	cas._cs2dCommands.tween_scale(self._id, time, scaleX, scaleY)
 	self._tScale.timer:start(time, 1, self)
+	
+	return self
 end
 
 -- Tween color.
@@ -309,6 +317,8 @@ function cas._image:tweenColor(time, color)
 	self._tColor.timerLifetime = time
 	cas._cs2dCommands.tween_color(self._id, time, color:getRGB())
 	self._tColor.timer:start(time, 1, self)
+	
+	return self
 end
 
 -- Tween alpha.
@@ -334,6 +344,8 @@ function cas._image:tweenAlpha(time, alpha)
 	self._tAlpha.timerLifetime = time
 	cas._cs2dCommands.tween_alpha(self._id, time, alpha)
 	self._tAlpha.timer:start(time, 1, self)
+	
+	return self
 end
 
 --== Tween functions, stoppers ==--
@@ -354,6 +366,8 @@ function cas._image:stopTweenMove()
 	self._y = ny
 	self._tMove.timer:stop()
 	self._tMove.active = false
+	
+	return self
 end
 
 -- Stop tween rotate.
@@ -374,6 +388,8 @@ function cas._image:stopTweenRotate()
 	self._angle = self:getAngle()
 	self._tRotate.timer:stop()
 	self._tRotate.active = false
+	
+	return self
 end
 
 -- Stop tween rotate constantly.
@@ -389,6 +405,8 @@ function cas._image:stopTweenRotateConstantly()
 	cas._cs2dCommands.tween_rotateconstantly(self._id, 0)
 	self._angle = self:getAngle()
 	self._tRotateConstantly.active = false
+	
+	return self
 end
 
 -- Stop tween scale.
@@ -407,6 +425,8 @@ function cas._image:stopTweenScale()
 	self._scaleY = scaleY
 	self._tScale.timer:stop()
 	self._tScale.active = false
+	
+	return self
 end
 
 -- Stop tween color.
@@ -424,6 +444,8 @@ function cas._image:stopTweenColor()
 	self._color = color
 	self._tColor.timer:stop()
 	self._tColor.active = false
+	
+	return self
 end
 
 -- Stop tween alpha.
@@ -440,6 +462,8 @@ function cas._image:stopTweenAlpha()
 	self._alpha = self:getAlpha()
 	self._tAlpha.timer:stop()
 	self._tAlpha.active = false
+	
+	return self
 end
 
 --== Setters ==--
@@ -636,6 +660,60 @@ end
 
 --== Getters ==--
 
+-- Gets if tween move function is active.
+function cas._image:isTweenMove()
+	if self._freed then
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
+	end
+	
+	return self._tMove.active
+end
+
+-- Gets if tween rotate function is active.
+function cas._image:isTweenRotate()
+	if self._freed then
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
+	end
+	
+	return self._tRotate.active
+end
+
+-- Gets if tween rotate constantly function is active.
+function cas._image:isTweenRotateConstantly()
+	if self._freed then
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
+	end
+	
+	return self._tRotateConstantly.active
+end
+
+-- Gets if tween scale function is active.
+function cas._image:isTweenScale()
+	if self._freed then
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
+	end
+	
+	return self._tScale.active
+end
+
+-- Gets if tween color function is active.
+function cas._image:isTweenColor()
+	if self._freed then
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
+	end
+	
+	return self._tColor.active
+end
+
+-- Gets if tween alpha function is active.
+function cas._image:isTweenAlpha()
+	if self._freed then
+		error("This image was already freed. It's better if you dispose of this instance.", 2)
+	end
+	
+	return self._tAlpha.active
+end
+
 -- Gets if the image has a hitzone.
 function cas._image:hasHitzone()
 	if self._freed then
@@ -780,4 +858,4 @@ cas._image._hitzoneEffects = {
 }
 
 cas._image._debug = cas.debug.new(cas.color.yellow, "CAS Image") -- Debug for image objects.
-cas._image._debug:setActive(true)
+--cas._image._debug:setActive(true)

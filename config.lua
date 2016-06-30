@@ -83,20 +83,23 @@ return
 		["build"] = {player = {1}, dynObject = {6}},
 		["buildattempt"] = {player = {1}},
 		["buy"] = {player = {1}, itemType = {2}},
-		["clientdata"] = {player = {1}},
+		["clientdata"] = {player = {1}, reqcldMode = {2}},
 		["collect"] = {player = {1}, --[[item = {2},]] itemType = {3}},
 		-- During the collect hook, the passed "iid" parameted always represents an item which no
 		-- longer exists (because it was collected by a player). So I made this hook return the
 		-- ID of the collected item rather than the instance of item (which won't work anyway).
 		["die"] = {player = {1, 2}, itemType = {3}, dynObject = {6}},
 		["dominate"] = {player = {1}},
-		["drop"] = {player = {1}, item = {2}, itemType = {3}},
+		["drop"] = {player = {1}, --[[item = {2},]] itemType = {3}},
+		-- During the drop hook, the passed "iid" parameted always represents an item which doesn't
+		-- yet exist (because it is still on the ground). So I made this hook return the ID of the
+		-- dropped item rather than the instance of item (which won't work anyway).
 		["endround"] = {},
 		["flagcapture"] = {player = {1}},
 		["flagtake"] = {player = {1}},
 		["flashlight"] = {player = {1}},
 		["hit"] = {player = {1, 2}, itemType = {3}, dynObject = {7}},
-		["hitzone"] = {image = {1}, player = {2}, dynObject = {3}, itemType = {4}}, --TODO 253 - turret (any),  249 - vartiguant, 248 - soldier
+		["hitzone"] = {image = {1}, player = {2}, dynObject = {3}, itemType = {4}},
 		["hostagerescue"] = {player = {1}},
 		["join"] = {player = {1}},
 		["kill"] = {player = {1, 2}, itemType = {3}, dynObject = {6}},

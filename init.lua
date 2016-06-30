@@ -35,6 +35,8 @@ dofile(... .. "/classes/entity.lua")
 dofile(... .. "/classes/game.lua")
 dofile(... .. "/classes/map.lua")
 dofile(... .. "/classes/tile.lua")
+dofile(... .. "/classes/hudText.lua")
+dofile(... .. "/classes/projectile.lua")
 
 --== Hooks which clean up data of certain classes. ==--
 
@@ -90,6 +92,8 @@ cas._hooks = {
 					cas.player._instances[key] = nil
 				end
 			end
+			
+			cas.hudText._hudTexts[player._id] = setmetatable({}, {__mode = "kv"})
 		end
 	},
 	

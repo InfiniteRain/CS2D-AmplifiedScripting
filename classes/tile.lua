@@ -93,14 +93,18 @@ end
 --== Setters/control ==--
 
 -- Sets the tile frame on the position.
-function cas.tile.setFrame(x, y, tile)
+function cas.tile.setTile(x, y, tile)
 	cas.tile._checkPositionParameters(x, y)
 	if type(tile) ~= "number" then
 		error("Passed \"tile\" parameter is not valid. Number expected, ".. type(tile) .." passed.", 2)
 	end
 	
-	if not (tile >= 0 and tile <= 255) then
-		error("Passed \"tile\" value has to be in the range of 0 - 255.", 2)
+	if not (x >= 0 and y >= 0 and x <= cas.map.getXSize() and y <= cas.map.getYSize()) then
+		error("Passed position is outside of map bounds!", 2)
+	end
+	
+	if not (tile <= cas.map.getTileCount()) then
+		error("Passed tile represents a non-valid tile tile.", 2)
 	end
 	
 	cas.console.parse("settile", x, y, tile)

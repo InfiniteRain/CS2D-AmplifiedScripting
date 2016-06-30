@@ -88,31 +88,17 @@ function cas.game.messageToConsole(message, color)
 end
 
 -- Sends a message to every client.
-function cas.game.messageToChat(message, ...)
-	if type(message) ~= "string" then
-		error("Passed \"message\" parameter is not valid. String expected, ".. type(message) .." passed.", 2)
-	end
-	
+function cas.game.messageToChat(...)	
 	local arguments = {...}
-	if #arguments % 2 ~= 0 then
-		error("The number of the extra arguments should be even.", 2)
-	end
-	
-	local messageString = message
+	local messageString = ""
 	
 	for key, value in pairs(arguments) do
-		if key % 2 == 0 then
-			if type(value) ~= "string" then
-				error("Argument #".. key + 1 .." should be a string.", 2)
-			end
-			
+		if getmetatable(value) == cas.color then
+			messageString = messageString .. tostring(value)
+		elseif type(value) == "string" then
 			messageString = messageString .. value
 		else
-			if getmetatable(value) ~= cas.color then
-				error("Argument #".. key + 1 .." should be an instance of the cas.color class.", 2)
-			end
-			
-			messageString = messageString .. tostring(value)
+			error("Argument #".. key .." should either be an instance of the cas.color class or a string.", 2)
 		end
 	end
 	
@@ -120,7 +106,7 @@ function cas.game.messageToChat(message, ...)
 end
 
 -- Fire effect.
-function cas.game.fireEffect(x, y, amount, radius, color)
+function cas.game.fireEffect(x, y, amount, radius)
 	if type(x) ~= "number" then
 		error("Passed \"x\" parameter is not valid. Number expected, ".. type(x) .." passed.", 2)
 	elseif type(y) ~= "number" then
@@ -129,11 +115,9 @@ function cas.game.fireEffect(x, y, amount, radius, color)
 		error("Passed \"amount\" parameter is not valid. Number expected, ".. type(amount) .." passed.", 2)
 	elseif type(radius) ~= "number" then
 		error("Passed \"radius\" parameter is not valid. Number expected, ".. type(radius) .." passed.", 2)
-	elseif getmetatable(color) ~= cas.color then
-		error("Passed \"color\" parameter is not an instance of the \"cas.color\" class.", 2)
 	end
 	
-	cas.console.parse("effect", "fire", x, y, amount, radius, color:getRGB())
+	cas.console.parse("effect", "fire", x, y, amount, radius)
 end
 
 -- Smoke effect.
@@ -269,6 +253,37 @@ function cas.game.triggerPosition(x, y)
 	end
 	
 	cas.console.parse("triggerposition", x, y)
+end
+
+-- Plays a sound to everyone on the server.
+function cas.game.playSound(path)
+	if type(path) ~= "string" then
+		error("Passed \"path\" parameter is not valid. String expected, ".. type(path) .." passed.", 2)
+	end
+	
+	cas.console.parse("sv_sound", path)
+end
+
+-- Plays a sound at a certain position (for 3D sound effect)
+function cas.game.playPositionalSound(path, x, y)
+	if type(path) ~= "string" then
+		error("Passed \"path\" parameter is not valid. String expected, ".. type(path) .." passed.", 2)
+	elseif type(x) ~= "number" then
+		error("Passed \"x\" parameter is not valid. Number expected, ".. type(x) .." passed.", 2)
+	elseif type(y) ~= "number" then
+		error("Passed \"y\" parameter is not valid. Number expected, ".. type(y) .." passed.", 2)
+	end
+	
+	cas.console.parse("sv_soundpos", path, x, y)
+end
+
+-- Stops sound defined by path for everyone on the server.
+function cas.game.stopSound(path)
+	if type(path) ~= "string" then
+		error("Passed \"path\" parameter is not valid. String expected, ".. type(path) .." passed.", 2)
+	end
+	
+	cas.console.parse("sv_stopsound", 0, path)
 end
 
 ----------------------

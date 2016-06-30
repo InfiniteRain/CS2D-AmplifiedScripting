@@ -36,6 +36,7 @@ function cas.item.type.getInstance(typeID)
 		end
 	end
 	
+	print(typeID)
 	error("Passed \"typeID\" value is not valid.", 2)
 end
 
@@ -68,6 +69,10 @@ end
 -- Everything that follows is self explanatory.
 
 --== Getters ==--
+
+function cas.item.type:getType()
+	return self._typeId
+end
 
 function cas.item.type:getName()
 	return cas._cs2dCommands.itemtype(self._typeId, "name")
@@ -167,8 +172,6 @@ function cas.item.type:spawnProjectile(player, x, y, flyDistance, angle)
 	
 	cas.console.parse("spawnprojectile", player._id, self._typeId, x, y, flyDistance, angle)
 end
-
-
 
 -------------------
 -- Static fields --

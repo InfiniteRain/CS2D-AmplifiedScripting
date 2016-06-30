@@ -20,6 +20,20 @@ function cas.console.parse(command, ...)
 	cas._cs2dCommands.parse(commandString)
 end
 
+-- Prints console message.
+function cas.console.print(message, color)
+	if type(message) ~= "string" then
+		error("Passed \"message\" parameter is not valid. String expected, ".. type(message) .." passed.", 2)
+	end
+	if color then
+		if getmetatable(color) ~= cas.color then
+			error("Passed \"color\" parameter is not valid. String expected, ".. type(color) .." passed.", 2)
+		end
+	end
+	
+	print((color and tostring(color) or "") .. message)
+end
+
 ----------------------
 -- Instance methods --
 ----------------------

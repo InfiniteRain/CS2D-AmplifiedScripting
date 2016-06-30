@@ -52,11 +52,11 @@ function cas.dynObject.type:spawn(...)
 			error("Passed \"mode\" parameter is not valid. Number expected, ".. type(mode) .." passed.", 2)
 		elseif type(team) ~= "number" then
 			error("Passed \"team\" parameter is not valid. Number expected, ".. type(team) .." passed.", 2)
-		elseif getmetatable(player) ~= cas.player then
-			error("Passed \"player\" parameter is not an instance of the \"cas.player\" class.", 2)
+		elseif getmetatable(player) ~= cas.player and player ~= false then
+			error("Passed \"player\" parameter is not valid. False or instance of \"cas.player\" expected.", 2)
 		end
 		
-		cas.console.parse("spawnobject", self._objectTypeID, x, y, 0, mode, team, player)
+		cas.console.parse("spawnobject", self._objectTypeID, x, y, 0, mode, team, player and player or 0)
 	elseif self._objectTypeID == 30 then
 		local npcType, x, y, angle = ...
 		if type(npcType) ~= "string" then

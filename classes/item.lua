@@ -283,4 +283,4 @@ end
 cas.item._allowCreation = false -- Defines if instantiation of this class is allowed.
 cas.item._instances = setmetatable({}, {__mode = "kv"}) -- A table of instances of this class.
 cas.item._debug = cas.debug.new(cas.color.yellow, "CAS Item") -- Debug for items.
-cas.item._debug:setActive(true)
+--cas.item._debug:setActive(true)

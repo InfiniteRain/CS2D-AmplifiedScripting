@@ -29,6 +29,14 @@ cas.class = function(inheritsFrom)
 		-- Initializes the instance.
 		local instance = setmetatable({}, class)
 		
+		-- If the instance has the constructor declared, then call it.
+		if instance.constructor then
+			local success, errorString = pcall(instance.constructor, instance, ...)
+			if not success then
+				error(errorString, 2)
+			end
+		end
+		
 		-- Since __gc metamethod doesn't work with tables in lua 5.1, we create a blank userdata
 		-- and make its __gc method call the destructor of the object. Then, we store it as a field
 		-- in the instance, so when the field is garbage collected, that means the object was 
@@ -44,14 +52,6 @@ cas.class = function(inheritsFrom)
 			end
 		end
 		rawset(instance, '__proxy', proxy)
-		
-		-- If the instance has the constructor declared, then call it.
-		if instance.constructor then
-			local success, errorString = pcall(instance.constructor, instance, ...)
-			if not success then
-				error(errorString, 2)
-			end
-		end
 		
 		-- Returns the instance.
 		return instance

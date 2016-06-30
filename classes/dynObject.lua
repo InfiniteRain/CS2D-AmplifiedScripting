@@ -372,4 +372,4 @@ end
 cas.dynObject._allowCreation = false -- Defines if instantiation of this class is allowed.
 cas.dynObject._instances = setmetatable({}, {__mode = "kv"}) -- A table of instances of this class.
 cas.dynObject._debug = cas.debug.new(cas.color.yellow, "CAS Dynamic Object") -- Debug for dynamic objects.
-cas.dynObject._debug:setActive(true)
+--cas.dynObject._debug:setActive(true)

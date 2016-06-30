@@ -65,7 +65,13 @@ function cas.projectile.getProjectiles(listType, player)
 		end
 	end
 	
-	return cas._cs2dCommands.projectilelist(listType == "flying" and 0 or 1, player and player or 0)
+	local list = cas._cs2dCommands.projectilelist(listType == "flying" and 0 or 1, player and player or 0)
+	local newList = {}
+	for key, value in pairs(list) do
+		newList[key] = {id = value.id, player = cas.player.getInstance(value.player)}
+	end
+	
+	return newList
 end
 
 ----------------------

@@ -159,4 +159,4 @@ end
 cas.timer._timerLabels = {} -- Table used for timer labels.
 cas.timer._timerFuncs = {} -- Table for timer entries.
 cas.timer._debug = cas.debug.new(cas.color.yellow, "CAS Timer") -- Debug for timers.
-cas.timer._debug:setActive(true)
+--cas.timer._debug:setActive(true)
