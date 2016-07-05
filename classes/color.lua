@@ -25,8 +25,8 @@ end
 -- Instance Methods --
 ----------------------
 
--- Constructor. Creates an instance of the color class and returns it. Takes RGB color values as 
--- parameters to define the color the instance is supposed to represent.
+-- Constructor. Takes RGB color values as parameters to define color the instance is supposed
+-- to represent.
 function cas.color:constructor(red, green, blue)
 	if not cas.color.isCorrectFormat(red, green, blue) then
 		error("Passed parameters contained unsuitable values for color instance.", 2)

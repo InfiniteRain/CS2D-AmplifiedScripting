@@ -98,7 +98,6 @@ function cas.hook:constructor(event, func, priority, label)
 			if cas._config.cs2dHooks[self._event].item then
 				for key, value in pairs(cas._config.cs2dHooks[self._event].item) do
 					local item = params[value]
-					print(item)
 					params[value] = cas.item.getInstance(item)
 				end
 			end

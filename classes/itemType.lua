@@ -36,7 +36,6 @@ function cas.item.type.getInstance(typeID)
 		end
 	end
 	
-	print(typeID)
 	error("Passed \"typeID\" value is not valid.", 2)
 end
 
