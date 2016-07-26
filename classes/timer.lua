@@ -78,7 +78,6 @@ function cas.timer:start(milliseconds, repetitions, ...)
 	
 	-- Initiating the timer.
 	cas._cs2dCommands.timer(milliseconds, "cas.timer._timerFuncs.".. self._funcLabel ..".func", self._funcLabel, repetitions)
-	freetimer("cas.timer._timerFuncs.".. self._funcLabel ..".func")
 	
 	cas.timer._debug:log("Timer \"".. tostring(self) .."\" started with interval of ".. milliseconds .." and ".. repetitions .." repetitions.")
 	
@@ -132,7 +131,7 @@ function cas.timer:isRunning()
 end
 
 -- Gets whether or not the timer is being run constantly.
-function cas.timer:isRunConstantly()
+function cas.timer:isRunningConstantly()
 	if cas.timer._timerFuncs[self._funcLabel] then
 		return cas.timer._timerFuncs[self._funcLabel].repetition == nil
 	end

@@ -147,7 +147,7 @@ function cas.item:getPlayer()
 	end
 	
 	local player = cas._cs2dCommands.item(self._id, "player")
-	return (player ~= 0 and player or false)
+	return (player ~= 0 and cas.player.getInstance(player) or false)
 end
 
 function cas.item:getAmmo()
@@ -206,6 +206,7 @@ function cas.item:hasFadeoutTimer()
 	end
 	
 	return cas._cs2dCommands.item(self._id, "dropped")
+	-- TODO: add filetrs for modes 0 and 4
 end
 
 function cas.item:getDropTimer()
@@ -273,7 +274,7 @@ function cas.item:setAmmo(ammoin, ammo)
 		error("The item of this instance was already removed. It's better if you dispose of this instance.", 2)
 	end
 	
-	cas.console.parse("setammo", self._id, 0, ammoin, ammo)
+	cas.console.parse("setammo", self._id, 0, ammoin and ammoin or 1000, ammo and ammo or 1000)
 end
 
 -------------------
