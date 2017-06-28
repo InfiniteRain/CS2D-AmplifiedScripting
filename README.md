@@ -13,7 +13,7 @@ Another example is that in the standard API, the only way to control majority of
 which means that you have to integrate needed values into strings and even put some of them into quotation marks so that if one of your
 parameters is a string with a space, it won't count as two seperate parameters. Such way of controlling things is extremely annoying and
 this API takes care of that. Every possible console command that is used to control anything is now integrated as methods (functions) of
-corresponding instances. So, for example, instead of writing " parse('setpos '.. player ..' '.. x ..' '.. y) ", you just write
+corresponding instances. So, for example, instead of writing `parse('setpos '.. player ..' '.. x ..' '.. y)`, you just write
 " player:setPosition(x, y) ".
 
 There are a lot of really good features and the list would get too long if I would try and list them all. Just try and see it for 
