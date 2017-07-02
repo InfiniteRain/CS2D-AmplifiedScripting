@@ -2,5 +2,6 @@ return
 
 {
 	-- The main class (<namespace>.<class>)
-	mainClass = 'Mod.MainClass'
+	mainClass = 'Mod.MainClass',
+	sourceDirectory = 'source'
 }
