@@ -4,7 +4,7 @@
 
 local cas = {} -- Table holding the CAS module.
 cas.location = ... -- Location of the init.lua
-cas.config = require(cas.location .. '.config') -- Loading the configuration file.
+cas.config = require(cas.location .. ".config") -- Loading the configuration file.
 cas.usedNamespaces = {} -- Holds the used namespaces of each class.
 
 -- Tries to load a class from within used namespaces.
@@ -15,18 +15,18 @@ cas.loadClass = function(class, namespaces)
 	for _, ns in pairs(namespaces) do
 		-- Potential file path for the class with that namespace.
 		local filePath = cas.location
-			:gsub('%.+', '/') .. '/' .. cas.config.sourceDirectory ..'/' .. ns .. '/' .. class .. '.lua'
+			:gsub("%.+", "/") .. "/" .. cas.config.sourceDirectory .."/" .. ns .. "/" .. class .. ".lua"
 
 		-- Checking if the file exists.
-		local file = io.open(filePath, 'r')
+		local file = io.open(filePath, "r")
 		if file ~= nil then
 			-- File exists.
 			file:close()
 
 			-- Requiring the file and checking if the 
-			local requirePath = cas.location .. '.' .. cas.config.sourceDirectory ..'.' .. ns .. '.' .. class
+			local requirePath = cas.location .. "." .. cas.config.sourceDirectory .."." .. ns .. "." .. class
 			local class = require(requirePath)
-			if class ~= nil and type(class) == 'table' and class.__IS_CLASS then
+			if class ~= nil and type(class) == "table" and class.__IS_CLASS then
 				-- If all the checks are passed, adding inserting the class into the found classes table.
 				table.insert(foundClasses, class)
 			end
@@ -36,14 +36,14 @@ cas.loadClass = function(class, namespaces)
 	-- Error handling.
 	if #foundClasses == 0 then
 		-- No classes found.
-		return false, 0, 'Class \'' .. class ..'\' was not found within the used namespaces.'
+		return false, 0, "Class \"" .. class .."\" was not found within the used namespaces."
 	elseif #foundClasses > 1 then
 		-- More than one class found.
 		return 
 			false, 
 			1, 
-			'More than one class with the name \'' .. class .. '\' was found within the used namespaces\n'
-				.. 'Use a namespace table to load a specific class.'
+			"More than one class with the name \"" .. class .. "\" was found within the used namespaces\n"
+				.. "Use a namespace table to load a specific class."
 	end
 
 	-- If everything is OK, returning the only class found.
@@ -59,10 +59,10 @@ end
 class = function(inheritsFrom)
 	-- Checking if all the arguments are correct.
 	if inheritsFrom then
-		if type(inheritsFrom) ~= 'table' then
+		if type(inheritsFrom) ~= "table" then
 			error(
-				'Passed \'inheritsFrom\' parameter is not valid. Table expected, '.. 
-					type(inheritsFrom) ..' passed.',
+				"Passed \"inheritsFrom\" parameter is not valid. Table expected, ".. 
+					type(inheritsFrom) .." passed.",
 				2
 			)
 		end
@@ -96,7 +96,7 @@ class = function(inheritsFrom)
 			end
 		end
 		
-		-- Since __gc metamethod doesn't work with tables in lua 5.1, we create a blank userdata
+		-- Since __gc metamethod doesn"t work with tables in lua 5.1, we create a blank userdata
 		-- and make its __gc method call the destructor of the object. Then, we store it as a field
 		-- in the instance, so when the field is garbage collected, that means the object was 
 		-- garbage collected as well.
@@ -110,7 +110,7 @@ class = function(inheritsFrom)
 				end
 			end
 		end
-		rawset(instance, '__proxy', proxy)
+		rawset(instance, "__proxy", proxy)
 		
 		-- Returning the instance.
 		return instance
@@ -129,8 +129,8 @@ end
 use = function(namespace)
 	-- Path of this class (<namespace>.<class>)
 	local thisPath = debug.getinfo(2).source
-		:sub(4, -5):gsub('[\\/]', '.')
-		:sub(#(cas.location .. '.' .. cas.config.sourceDirectory ..'.') + 1, -1)
+		:sub(4, -5):gsub("[\\/]", ".")
+		:sub(#(cas.location .. "." .. cas.config.sourceDirectory ..".") + 1, -1)
 	-- Namespace of this class.
 	cas.usedNamespaces[thisPath] = cas.usedNamespaces[thisPath] or {} 
 	
@@ -164,9 +164,9 @@ here = setmetatable({}, {
 	__index = function(self, index)
 		-- Getting the namespace based on the location of the folder the file is in.
 		local namespace = debug.getinfo(2).source
-			:sub(4, -5):gsub('[\\/]', '.')
-			:sub(#(cas.location .. '.' .. cas.config.sourceDirectory ..'.') + 1, -1)
-			:gsub('(.*)%.(.*)$','%1')
+			:sub(4, -5):gsub("[\\/]", ".")
+			:sub(#(cas.location .. "." .. cas.config.sourceDirectory ..".") + 1, -1)
+			:gsub("(.*)%.(.*)$","%1")
 
 		-- Tries to load a class within the namespace, and if it loads, returns the class.
 		local potentialClass = cas.loadClass(index, {namespace})
@@ -182,10 +182,10 @@ _G = setmetatable(_G, {
 	__index = function(self, index)
 		-- Path of this class (<namespace>.<class>)
 		local thisPath = debug.getinfo(2).source
-			:sub(4, -5):gsub('[\\/]', '.')
-			:sub(#(cas.location .. '.' .. cas.config.sourceDirectory ..'.') + 1, -1)
+			:sub(4, -5):gsub("[\\/]", ".")
+			:sub(#(cas.location .. "." .. cas.config.sourceDirectory ..".") + 1, -1)
 		-- Namespace of this class.
-		local namespace = thisPath:gsub('(.*)%.(.*)$','%1')
+		local namespace = thisPath:gsub("(.*)%.(.*)$","%1")
 
 		-- Tries to load a class within the used namespaces, and if it loads, returns the class.
 		local potentialClass, errorNumber, errorMessage = cas.loadClass(
@@ -201,19 +201,40 @@ _G = setmetatable(_G, {
 	end
 })
 
+-- Table which holds meta data for CAS.
+_META =  {
+	config = cas.config,
+	command = {},
+	timerFuncs = {},
+	hookFuncs = {},
+	hooks = {}
+}
+
+-- Saving the existing commands, for a chance that they get overriden.
+for _, command in pairs(cas.config.cs2dCommands) do
+	_META.command[command] = _G[command]
+end
+
+-- Loading meta hooks.
+require(cas.location .. ".metaHooks")(_META)
+
 -----------------------------
 -- THE INITIATION FUNCTION --
 -----------------------------
 
--- Attempts to load the main class.
+-- Function which initializes CAS.
 return function()
 	local class, errorNumber, errorMessage = cas.loadClass(
-		cas.config.mainClass:gsub('(.*)%.(.*)$','%2'), 
-		{cas.config.mainClass:gsub('(.*)%.(.*)$','%1')}
+		cas.config.mainClass:gsub("(.*)%.(.*)$","%2"), 
+		{cas.config.mainClass:gsub("(.*)%.(.*)$","%1")}
 	)
 	if not class then
 		error(errorMessage, 2)
 	else
-		class.main()
+		if class.main and type(class.main) == "function" then
+			class.main()
+		else 
+			error("Static method \"main\" does not exist in the \"" .. cas.config.mainClass .. "\" class.")
+		end
 	end
 end
