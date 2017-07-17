@@ -6,62 +6,60 @@ local DynObject = class()
 --------------------
 
 -- Checks if the dynamic object under the passed ID exists.
-function DynObject.idExists(objectID)
-	if type(objectID) ~= "number" then
-		error("Passed \"objectID\" parameter is not valid. Number expected, ".. type(objectID) .." passed.", 2)
-	end
-	
-	return _META.command.object(objectID, "exists")
+function DynObject.idExists(dynObjectID)
+  DynObject._validator:validate({
+    { value = dynObjectID, type = 'number' }
+  }, 'idExists', 2)
+
+  return _META.command.object(dynObjectID, 'exists')
 end
 
 -- Returns the dynamic object instance from the passed onject ID.
 function DynObject.getInstance(dynObjectID)
-	if type(dynObjectID) ~= "number" then
-		error("Passed \"dynObjectID\" parameter is not valid. Number expected, ".. type(dynObjectID) .." passed.", 2)
-	elseif not _META.command.object(dynObjectID, 'exists') then
-		error("Passed \"dynObjectID\" parameter represents a non-existent object.", 2)
-	end
-	
-	for key, value in pairs(DynObject._instances) do
-		if value._id == dynObjectID then
-			DynObject._debug:log("Dynamic object \"".. tostring(value) .."\" was found in \"_instances\" table and returned.")
-			return value
-		end
-	end
-	
-	DynObject._allowCreation = true
-	local dynObject = DynObject.new(dynObjectID)
-	DynObject._allowCreation = false
-	
-	return dynObject
+  DynObject._validator:validate({
+    { value = dynObjectID, type = 'number' }
+  }, 'getInstance', 2)
+
+  if not _META.command.object(dynObjectID, 'exists') then
+    error('Dynamic object with the passed ID was not fund.', 2)
+  end
+
+  for key, value in pairs(DynObject._instances) do
+    if value._id == dynObjectID then
+      DynObject._debug:log('Dynamic object "' .. tostring(value) .. '" was ' ..
+          'found in "_instances" table and returned.')
+      return value
+    end
+  end
+
+  DynObject._allowCreation = true
+  local dynObject = DynObject(dynObjectID)
+  DynObject._allowCreation = false
+
+  return dynObject
 end
 
 -- Returns a table of all the dynamic objects.
 function DynObject.dynamicObjects()
-	local dynamicObjects = {}
-	for key, value in pairs(_META.command.object(0, 'table')) do
-		table.insert(dynamicObjects, DynObject.getInstance(value))
-	end
-	
-	return dynObject
+  local dynamicObjects = {}
+  for key, value in pairs(_META.command.object(0, 'table')) do
+    table.insert(dynamicObjects, DynObject.getInstance(value))
+  end
+
+  return dynObject
 end
 
 -- Returns a dynamic object on the position.
 function DynObject.getDynamicObjectAt(x, y, dynObjectType)
-	if type(x) ~= "number" then
-		error("Passed \"x\" parameter is not valid. Number expected, ".. type(x) .." passed.", 2)
-	elseif type(y) ~= "number" then
-		error("Passed \"y\" parameter is not valid. Number expected, ".. type(y) .." passed.", 2)
-	end
-	
-	if dynObjectType then
-		if getmetatable(dynObjectType) ~= DynObjectType then
-			error("Passed \"dynObjectType\" parameter is not an instance of the \"DynObjectType\" class.", 2)
-		end
-	end
-	
-	local dynObject = _META.command.objectat(x, y, dynObjectType and dynObjectType._objectTypeID or nil)
-	return dynObject ~= 0 and DynObject.getInstance(dynObject) or false
+  DynObject._validator:validate({
+    { value = x, type = 'number' },
+    { value = y, type = 'number' },
+    { value = dynObjectType, type = DynObjectType, optional = true }
+  }, 'getDynamicObjectAt', 2)
+
+  local dynObject = _META.command.objectat(x, y, dynObjectType and dynObjectType._objectTypeID or nil)
+  print(dynObject)
+  return dynObject ~= 0 and DynObject.getInstance(dynObject) or false
 end
 
 ----------------------
@@ -70,308 +68,270 @@ end
 
 -- Constructor. Creates a dynamic object instance with corresponding ID.
 function DynObject:constructor(dynObjectID)
-	if type(dynObjectID) ~= "number" then
-		error("Passed \"dynObjectID\" parameter is not valid. Number expected, ".. type(dynObjectID) .." passed.", 2)
-	elseif not _META.command.object(dynObjectID, 'exists') then
-		error("Passed \"dynObjectID\" parameter represents a non-existent object.", 2)
-	end
-	
-	if not DynObject._allowCreation then
-		error("Instantiation of this class is not allowed.", 2)
-	end
-	
-	for key, value in pairs(DynObject._instances) do
-		if value._id == dynObjectID then
-			error("Instance with the same object ID already exists.", 2)
-		end
-	end
-	
-	self._id = dynObjectID
-	self._killed = false
-	
-	table.insert(DynObject._instances, self)
-	
-	DynObject._debug:log("Dynamic object \"".. tostring(self) .."\" was instantiated.")
+  DynObject._validator:validate({
+    { value = dynObjectID, type = 'constructor' }
+  }, 'constructor', 2)
+
+  if not _META.command.object(dynObjectID, 'exists') then
+    error('Dynamic object with the passed ID was not fund.', 2)
+  end
+
+  for key, value in pairs(DynObject._instances) do
+    if value._id == dynObjectID then
+      error('Instance with the same object ID already exists.', 2)
+    end
+  end
+
+  self._id = dynObjectID
+  self._killed = false
+
+  table.insert(DynObject._instances, self)
+
+  DynObject._debug:log('Dynamic object "' .. tostring(self) .. '" was ' ..
+      'instantiated.')
 end
 
 -- Destructor
 function DynObject:destructor()
-	if not self._killed then
-		self._killed = true
-	end
-	
-	for key, value in pairs(DynObject._instances) do
-		if value._id == self._id then
-			-- Removes the dynamic object from the DynObject._instances table.
-			DynObject._instances[key] = nil
-		end
-	end
-	
-	DynObject._debug:log("Dynamic object \"".. tostring(self) .."\" was garbage collected.")
+  if not self._killed then
+    self._killed = true
+  end
+
+  for key, value in pairs(DynObject._instances) do
+    if value._id == self._id then
+      -- Removes the dynamic object from the DynObject._instances table.
+      DynObject._instances[key] = nil
+    end
+  end
+
+  DynObject._debug:log('Dynamic object "' .. tostring(self) .. '" was ' ..
+      'garbage collected.')
+end
+
+-- Raises an error if the object is need of being disposed.
+function DynObject:errorIfNeedsDisposing()
+  if self._killed then
+    error('The dynamic object of this instance was already killed. ' ..
+        'It\'s better to dispose of this instance.', 2)
+  end
 end
 
 --== Getters ==--
 
 -- Gets the ID of the dynamic object.
 function DynObject:getID()
-	if self._killed then
-		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.", 2)
-	end
-	
-	return self._id
+  self:errorIfNeedsDisposing()
+
+  return self._id
 end
 
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
--- The following is self explanatory, I based it on "object" function of cs2d --
+-- The following is self explanatory, I based it on 'object' function of cs2d --
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 function DynObject:getTypeName()
-	if self._killed then
-		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.", 2)
-	end
-	
-	return _META.command.object(self._id, 'typename')
+  self:errorIfNeedsDisposing()
+
+  return _META.command.object(self._id, 'typename')
 end
 
 function DynObject:getType()
-	if self._killed then
-		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.", 2)
-	end
-	
-	return DynObjectType.getInstance(_META.command.object(self._id, 'type'))
+  self:errorIfNeedsDisposing()
+
+  return DynObjectType.getInstance(_META.command.object(self._id, 'type'))
 end
 
 function DynObject:getHealth()
-	if self._killed then
-		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.", 2)
-	end
-	
-	return _META.command.object(self._id, 'health')
+  self:errorIfNeedsDisposing()
+
+  return _META.command.object(self._id, 'health')
 end
 
 function DynObject:getMode()
-	if self._killed then
-		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.", 2)
-	end
-	
-	return _META.command.object(self._id, 'mode')
+  self:errorIfNeedsDisposing()
+
+  return _META.command.object(self._id, 'mode')
 end
 
 function DynObject:getTeam()
-	if self._killed then
-		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.", 2)
-	end
-	
-	return _META.command.object(self._id, 'team')
+  self:errorIfNeedsDisposing()
+
+  return _META.command.object(self._id, 'team')
 end
 
 function DynObject:getPlayer()
-	if self._killed then
-		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.", 2)
-	end
-	
-	if self:getType() == 30 then
-		error("This dynamic object is an npc, thus does not have an owner.", 2)
-	end
-	
-	return _META.command.object(self._id, 'player')
+  self:errorIfNeedsDisposing()
+
+  if self:getType() == 30 then
+    error('This dynamic object is an npc, thus does not have an owner.', 2)
+  end
+
+  return _META.command.object(self._id, 'player')
 end
 
 function DynObject:getNPCType()
-	if self._killed then
-		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.", 2)
-	end
-	
-	if self:getType() ~= 30 then
-		error("This dynamic object is not an npc, thus does not have an NPC type.", 2)
-	end
-	
-	return _META.command.object(self._id, 'player')
+  self:errorIfNeedsDisposing()
+
+  if self:getType() ~= 30 then
+    error('This dynamic object is not an npc, thus does not have an NPC type.',
+      2)
+  end
+
+  return _META.command.object(self._id, 'player')
 end
 
 function DynObject:getPosition()
-	if self._killed then
-		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.", 2)
-	end
-	
-	return
-		_META.command.object(self._id, 'x'),
-		_META.command.object(self._id, 'y')
+  self:errorIfNeedsDisposing()
+
+  return
+  _META.command.object(self._id, 'x'),
+  _META.command.object(self._id, 'y')
 end
 
 function DynObject:getX()
-	if self._killed then
-		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.", 2)
-	end
-	
-	return _META.command.object(self._id, 'x')
+  self:errorIfNeedsDisposing()
+
+  return _META.command.object(self._id, 'x')
 end
 
 function DynObject:getY()
-	if self._killed then
-		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.", 2)
-	end
-	
-	return _META.command.object(self._id, 'y')
+  self:errorIfNeedsDisposing()
+
+  return _META.command.object(self._id, 'y')
 end
 
 function DynObject:getAngle()
-	if self._killed then
-		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.", 2)
-	end
-	
-	return _META.command.object(self._id, 'rot')
+  self:errorIfNeedsDisposing()
+
+  return _META.command.object(self._id, 'rot')
 end
 
 function DynObject:getTilePosition()
-	if self._killed then
-		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.", 2)
-	end
-	
-	return
-		_META.command.object(self._id, 'tilex'),
-		_META.command.object(self._id, 'tiley')
+  self:errorIfNeedsDisposing()
+
+  return
+  _META.command.object(self._id, 'tilex'),
+  _META.command.object(self._id, 'tiley')
 end
 
 function DynObject:getTileX()
-	if self._killed then
-		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.", 2)
-	end
-	
-	return _META.command.object(self._id, 'tilex')
+  self:errorIfNeedsDisposing()
+
+  return _META.command.object(self._id, 'tilex')
 end
 
 function DynObject:getTileY()
-	if self._killed then
-		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.", 2)
-	end
-	
-	return _META.command.object(self._id, 'tiley')
+  self:errorIfNeedsDisposing()
+
+  return _META.command.object(self._id, 'tiley')
 end
 
 function DynObject:getCountdown()
-	if self._killed then
-		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.", 2)
-	end
-	
-	return _META.command.object(self._id, 'countdown')
+  self:errorIfNeedsDisposing()
+
+  return _META.command.object(self._id, 'countdown')
 end
 
 function DynObject:getOriginalAngle()
-	if self._killed then
-		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.", 2)
-	end
-	
-	return _META.command.object(self._id, 'rootrot')
+  self:errorIfNeedsDisposing()
+
+  return _META.command.object(self._id, 'rootrot')
 end
 
 function DynObject:getTarget()
-	if self._killed then
-		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.", 2)
-	end
-	
-	local target = _META.command.object(self._id, 'target')
-	return target ~= 0 and Player.getInstance(target) or false
+  self:errorIfNeedsDisposing()
+
+  local target = _META.command.object(self._id, 'target')
+  return target ~= 0 and Player.getInstance(target) or false
 end
 
 function DynObject:getUpgradeVal()
-	if self._killed then
-		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.", 2)
-	end
-	
-	return _META.command.object(self._id, 'upgrade')
+  self:errorIfNeedsDisposing()
+
+  return _META.command.object(self._id, 'upgrade')
 end
 
 function DynObject:isSpawnedByEntity()
-	if self._killed then
-		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.", 2)
-	end
-	
-	return _META.command.object(self._id, 'entity')
+  self:errorIfNeedsDisposing()
+
+  return _META.command.object(self._id, 'entity')
 end
 
 function DynObject:getSpawnEntityPosition()
-	if self._killed then
-		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.", 2)
-	end
-	
-	if not DynObject:isSpawnedByEntity() then
-		error("This dynamic object wasn't spawned by an entity.", 2)
-	end
-	
-	return
-		_META.command.object(self._id, 'entityx'),
-		_META.command.object(self._id, 'entityy')
+  self:errorIfNeedsDisposing()
+
+  if not DynObject:isSpawnedByEntity() then
+    error('This dynamic object wasn\'t spawned by an entity.', 2)
+  end
+
+  return
+     _META.command.object(self._id, 'entityx'),
+     _META.command.object(self._id, 'entityy')
 end
 
 function DynObject:getSpawnEntityX()
-	if self._killed then
-		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.", 2)
-	end
-	
-	if not DynObject:isSpawnedByEntity() then
-		error("This dynamic object wasn't spawned by an entity.", 2)
-	end
-	
-	return _META.command.object(self._id, 'entityx')
+  self:errorIfNeedsDisposing()
+
+  if not DynObject:isSpawnedByEntity() then
+    error('This dynamic object wasn\'t spawned by an entity.', 2)
+  end
+
+  return _META.command.object(self._id, 'entityx')
 end
 
 function DynObject:getSpawnEntityY()
-	if self._killed then
-		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.", 2)
-	end
-	
-	if not DynObject:isSpawnedByEntity() then
-		error("This dynamic object wasn't spawned by an entity.", 2)
-	end
-	
-	return _META.command.object(self._id, 'entityy')
+  self:errorIfNeedsDisposing()
+
+  if not DynObject:isSpawnedByEntity() then
+    error('This dynamic object wasn\'t spawned by an entity.', 2)
+  end
+
+  return _META.command.object(self._id, 'entityy')
 end
 
 --== Setters/control ==--
 
 function DynObject:damage(damage, player)
-	if type(damage) ~= "number" then
-		error("Passed \"damage\" parameter is not valid. Number expected, ".. type(damage) .." passed.", 2)
-	end
-	if player then
-		if getmetatable(player) ~= Player then
-			error("Passed \"player\" parameter is not an instance of the \"Player\" class.", 2)
-		end
-	end
-	
-	if self._killed then
-		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.", 2)
-	end
-	
-	if self:getType() == DynObjectType.image then
-		error("This object is an image, thus it cannot be damaged.", 2)
-	end
-	
-	local player = player or 0
-	
-	Console.parse("damageobject", self._id, damage, player)
+  DynObject._validator:validate({
+    { value = damage, type = 'number' },
+    { value = player, type = Player, optional = true }
+  }, 'damage', 2)
+
+  self:errorIfNeedsDisposing()
+
+  if self:getType() == DynObjectType.image then
+    error('This object is an image, thus it cannot be damaged.', 2)
+  end
+
+  local player = player or 0
+
+  Console.parse('damageobject', self._id, damage, player)
 end
 
 function DynObject:kill()
-	if self._killed then
-		error("The dynamic object of this instance was already killed. It's better if you dispose of this instance.", 2)
-	end
-	
-	if self:getType() == DynObjectType.image then
-		Image.getInstance(self._id):free()
-	else
-		Console.parse("killobject", self._id)
-	end
+  self:errorIfNeedsDisposing()
+
+  if self:getType() == DynObjectType.image then
+    Image.getInstance(self._id):free()
+  else
+    Console.parse('killobject', self._id)
+  end
+  self._killed = true;
 end
 
 -------------------
 -- Static fields --
 -------------------
 
-DynObject._allowCreation = false -- Defines if instantiation of this class is allowed.
-DynObject._instances = setmetatable({}, {__mode = "kv"}) -- A table of instances of this class.
-DynObject._debug = Debug.new(Color.yellow, "CAS Dynamic Object") -- Debug for dynamic objects.
+-- Validator for argument validation.
+DynObject._validator = Validator()
+
+-- Defines if instantiation of this class is allowed.
+DynObject._allowCreation = false
+-- A table of instances of this class.
+DynObject._instances = setmetatable({}, { __mode = 'kv' })
+-- Debug for dynamic objects.
+DynObject._debug = Debug(Color.yellow, 'CAS Dynamic Object')
 DynObject._debug:setActive(_META.config.debugMode)
 
 -------------------------

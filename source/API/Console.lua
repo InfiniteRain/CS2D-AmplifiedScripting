@@ -7,40 +7,44 @@ local Console = class()
 
 -- Parses the passed cs2d command with the passed parameters.
 function Console.parse(command, ...)
-	if type(command) ~= "string" then
-		error("Passed \"command\" parameter is not valid. String expected, ".. type(command) .." passed.", 2)
-	end
-	
-	local parameters = {...}
-	local commandString = command
-	for key, value in pairs(parameters) do
-		commandString = commandString .. " \"".. tostring(value) .."\""
-	end
-	
-	_META.command.parse(commandString)
+  Console._validator:validate({
+    { value = command, type = 'string' }
+  }, 'parse', 2)
+
+  local parameters = { ... }
+  local commandString = command
+  for key, value in pairs(parameters) do
+    commandString = commandString .. ' "' .. tostring(value) .. '"'
+  end
+
+  _META.command.parse(commandString)
 end
 
 -- Prints console message.
 function Console.print(message, color)
-	if type(message) ~= "string" then
-		error("Passed \"message\" parameter is not valid. String expected, ".. type(message) .." passed.", 2)
-	end
-	if color then
-		if getmetatable(color) ~= Color then
-			error("Passed \"color\" parameter is not valid. String expected, ".. type(color) .." passed.", 2)
-		end
-	end
-	
-	print((color and tostring(color) or "") .. message)
+  Console._validator:validate({
+    { value = message, type = 'string' },
+    { value = color, type = Color, optional = true }
+  }, 'print', 2)
+
+  print((color and tostring(color) or '') .. message)
 end
 
 ----------------------
 -- Instance methods --
 ----------------------
 
+-- Disallow instantiation.
 function Console:constructor()
-	error("Instantiation of this class is not allowed.", 2)
+  error('Instantiation of this class is not allowed.', 2)
 end
+
+-------------------
+-- Static fields --
+-------------------
+
+-- Validator for argument validation.
+Console._validator = Validator()
 
 -------------------------
 -- Returning the class --
