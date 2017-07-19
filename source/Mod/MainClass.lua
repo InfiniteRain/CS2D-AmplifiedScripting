@@ -1,5 +1,5 @@
--- Using the API namespace.
-use 'API'
+-- Using the CAS namespace.
+use 'CAS'
 
 -- Initializing the main class.
 local MainClass = class()

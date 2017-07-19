@@ -13,7 +13,7 @@ function Console.parse(command, ...)
 
   local parameters = { ... }
   local commandString = command
-  for key, value in pairs(parameters) do
+  for _, value in pairs(parameters) do
     commandString = commandString .. ' "' .. tostring(value) .. '"'
   end
 
