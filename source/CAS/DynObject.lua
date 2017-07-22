@@ -6,7 +6,7 @@ local DynObject = class()
 --~~~~~~~~~~~~~~~~--
 
 ---
--- Checks if the dynamic object under the passed ID exists.
+-- Checks if the dynamic object with the passed ID exists.
 --
 -- @param dynObjectID (number)
 --   Numberic object ID
@@ -20,12 +20,12 @@ function DynObject.idExists(dynObjectID)
 end
 
 ---
--- Returns the dynamic object instance from the passed onject ID.
+-- Returns the CAS.DynObject instance from the passed object ID.
 --
 -- @param dynObjectID (number)
---   Numberic dyn object ID
+--   Numeric dyn object ID
 -- @return (instance of CAS.DynObject)
---   A dyn object instance
+--   The instance which represents the dyn object with that ID
 --
 function DynObject.getInstance(dynObjectID)
     DynObject._validator:validate({
@@ -52,10 +52,9 @@ function DynObject.getInstance(dynObjectID)
 end
 
 ---
--- Returns a table of all the dynamic objects.
+-- Returns a table containing all the dynamic objects currently spawned.
 --
 -- @return (table)
---   Table consisting of all the dynamic objects which currently exist.
 --
 function DynObject.dynamicObjects()
     local dynamicObjects = {}
@@ -70,7 +69,7 @@ end
 -- Returns a dynamic object on the position.
 --
 -- @return (instance of CAS.DynObject)
---   On success, the instace of a dyn object at that position
+--   On success, the instance representing a dyn object on that position
 -- @return (boolean)
 --   On failure, false
 --
@@ -137,7 +136,7 @@ function DynObject:destructor()
 end
 
 ---
--- Checking if the object was killed in game and needs to be disposed of, and if it the case, raising an error.
+-- Checking if the object was killed in game and needs to be disposed of, and if it is the case, raising an error.
 --
 function DynObject:errorIfNeedsDisposing()
     if self._killed then
@@ -173,7 +172,7 @@ end
 ---
 -- Returns the type of the dynamic object.
 --
--- @return (instance of CAS.DynamicType)
+-- @return (instance of CAS.DynObjectType)
 --
 function DynObject:getType()
     self:errorIfNeedsDisposing()
@@ -215,7 +214,7 @@ function DynObject:getTeam()
 end
 
 ---
--- Returns the play by whom the dynamic object was created, if the object is not an NPC.
+-- Returns the player by whom the dynamic object was created, if the dyn object is not an NPC.
 --
 -- @return (instance of CAS.Player)
 --
@@ -230,7 +229,7 @@ function DynObject:getPlayer()
 end
 
 ---
--- Returns the type of the NPC the dynamic object is, if the object is an NPC.
+-- Returns the type of NPC the dynamic object is (if the object is an NPC).
 --
 -- @return (number)
 --
@@ -238,8 +237,7 @@ function DynObject:getNPCType()
     self:errorIfNeedsDisposing()
 
     if self:getType() ~= 30 then
-        error('This dynamic object is not an npc, thus does not have an NPC type.',
-            2)
+        error('This dynamic object is not an npc, thus does not have an NPC type.', 2)
     end
 
     return _META.command.object(self._id, 'player')
@@ -250,8 +248,8 @@ end
 --
 -- @return
 --   2 values:
---     x position (number),
---     y position (number)
+--     X position (number),
+--     Y position (number)
 --
 function DynObject:getPosition()
     self:errorIfNeedsDisposing()
@@ -358,7 +356,7 @@ end
 -- Returns the target of the dynamic object.
 --
 -- @return (instance of CAS.Player)
---   If there is a target exists, returns the player
+--   If there is a target, returns the player
 -- @return (boolean)
 --   If there is no target, returns false
 --
@@ -447,7 +445,7 @@ end
 -- Damages the dynamic object.
 --
 -- @param damage (number)
---   The damage
+--   The damage amount
 -- @param player (instance of CAS.Player) (optional)
 --   The player who inflicted the damage
 --
