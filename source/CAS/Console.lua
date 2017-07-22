@@ -28,7 +28,7 @@ function Console.parse(command, ...)
 end
 
 ---
--- Prints console message.
+-- Prints a console message.
 --
 -- @param message
 --   Message to display

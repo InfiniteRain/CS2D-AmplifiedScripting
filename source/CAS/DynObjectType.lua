@@ -6,12 +6,12 @@ local DynObjectType = class() -- Acts as the inner class of the dynObject class.
 --~~~~~~~~~~~~~~~~--
 
 ---
--- Turns object type ID into an instance.
+-- Turns object type ID into an instance of CAS.DynObjectType.
 --
 -- @param objectTypeID (number)
 --   The object type ID
 -- @return (instance of DynObjectType)
---   If the type ID is valid, returns the instance representing that object type ID
+--   If the type ID is valid, returns the instance which represents the passed object type ID
 --
 function DynObjectType.getInstance(objectTypeID)
     DynObjectType._validator:validate({
@@ -34,7 +34,7 @@ end
 --~~~~~~~~~~~~~~~~~~--
 
 ---
--- Constructor. Can only be instantiated at certain times.
+-- Constructor. Makes it so that the class can only be instantiated at certain times.
 --
 -- @param objectTypeID
 --   The type ID of the object this instance should represent.
