@@ -1,28 +1,30 @@
--- Initializing the color class.
+-- Initializing the class.
 local Color = class()
 
-----------------------
--- Instance Methods --
-----------------------
+--~~~~~~~~~~~~~~~~~~--
+-- Instance methods --
+--~~~~~~~~~~~~~~~~~~--
 
 ---
--- @param red
+-- Constructor method.
+--
+-- @param red (number)
 --   Red color value of the instance.
--- @param green
+-- @param green (number)
 --   Green color value of the instance.
--- @param blue
+-- @param blue (number)
 --   Blue color value of the instance.
 --
 function Color:constructor(red, green, blue)
-  Color._validator:validate({
-    { value = red, type = 'color' },
-    { value = green, type = 'color' },
-    { value = blue, type = 'color' }
-  } , 'constructor', 2)
+    Color._validator:validate({
+        { value = red, type = 'color' },
+        { value = green, type = 'color' },
+        { value = blue, type = 'color' }
+    }, 'constructor', 2)
 
-  self._red = red
-  self._green = green
-  self._blue = blue
+    self._red = red
+    self._green = green
+    self._blue = blue
 end
 
 ---
@@ -30,12 +32,11 @@ end
 -- Returns a string which is used to change the message's color, in the following format: '©<red><green><blue>', with
 -- necessary zeros added.
 --
--- @return
+-- @return (string)
 --   Formatted color injection string
 --
 function Color:__tostring()
-  return string.format('%c%03d%03d%03d', 169,
-    self._red, self._green, self._blue)
+    return string.format('%c%03d%03d%03d', 169, self._red, self._green, self._blue)
 end
 
 --== Setters ==--
@@ -43,69 +44,69 @@ end
 ---
 -- Sets the color fields of the instance.
 --
--- @param red
+-- @param red (number)
 --   Red value (0 - 255)
--- @param green
+-- @param green (number)
 --   Green value (0 - 255)
--- @param blue
+-- @param blue (number)
 --   Blue value (0 - 255)
 --
 function Color:setRGB(red, green, blue)
-  Color._validator:validate({
-    { value = self, type = Color },
-    { value = red, type = 'color' },
-    { value = green, type = 'color' },
-    { value = blue, type = 'color' }
-  } , 'setRGB', 2)
+    Color._validator:validate({
+        { value = self, type = Color },
+        { value = red, type = 'color' },
+        { value = green, type = 'color' },
+        { value = blue, type = 'color' }
+    }, 'setRGB', 2)
 
-  self._red = red
-  self._green = green
-  self._blue = blue
+    self._red = red
+    self._green = green
+    self._blue = blue
 end
 
 ---
 -- Sets the red color field of the instance.
 --
--- @param red
+-- @param red (number)
 --   Red value (0 - 255)
 --
 function Color:setRed(red)
-  Color._validator:validate({
-    { value = self, type = Color },
-    { value = red, type = 'color' }
-  } , 'setRed', 2)
+    Color._validator:validate({
+        { value = self, type = Color },
+        { value = red, type = 'color' }
+    }, 'setRed', 2)
 
-  self._red = red
+    self._red = red
 end
 
 ---
 -- Sets the green color field of the instance.
 --
--- @param green
+-- @param green (number)
 --   Green value (0 - 255)
 --
 function Color:setGreen(green)
-  Color._validator:validate({
-    { value = self, type = Color },
-    { value = green, type = 'color' }
-  } , 'setGreen', 2)
+    Color._validator:validate({
+        { value = self, type = Color },
+        { value = green, type = 'color' }
+    }, 'setGreen', 2)
 
-  self._green = green
+    self._green = green
 end
 
 ---
 -- Sets the blue color field of the instance.
 --
--- @param blue
+-- @param blue (number)
 --   Blue value (0 - 255)
 --
 function Color:setBlue(blue)
-  Color._validator:validate({
-    { value = self, type = Color },
-    { value = blue, type = 'color' }
-  } , 'setBlue', 2)
+    Color._validator:validate({
+        { value = self, type = Color },
+        { value = blue, type = 'color' }
+    }, 'setBlue', 2)
 
-  self._blue = blue
+    self._blue = blue
 end
 
 --== Getters ==--
@@ -115,57 +116,58 @@ end
 --
 -- @return
 --   3 values:
---     red color value,
---     green color value,
---     blue color value
+--     red color value (number),
+--     green color value (number),
+--     blue color value (number)
 --
 function Color:getRGB()
-  return self._red, self._green, self._blue
+    return self._red, self._green, self._blue
 end
 
 ---
 -- Gets the red color field of the instance.
 --
--- @return
+-- @return (number)
 --   Red color value
 --
 function Color:getRed()
-  return self._red
+    return self._red
 end
 
 ---
 -- Gets the green color field of the instance.
 --
--- @return
+-- @return (number)
 --   Green color value
 --
 function Color:getGreen()
-  return self._green
+    return self._green
 end
 
 ---
 -- Gets the blue color field of the instance.
 --
--- @return
+-- @return (number)
 --   Blue color value
+--
 function Color:getBlue()
-  return self._blue
+    return self._blue
 end
 
--------------------
+--~~~~~~~~~~~~~~~--
 -- Static fields --
--------------------
+--~~~~~~~~~~~~~~~--
 
--- Validator for argument validation.
+-- Validator.
 Color._validator = Validator()
 -- Checks if the value is a correct representation of color.
 Color._validator:addCustomRule('color', function(ruleTable)
-  local value = ruleTable.value
-  local hasError = not (type(value) == 'number'
-      and value >= 0 and value <= 255 and value == math.floor(value))
-  local message = 'value is not valid for color representation, has to be an integer between 0 and 255'
+    local value = ruleTable.value
+    local hasError = not (type(value) == 'number'
+        and value >= 0 and value <= 255 and value == math.floor(value))
+    local message = 'value is not valid for color representation, has to be an integer between 0 and 255'
 
-  return hasError, message
+    return hasError, message
 end)
 
 -- Preset color values for ease of access.
@@ -183,7 +185,8 @@ Color.magenta = Color(255, 0, 255)
 Color.cyan = Color(0, 255, 255)
 Color.blue = Color(0, 0, 255)
 
--------------------------
+--~~~~~~~~~~~~~~~~~~~~~--
 -- Returning the class --
--------------------------
+--~~~~~~~~~~~~~~~~~~~~~--
+
 return Color

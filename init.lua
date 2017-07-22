@@ -13,17 +13,16 @@ local config = require(location .. '.config')
 local usedNamespaces = {}
 
 ---
--- Attempts to load a class. Namespace represents the file path to the class
--- while class name represents the file name. I.E. 'API.Color' will search
--- a file './source/API/Color.lua', execute it, and get the returned class,
--- if there is any.
+-- Attempts to load a class. Namespace represents the file path to the class while class name represents the file name.
+-- I.E. 'API.Color' will search a file './source/API/Color.lua', execute it, and get the returned class, if there is
+-- any.
 --
--- @param class
+-- @param class (string)
 --   Class name
--- @param namespaces
+-- @param namespaces (string)
 --   Class namespace
--- @return
---   Class
+-- @return (table)
+--   The loaded class
 --
 local function loadClass(class, namespaces)
     -- Table for the found classes within the used namespaces.
@@ -69,12 +68,14 @@ end
 ---
 -- Returns the namespace and a class name of a class file.
 --
--- @param level
+-- @param level (number)
 --   File level to check at.
 -- @return
 --   Two values:
---     the namespace of the class (E.G. Mod.Enemies),
---     the class name (E.G. EvilChicken)
+--     the namespace of the class (E.G. Mod.Enemies) (string),
+--     the class name (E.G. EvilChicken) (string)
+-- @return (boolean)
+--   If the class is attempted to be loaded from outside of the source directory, then returns false
 --
 local function getCurrentClassPath(level)
     local filePath = debug.getinfo(level + 1).source:sub(4, -5):gsub('[\\/]', '.')
@@ -97,32 +98,29 @@ end
 ---
 -- Initializes a class and returns it.
 --
--- @param inheritsFrom
---   Name of the class to inherit properties from. Optional.
--- @return
+-- @param inheritsFrom (class) (optional)
+--   Name of the class to inherit properties from.
+-- @return (class table)
 --   Proposed class.
 --
 function class(inheritsFrom)
     -- Checking if all the arguments are correct.
     if inheritsFrom then
         if type(inheritsFrom) ~= 'table' then
-            error(
-                'Passed "inheritsFrom" parameter is not valid. Table expected, ' .. type(inheritsFrom) .. ' passed.',
-                2
-            )
+            error('Invalid argument #1 at "class" (class expected)', 21)
         end
     end
 
     local ns, cn = getCurrentClassPath(2)
     if not ns then
-        error('The "class" function may only be used within the files located in CAS source folder.', 2)
+        error('The "class" function may only be used within the files located within the CAS source folder.', 2)
     end
 
     -- Initializing the class.
     local class = {}
     class.__index = class
 
-    local newInstance = function(_, ...)
+    local function newInstance(_, ...)
         -- Initializing the instance.
         local instance = setmetatable({}, class)
 
@@ -190,9 +188,9 @@ end
 -- called. This function also returns a namespace table, which will return an indexed class if the class exists within
 -- the used namespace.
 --
--- @param namespace
+-- @param namespace (string)
 --   The namespace to use
--- @return
+-- @return (table)
 --   A namespace table (on success)
 --
 function use(namespace)
@@ -283,13 +281,13 @@ setmetatable(
 ---
 -- Global table for CAS meta data
 --
--- @field config
+-- @field config (table)
 --   Loaded config from config.lua
--- @field command
+-- @field command (table)
 --   Table storing all the global Lua functions which are CS2D related.
--- @field timeFuncs
+-- @field timeFuncs (table)
 --   Table which stores functions for timers.
--- @field hookFuncs
+-- @field hookFuncs (table)
 --   Table which stores functions for hooks.
 --
 _META = {
